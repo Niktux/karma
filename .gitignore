@@ -1,0 +1,15 @@
+# Eclipse files
+.settings/
+.buildpath
+.project
+
+# Composer files
+vendor/
+composer.phar
+composer.lock
+
+# Logs
+php_errors.log
+
+# Code coverage report
+report/

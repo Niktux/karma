@@ -1,0 +1,27 @@
+{
+	"name" : "niktux/karma",
+	"description" : "hydrate code with environment dependent values",
+	"type" : "script",
+	"authors" : [{
+			"name" : "Nicolas Le Nardou",
+			"email" : "nico.ln@gmail.com"
+		}
+	],
+	"keywords" : [
+		"configuration",
+		"environment"
+	],
+	"homepage" : "https://github.com/Niktux/karma",
+	"require" : {
+		"symfony/console" : "~2.4",
+		"knplabs/gaufrette" : "0.1.6"
+	},
+	"require-dev" : {
+		"phpunit/phpunit" : "~3.7"
+	},
+	"autoload" : {
+		"psr-0" : {
+			"Karma" : "src"
+		}
+	}
+}
