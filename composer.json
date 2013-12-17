@@ -14,6 +14,7 @@
 	"homepage" : "https://github.com/Niktux/karma",
 	"require" : {
 		"symfony/console" : "~2.4",
+		"php" : ">=5.4",
 		"knplabs/gaufrette" : "0.1.6"
 	},
 	"require-dev" : {
