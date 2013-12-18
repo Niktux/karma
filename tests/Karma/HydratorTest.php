@@ -47,4 +47,17 @@ class HydratorTest extends PHPUnit_Framework_TestCase
             array('preprod', '51'),
         );
     }
+    
+    public function testDryRun()
+    {
+        $this->fs->write('a.php', '');
+        $this->fs->write('b.php-dist', '<%var%>');
+        $this->fs->write('c.php', '<%var%>');
+    
+        $this->hydrator
+            ->setDryRun()
+            ->hydrate('dev');
+    
+        $this->assertFalse($this->fs->has('b.php'));
+    }
 }
