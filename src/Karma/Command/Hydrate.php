@@ -11,7 +11,7 @@ use Gaufrette\Filesystem;
 use Gaufrette\Adapter\Local;
 use Karma\Finder;
 use Karma\Hydrator;
-use Karma\InMemoryReader;
+use Karma\Configuration\InMemoryReader;
 
 class Hydrate extends Command
 {

@@ -3,7 +3,7 @@
 use Gaufrette\Filesystem;
 use Gaufrette\Adapter\InMemory;
 use Karma\Hydrator;
-use Karma\InMemoryReader;
+use Karma\Configuration\InMemoryReader;
 
 class HydratorTest extends PHPUnit_Framework_TestCase
 {

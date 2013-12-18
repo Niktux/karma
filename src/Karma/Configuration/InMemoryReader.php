@@ -1,6 +1,8 @@
 <?php
 
-namespace Karma;
+namespace Karma\Configuration;
+
+use Karma\Configuration;
 
 class InMemoryReader implements Configuration
 {
