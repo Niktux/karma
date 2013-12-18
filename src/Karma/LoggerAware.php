@@ -35,5 +35,4 @@ trait LoggerAware
     {
         return $this->logger->debug($message);
     }
-    
 }
