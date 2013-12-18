@@ -53,4 +53,33 @@ class ReaderTest extends ParserTestCase
         
         $this->assertSame($expectedValue, $reader->read($variable, $environment));
     }
+    
+    /**
+     * @dataProvider providerTestRead
+     */
+    public function testReadWithDefaultEnvironment($variable, $environment, $expectedValue)
+    {
+        $reader = new Reader($this->parser, self::MASTERFILE_PATH);
+        $reader->setDefaultEnvironment($environment);
+    
+        $this->assertSame($expectedValue, $reader->read($variable));
+    }
+    
+    /**
+     * @dataProvider providerTestReadNotFoundValue
+     * @expectedException \RuntimeException
+     */
+    public function testReadNotFoundValue($variable, $environment)
+    {
+        $reader = new Reader($this->parser, self::MASTERFILE_PATH);
+        $reader->read($variable, $environment);
+    }
+    
+    public function providerTestReadNotFoundValue()
+    {
+        return array(
+            array('thisvariabledoesnotexist', 'dev'),
+            array('server', 'dev'),
+        );
+    }
 }
