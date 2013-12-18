@@ -1,16 +1,11 @@
 <?php
 
-use Symfony\Component\Console\Application;
-use Karma\Command\Hydrate;
-use Symfony\Component\Console\Tester\CommandTester;
-use Karma\Hydrator;
 use Gaufrette\Filesystem;
 use Gaufrette\Adapter\InMemory;
-use Karma\FakeReader;
-use Symfony\Component\Console\Output\ConsoleOutput;
-use Symfony\Component\Console\Output\OutputInterface;
+use Karma\Hydrator;
+use Karma\InMemoryReader;
 
-class HydrateTest extends PHPUnit_Framework_TestCase
+class HydratorTest extends PHPUnit_Framework_TestCase
 {
     private
         $fs,
@@ -20,7 +15,7 @@ class HydrateTest extends PHPUnit_Framework_TestCase
     {
         $this->fs = new Filesystem(new InMemory());
         $suffix = '-dist';
-        $reader = new FakeReader(array(
+        $reader = new InMemoryReader(array(
             'var:dev' => 42,
             'var:preprod' => 51,
             'var:prod' => 69,
