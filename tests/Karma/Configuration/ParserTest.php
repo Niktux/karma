@@ -8,6 +8,19 @@ require_once __DIR__ . '/ParserTestCase.php';
 
 class ParserTest extends ParserTestCase
 {
+    /**
+     * @dataProvider providerTestRead
+     */
+    public function testRead($variable, $environment, $expectedValue)
+    {
+        $this->variables = $this->parser->parse(self::MASTERFILE_PATH);
+    
+        $this->assertArrayHasKey($variable, $this->variables);
+        $this->assertArrayHasKey('env', $this->variables[$variable]);
+        $this->assertArrayHasKey($environment, $this->variables[$variable]['env']);
+        $this->assertSame($expectedValue, $this->variables[$variable]['env'][$environment]);
+    }
+    
     public function providerTestRead()
     {
         return array(
@@ -41,19 +54,6 @@ class ParserTest extends ParserTestCase
             // db.conf
             array('user', 'default', 'root'),    
         );    
-    }
-    
-    /**
-     * @dataProvider providerTestRead
-     */
-    public function testRead($variable, $environment, $expectedValue)
-    {
-        $this->variables = $this->parser->parse(self::MASTERFILE_PATH);
-        
-        $this->assertArrayHasKey($variable, $this->variables);
-        $this->assertArrayHasKey('env', $this->variables[$variable]);
-        $this->assertArrayHasKey($environment, $this->variables[$variable]['env']);
-        $this->assertSame($expectedValue, $this->variables[$variable]['env'][$environment]);
     }
     
     /**
