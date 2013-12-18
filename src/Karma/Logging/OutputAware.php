@@ -15,6 +15,21 @@ trait OutputAware
         
         return $this;
     }
+
+    protected function error($messages, $newline = false, $type = OutputInterface::OUTPUT_NORMAL)
+    {
+        return $this->write($messages, $newline, $type, OutputInterface::VERBOSITY_NORMAL, 'red');
+    }
+    
+    protected function warning($messages, $newline = false, $type = OutputInterface::OUTPUT_NORMAL)
+    {
+        return $this->write($messages, $newline, $type, OutputInterface::VERBOSITY_VERBOSE, 'yellow');
+    }
+    
+    protected function info($messages, $newline = false, $type = OutputInterface::OUTPUT_NORMAL)
+    {
+        return $this->write($messages, $newline, $type, OutputInterface::VERBOSITY_VERY_VERBOSE, 'white');
+    }
     
     protected function debug($messages, $newline = false, $type = OutputInterface::OUTPUT_NORMAL)
     {
@@ -32,7 +47,7 @@ trait OutputAware
                     $messages = array($messages);
                 }
     
-                array_walk($messages, function(& $message){
+                array_walk($messages, function(& $message) use($textColor) {
                     $message = "<fg=$textColor>$message</fg=$textColor>";
                 });
     
