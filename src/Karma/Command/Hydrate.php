@@ -11,7 +11,7 @@ use Gaufrette\Filesystem;
 use Gaufrette\Adapter\Local;
 use Karma\Finder;
 use Karma\Hydrator;
-use Karma\FakeReader;
+use Karma\InMemoryReader;
 
 class Hydrate extends Command
 {
@@ -50,7 +50,7 @@ class Hydrate extends Command
         $fs = new Filesystem(new Local($sourcePath));
         
         // FIXME reader
-        $reader = new FakeReader();
+        $reader = new InMemoryReader();
         
         $hydrater = new Hydrator($fs, $input->getOption('suffix'), $reader);
         $hydrater
