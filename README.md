@@ -40,7 +40,7 @@ db.pass:
   dev = awfulPassword
 ```
 
-Command ```karma hydrate --env=prod src/``` will generate *db.ini* (without -dist) :
+Command ```karma hydrate --env=prod src/``` will generate **db.ini** (without -dist) :
 
 ```ini
 [Database]
@@ -49,7 +49,7 @@ User=myUser
 Pass=mySecretPass
 ```
 
-while command ```karma hydrate --env=dev src/``` will generate *db.ini* like this :
+while command ```karma hydrate --env=dev src/``` will generate **db.ini** like this :
 
 ```ini
 [Database]
@@ -62,6 +62,6 @@ Options
 -------
 
 TODO
-hydrate options (dry-run, master, confDir, suffix, ...)
-others command : rollback, display, check
-conf file syntax (includes, default fallback, managing different env)
+* hydrate options (dry-run, master, confDir, suffix, ...)
+* others command : rollback, display, check
+* conf file syntax (includes, default fallback, managing different env)
