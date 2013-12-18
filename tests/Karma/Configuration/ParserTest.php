@@ -13,7 +13,7 @@ class ParserTest extends ParserTestCase
      */
     public function testRead($variable, $environment, $expectedValue)
     {
-        $this->variables = $this->parser->parse(self::MASTERFILE_PATH);
+        $this->variables = $this->parser->setEOL("\n")->parse(self::MASTERFILE_PATH);
     
         $this->assertArrayHasKey($variable, $this->variables);
         $this->assertArrayHasKey('env', $this->variables[$variable]);
@@ -100,6 +100,7 @@ CONFFILE
             ), 
             'include not found' => array(<<<CONFFILE
 [includes]
+empty.conf
 notfound.conf
 CONFFILE
                       
