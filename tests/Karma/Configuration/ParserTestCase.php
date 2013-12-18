@@ -3,6 +3,9 @@
 use Gaufrette\Filesystem;
 use Gaufrette\Adapter\InMemory;
 use Karma\Configuration\Parser;
+use Karma\Logging\OutputInterfaceAdapter;
+use Symfony\Component\Console\Output\ConsoleOutput;
+use Symfony\Component\Console\Output\OutputInterface;
 
 class ParserTestCase extends \PHPUnit_Framework_TestCase
 {
@@ -68,5 +71,6 @@ CONFFILE;
         $fs = new Filesystem($adapter);
         
         $this->parser = new Parser($fs);
+        $this->parser->setLogger(new OutputInterfaceAdapter(new ConsoleOutput(OutputInterface::VERBOSITY_QUIET)));
     }
 }
