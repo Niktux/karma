@@ -39,6 +39,9 @@ class ReaderTest extends ParserTestCase
             array('tva', 'dev', 19.0),
             array('tva', 'default', 19.6),
 
+            array('my.var.with.subnames', 'dev', 21),                
+            array('my.var.with.subnames', 'default', 21),                
+            
             // db.conf
             array('user', 'default', 'root'),    
         );    

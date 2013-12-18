@@ -51,6 +51,8 @@ class ParserTest extends ParserTestCase
             array('apiKey', 'dev', '=2'),
             array('apiKey', 'default', 'qd4qs64d6q6=fgh4f6ùftgg==sdr'),
             
+            array('my.var.with.subnames', 'default', 21),
+                        
             // db.conf
             array('user', 'default', 'root'),    
         );    

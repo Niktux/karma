@@ -50,6 +50,9 @@ apiKey:
     dev==2
     default = qd4qs64d6q6=fgh4f6ùftgg==sdr
     
+my.var.with.subnames:
+    default = 21    
+    
 CONFFILE;
 
         $contentDb = <<< CONFFILE
