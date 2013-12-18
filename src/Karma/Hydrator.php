@@ -39,7 +39,7 @@ class Hydrator
         }
         
         $this->info(sprintf(
-	       '%d files generated',
+           '%d files generated',
             count($distFiles)
         ), true);
     }
