@@ -54,7 +54,7 @@ class Hydrator
     private function hydrateFile($file, $environment)
     {
         $content = $this->sources->read($file);
-        $targetContent = $this->injectValues($content, $environment);
+        $targetContent = $this->injectValues($file, $content, $environment);
         
         $targetFile = substr($file, 0, strlen($this->suffix) * -1);
         $this->debug("Write $targetFile", true);
@@ -65,10 +65,17 @@ class Hydrator
         }
     }
     
-    private function injectValues($content, $environment)
+    private function injectValues($sourceFile, $content, $environment)
     {
-        return preg_replace_callback('~<%(?P<variableName>\w+)%>~', function(array $matches) use($environment){
+        $targetContent = preg_replace_callback('~<%(?P<variableName>\w+)%>~', function(array $matches) use($environment){
             return $this->reader->read($matches['variableName'], $environment);
-        }, $content);
+        }, $content, -1, $count);
+        
+        if($count === 0)
+        {
+            $this->warning("No variable found in $sourceFile", true);
+        }
+        
+        return $targetContent;
     }
 }
