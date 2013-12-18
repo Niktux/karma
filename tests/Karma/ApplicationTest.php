@@ -1,6 +1,7 @@
 <?php
 
 use Karma\Application;
+use Gaufrette\Adapter\InMemory;
 
 class ApplicationTest extends PHPUnit_Framework_TestCase
 {
@@ -9,7 +10,11 @@ class ApplicationTest extends PHPUnit_Framework_TestCase
      */
     public function testContainer($service, $expected)
     {
+        $adapter = new InMemory();
+        $adapter->write(Application::DEFAULT_MASTER_FILE, null);
+        
         $app = new Application();
+        $app['configuration.fileSystem.adapter'] = $adapter;
         
         $this->assertInstanceOf($expected, $app[$service]);
     }
