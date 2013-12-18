@@ -37,7 +37,7 @@ db.host:
 db.pass:
   prod = mySecretPass
   preprod, staging = otherPass
-  dev = awfulassword
+  dev = awfulPassword
 ```
 
 Command ```karma hydrate --env=prod src/``` will generate *db.ini* (without -dist) :
@@ -47,6 +47,15 @@ Command ```karma hydrate --env=prod src/``` will generate *db.ini* (without -dis
 Host=mysql.domain.com
 User=myUser
 Pass=mySecretPass
+```
+
+while command ```karma hydrate --env=dev src/``` will generate *db.ini* like this :
+
+```ini
+[Database]
+Host=127.0.0.1
+User=myUser
+Pass=awfulPassword
 ```
 
 Options
