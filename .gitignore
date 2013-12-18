@@ -13,3 +13,7 @@ php_errors.log
 
 # Code coverage report
 report/
+
+# Test data
+conf/
+data/
