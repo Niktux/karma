@@ -1,6 +1,6 @@
 <?php
 
-namespace Karma;
+namespace Karma\Logging;
 
 use Symfony\Component\Console\Output\OutputInterface;
 

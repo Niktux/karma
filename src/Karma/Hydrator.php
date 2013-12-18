@@ -6,7 +6,7 @@ use Gaufrette\Filesystem;
 
 class Hydrator
 {
-    use OutputAware;
+    use \Karma\Logging\OutputAware;
     
     private
         $sources,

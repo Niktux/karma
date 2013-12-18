@@ -15,7 +15,7 @@ use Karma\InMemoryReader;
 
 class Hydrate extends Command
 {
-    use \Karma\OutputAware;
+    use \Karma\Logging\OutputAware;
     
     const
         ENV_DEV = 'dev',

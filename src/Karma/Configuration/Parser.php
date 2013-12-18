@@ -10,7 +10,7 @@ use Psr\Log\NullLogger;
 
 class Parser
 {
-    use \Karma\LoggerAware;
+    use \Karma\Logging\LoggerAware;
     
     const
         INCLUDES = 'includes',
