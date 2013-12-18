@@ -33,7 +33,7 @@ trait OutputAware
     
     protected function debug($messages, $newline = false, $type = OutputInterface::OUTPUT_NORMAL)
     {
-        return $this->write($messages, $newline, $type, OutputInterface::VERBOSITY_DEBUG, 'cyan');
+        return $this->write($messages, $newline, $type, OutputInterface::VERBOSITY_DEBUG, 'white');
     }
     
     private function write($messages, $newline, $type, $verbosity, $textColor)
