@@ -7,17 +7,16 @@ use Karma\Configuration\Parser\NullParser;
 use Karma\Configuration\Parser\IncludeParser;
 use Karma\Configuration\Parser\VariableParser;
 use Psr\Log\NullLogger;
-use Psr\Log\LoggerInterface;
-use Monolog\Logger;
 
 class Parser
 {
+    use \Karma\LoggerAware;
+    
     const
         INCLUDES = 'includes',
         VARIABLES = 'variables';
     
     private
-        $logger,
         $parsers,
         $currentParser,
         $parsedFiles,
@@ -38,34 +37,12 @@ class Parser
         $this->eol = "\n";
     }
     
-    public function setLogger(LoggerInterface $logger)
-    {
-        $this->logger = $logger;
-        
-        foreach($this->parsers as $parser)
-        {
-            $parser->setLogger($logger);
-        }
-        
-        return $this;
-    }
-    
     public function setEOL($eol)
     {
         $this->eol = $eol;
         
         return $this;
     }
-    
-    private function log($message, $level = Logger::INFO)
-    {
-        return $this->logger->log($level, $message);        
-    }
-    
-    private function error($message)
-    {
-        return $this->log($message, Logger::ERROR);
-    } 
     
     public function parse($masterFilePath)
     {
@@ -108,7 +85,7 @@ class Parser
         
         if(empty($lines))
         {
-            $this->log("Empty file ($filePath)", Logger::WARNING);
+            $this->warning("Empty file ($filePath)");
         }
         
         $this->currentParser = new NullParser();
@@ -155,7 +132,7 @@ class Parser
     
     private function changeCurrentFile($filePath)
     {
-        $this->log("Reading $filePath");
+        $this->info("Reading $filePath");
         
         foreach($this->parsers as $parser)
         {
