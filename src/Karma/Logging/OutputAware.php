@@ -18,9 +18,14 @@ trait OutputAware
     
     protected function debug($messages, $newline = false, $type = OutputInterface::OUTPUT_NORMAL)
     {
+        return $this->write($messages, $newline, $type, OutputInterface::VERBOSITY_VERBOSE, 'cyan');
+    }
+    
+    private function write($messages, $newline, $type, $verbosity, $textColor)
+    {
         if($this->output instanceof OutputInterface)
         {
-            if(OutputInterface::VERBOSITY_VERBOSE <= $this->output->getVerbosity())
+            if($verbosity <= $this->output->getVerbosity())
             {
                 if(! is_array($messages))
                 {
@@ -28,7 +33,7 @@ trait OutputAware
                 }
     
                 array_walk($messages, function(& $message){
-                    $message = "<fg=cyan>$message</fg=cyan>";
+                    $message = "<fg=$textColor>$message</fg=$textColor>";
                 });
     
                     $this->output->write($messages, $newline, $type);
