@@ -12,14 +12,14 @@ use Gaufrette\Adapter\Local;
 use Karma\Finder;
 use Karma\Hydrator;
 use Karma\Configuration\InMemoryReader;
+use Karma\Application;
 
 class Hydrate extends Command
 {
     use \Karma\Logging\OutputAware;
     
     const
-        ENV_DEV = 'dev',
-        DEFAULT_FILE_SUFFIX = '-dist';
+        ENV_DEV = 'dev';
     
     protected function configure()
     {
@@ -29,8 +29,11 @@ class Hydrate extends Command
             
             ->addArgument('sourcePath', InputArgument::REQUIRED, 'source path to hydrate')
             
-            ->addOption('env',    null, InputOption::VALUE_REQUIRED, 'Target environment', self::ENV_DEV)
-            ->addOption('suffix', null, InputOption::VALUE_REQUIRED, 'File suffix',        self::DEFAULT_FILE_SUFFIX)
+            ->addOption('env',     null, InputOption::VALUE_REQUIRED, 'Target environment',           self::ENV_DEV)
+            ->addOption('suffix',  null, InputOption::VALUE_REQUIRED, 'File suffix',                  Application::DEFAULT_DISTFILE_SUFFIX)
+            ->addOption('confDir', null, InputOption::VALUE_REQUIRED, 'Configuration root directory', Application::DEFAULT_CONF_DIRECTORY)
+            ->addOption('master',  null, InputOption::VALUE_REQUIRED, 'Configuration master file',    Application::DEFAULT_MASTER_FILE)
+            ->addOption('dry-run', null, InputOption::VALUE_NONE, 'Simulation mode')
         ;
     }
     
@@ -46,15 +49,21 @@ class Hydrate extends Command
             $environment
         ));
         
-        $sourcePath = $input->getArgument('sourcePath');
-        $fs = new Filesystem(new Local($sourcePath));
+        $app = new \Karma\Application();
+        $app['sources.path']             = $input->getArgument('sourcePath');
+        $app['distFiles.suffix']         = $input->getOption('suffix');
+        $app['configuration.path']       = $input->getOption('confDir');
+        $app['configuration.masterFile'] = $input->getOption('master');
         
-        // FIXME reader
-        $reader = new InMemoryReader();
+        $hydrater = $app['hydrator'];
+        $hydrater->setOutput($output);
         
-        $hydrater = new Hydrator($fs, $input->getOption('suffix'), $reader);
-        $hydrater
-            ->setOutput($output)
-            ->hydrate($environment);
+        if($input->hasOption('dry-run'))
+        {
+            $this->output->writeln("<fg=cyan>*** Run in dry-run mode ***</fg=cyan>");
+            $hydrater->setDryRun();
+        }
+            
+        $hydrater->hydrate($environment);
     }
 }
