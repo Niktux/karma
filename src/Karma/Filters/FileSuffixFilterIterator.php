@@ -2,7 +2,7 @@
 
 namespace Karma\Filters;
 
-class FileSuffixFilterIterator extends \FilterIterator
+class FileSuffixFilterIterator extends \FilterIterator implements \Countable
 {
     private
         $suffix;
@@ -19,5 +19,10 @@ class FileSuffixFilterIterator extends \FilterIterator
         $filename = $this->getInnerIterator()->current();
         
         return is_string($filename) && preg_match("~$this->suffix$~", $filename);
+    }
+    
+    public function count()
+    {
+        return iterator_count($this);
     }
 }
