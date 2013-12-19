@@ -9,7 +9,7 @@ Use composer :
 ```json
 {
     "require": {
-		    "niktux/karma" : "*"
+		    "niktux/karma" : "dev-master"
     }
 }
 ```
