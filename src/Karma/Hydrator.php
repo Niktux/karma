@@ -3,10 +3,11 @@
 namespace Karma;
 
 use Gaufrette\Filesystem;
+use Psr\Log\NullLogger;
 
 class Hydrator
 {
-    use \Karma\Logging\OutputAware;
+    use \Karma\Logging\LoggerAware;
     
     private
         $sources,
@@ -16,6 +17,8 @@ class Hydrator
     
     public function __construct(Filesystem $sources, $suffix, Configuration $reader)
     {
+        $this->logger = new NullLogger();
+        
         $this->sources = $sources;
         $this->suffix = $suffix;
         $this->reader = $reader;
@@ -41,7 +44,7 @@ class Hydrator
         $this->info(sprintf(
            '%d files generated',
             count($distFiles)
-        ), true);
+        ));
     }
     
     private function collectDistFiles()
@@ -57,7 +60,7 @@ class Hydrator
         $targetContent = $this->injectValues($file, $content, $environment);
         
         $targetFile = substr($file, 0, strlen($this->suffix) * -1);
-        $this->debug("Write $targetFile", true);
+        $this->debug("Write $targetFile");
 
         if($this->dryRun === false)
         {
@@ -73,7 +76,7 @@ class Hydrator
         
         if($count === 0)
         {
-            $this->warning("No variable found in $sourceFile", true);
+            $this->warning("No variable found in $sourceFile");
         }
         
         return $targetContent;

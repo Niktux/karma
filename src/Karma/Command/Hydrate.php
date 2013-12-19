@@ -13,6 +13,7 @@ use Karma\Finder;
 use Karma\Hydrator;
 use Karma\Configuration\InMemoryReader;
 use Karma\Application;
+use Karma\Logging\OutputInterfaceAdapter;
 
 class Hydrate extends Command
 {
@@ -56,7 +57,7 @@ class Hydrate extends Command
         $app['configuration.masterFile'] = $input->getOption('master');
         
         $hydrator = $app['hydrator'];
-        $hydrator->setOutput($output);
+        $hydrator->setLogger(new OutputInterfaceAdapter($output));
         
         if($input->hasOption('dry-run'))
         {
