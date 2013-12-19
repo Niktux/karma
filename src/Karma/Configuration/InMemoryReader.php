@@ -43,7 +43,7 @@ class InMemoryReader implements Configuration
     public function getAllVariables()
     {
         $variables = array_map(function($item){
-        	return explode(':', $item)[0];
+            return explode(':', $item)[0];
         }, array_keys($this->values));
         
         return array_unique($variables);
