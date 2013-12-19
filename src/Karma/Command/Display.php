@@ -71,7 +71,7 @@ class Display extends Command
             }
             
             $this->output->writeln(sprintf(
-	           '<fg=cyan>%s</fg=cyan> = %s',
+               '<fg=cyan>%s</fg=cyan> = %s',
                 $variable,
                 $value
             ));
