@@ -10,6 +10,7 @@ class Console
     {
         $app = new Application();
         $app->add(new Command\Hydrate());
+        $app->add(new Command\Display());
         $app->run();
     }
 }
