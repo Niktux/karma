@@ -4,6 +4,8 @@ namespace Karma\Configuration\Parser;
 
 class VariableParser extends AbstractGroupParser
 {
+    use \Karma\Configuration\FilterInputVariable;
+    
     const 
         ASSIGNMENT = '=',
         ENV_SEPARATOR = ',',
@@ -99,34 +101,6 @@ class VariableParser extends AbstractGroupParser
             
             $this->variables[$this->currentVariable]['env'][$environment] = $value;
         }
-    }
-    
-    private function filterValue($value)
-    {
-        $value = trim($value);
-
-        $knowValues = array(
-            'true' => true,
-            'false' => false,
-            'null' => null
-        );
-
-        if(array_key_exists(strtolower($value), $knowValues))
-        {
-            return $knowValues[strtolower($value)];
-        }
-        
-        if(is_numeric($value))
-        {
-            if(stripos($value, '.') !== false && floatval($value) == $value)
-            {
-                return floatval($value);
-            } 
-            
-            return intval($value);
-        }
-        
-        return $value;
     }
     
     public function getVariables()

@@ -17,9 +17,11 @@ use Karma\Configuration;
 class Display extends Command
 {
     use \Karma\Logging\OutputAware;
+    use \Karma\Configuration\FilterInputVariable;
     
     const
-        ENV_DEV = 'dev';
+        ENV_DEV = 'dev',
+        NO_FILTERING = 'karma-nofiltering';
     
     protected function configure()
     {
@@ -28,6 +30,7 @@ class Display extends Command
             ->setDescription('Display environment variable set')
             
             ->addOption('env',     null, InputOption::VALUE_REQUIRED, 'Target environment',           self::ENV_DEV)
+            ->addOption('value',   null, InputOption::VALUE_REQUIRED, 'Display only variable with this value')
             ->addOption('confDir', null, InputOption::VALUE_REQUIRED, 'Configuration root directory', Application::DEFAULT_CONF_DIRECTORY)
             ->addOption('master',  null, InputOption::VALUE_REQUIRED, 'Configuration master file',    Application::DEFAULT_MASTER_FILE)
         ;
@@ -51,10 +54,16 @@ class Display extends Command
         $reader = $app['configuration'];
         $reader->setDefaultEnvironment($input->getOption('env'));
         
-        $this->displayValues($reader);
+        $filter = self::NO_FILTERING;
+        if($input->hasOption('value'))
+        {
+            $filter = $this->filterValue($input->getOption('value'));
+        }
+        
+        $this->displayValues($reader, $filter);
     }
     
-    private function displayValues(Configuration $reader)
+    private function displayValues(Configuration $reader, $filter = self::NO_FILTERING)
     {
         $values = $reader->getAllValuesForEnvironment();
         
@@ -63,11 +72,14 @@ class Display extends Command
         
         foreach($variables as $variable)
         {
-            $this->output->writeln(sprintf(
-               '<fg=cyan>%s</fg=cyan> = %s',
-                $variable,
-                $this->formatValue($values[$variable])
-            ));
+            if($filter === self::NO_FILTERING || $values[$variable] === $filter)
+            {
+                $this->output->writeln(sprintf(
+                   '<fg=cyan>%s</fg=cyan> = %s',
+                    $variable,
+                    $this->formatValue($values[$variable])
+                ));
+            }
         }
     }
     
