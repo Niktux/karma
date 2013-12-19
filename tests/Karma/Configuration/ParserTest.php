@@ -49,6 +49,7 @@ class ParserTest extends ParserTestCase
             array('tva', 'default', 19.6),
 
             array('apiKey', 'dev', '=2'),
+            array('apiKey', 'recette', ''),
             array('apiKey', 'default', 'qd4qs64d6q6=fgh4f6ùftgg==sdr'),
             
             array('my.var.with.subnames', 'default', 21),

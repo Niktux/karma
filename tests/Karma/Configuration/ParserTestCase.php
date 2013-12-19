@@ -47,6 +47,7 @@ server:
     recette, qualif = rec21
     
 apiKey:
+    recette =
     dev==2
     default = qd4qs64d6q6=fgh4f6ùftgg==sdr
     
