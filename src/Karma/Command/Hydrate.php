@@ -55,15 +55,15 @@ class Hydrate extends Command
         $app['configuration.path']       = $input->getOption('confDir');
         $app['configuration.masterFile'] = $input->getOption('master');
         
-        $hydrater = $app['hydrator'];
-        $hydrater->setOutput($output);
+        $hydrator = $app['hydrator'];
+        $hydrator->setOutput($output);
         
         if($input->hasOption('dry-run'))
         {
             $this->output->writeln("<fg=cyan>*** Run in dry-run mode ***</fg=cyan>");
-            $hydrater->setDryRun();
+            $hydrator->setDryRun();
         }
             
-        $hydrater->hydrate($environment);
+        $hydrator->hydrate($environment);
     }
 }
