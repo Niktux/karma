@@ -1,6 +1,7 @@
 <?php
 
 use Karma\Configuration\InMemoryReader;
+use Karma\Configuration;
 
 class InMemoryReaderTest extends PHPUnit_Framework_TestCase
 {
@@ -54,5 +55,46 @@ class InMemoryReaderTest extends PHPUnit_Framework_TestCase
         sort($expected);
         
         $this->assertSame($expected, $variables);
+    }
+    
+    /**
+     * @dataProvider providerTestGetAllValuesForEnvironment
+     */
+    public function testGetAllValuesForEnvironment($environment, array $expectedValues)
+    {
+        $variables = $this->reader->getAllValuesForEnvironment($environment);
+        $this->assertInternalType('array', $variables);
+    
+        $keys = array_keys($variables);
+        $expectedKeys = array_keys($expectedValues);
+        sort($keys);
+        sort($expectedKeys);
+        $this->assertSame($expectedKeys, $keys);
+    
+        foreach($keys as $variable)
+        {
+            $this->assertSame($expectedValues[$variable], $variables[$variable], "Value for $variable");
+        }
+    }
+    
+    public function providerTestGetAllValuesForEnvironment()
+    {
+        return array(
+            array('dev', array(
+                'foo' => 'foodev',
+                'bar' => 'bardev',
+                'baz' => null,
+            )),
+            array('recette', array(
+                'foo' => null,
+                'bar' => null,
+                'baz' => 'bazrecette',
+            )),
+            array('prod', array(
+                'foo' => 'fooprod',
+                'bar' => null,
+                'baz' => null,
+            )),
+        );
     }
 }

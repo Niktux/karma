@@ -72,4 +72,27 @@ class Reader implements Configuration
     {
         return array_keys($this->variables);
     }
+    
+    public function getAllValuesForEnvironment($environment = null)
+    {
+        $result = array();
+        
+        $variables = $this->getAllVariables();
+        
+        foreach($variables as $variable)
+        {
+            try
+            {
+                $value = $this->read($variable, $environment);
+            }
+            catch(\RuntimeException $e)
+            {
+                $value = Configuration::NOT_FOUND;
+            }
+        
+            $result[$variable] = $value;
+        }    
+        
+        return $result;
+    }
 }

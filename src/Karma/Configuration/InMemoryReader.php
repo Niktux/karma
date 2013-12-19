@@ -48,4 +48,18 @@ class InMemoryReader implements Configuration
         
         return array_unique($variables);
     }
+    
+    public function getAllValuesForEnvironment($environment = null)
+    {
+        $result = array();
+        
+        $variables = $this->getAllVariables();
+        
+        foreach($variables as $variable)
+        {
+            $result[$variable] = $this->read($variable, $environment);
+        }    
+        
+        return $result;
+    }
 }

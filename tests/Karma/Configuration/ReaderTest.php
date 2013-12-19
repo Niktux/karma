@@ -50,6 +50,10 @@ class ReaderTest extends ParserTestCase
             array('tva', 'dev', 19.0),
             array('tva', 'default', 19.6),
 
+            array('apiKey', 'dev', '=2'),
+            array('apiKey', 'prod', 'qd4qs64d6q6=fgh4f6ùftgg==sdr'),
+            array('apiKey', 'default', 'qd4qs64d6q6=fgh4f6ùftgg==sdr'),
+            
             array('my.var.with.subnames', 'dev', 21),                
             array('my.var.with.subnames', 'default', 21),                
             
@@ -102,5 +106,51 @@ class ReaderTest extends ParserTestCase
         sort($expected);
         
         $this->assertSame($expected, $variables);
+    }
+    
+    /**
+     * @dataProvider providerTestGetAllValuesForEnvironment
+     */
+    public function testGetAllValuesForEnvironment($environment, array $expectedValues)
+    {
+        $variables = $this->reader->getAllValuesForEnvironment($environment);
+        $this->assertInternalType('array', $variables);
+
+        $keys = array_keys($variables);
+        $expectedKeys = array_keys($expectedValues);
+        sort($keys);
+        sort($expectedKeys);
+        $this->assertSame($expectedKeys, $keys);
+        
+        foreach($keys as $variable)
+        {
+            $this->assertSame($expectedValues[$variable], $variables[$variable], "Value for $variable");
+        }
+    }
+    
+    public function providerTestGetAllValuesForEnvironment()
+    {
+        return array(
+            array('dev', array(
+                'print_errors' => true,
+                'debug' => true,
+                'gourdin' => 2,
+                'server' => Configuration::NOT_FOUND,
+                'tva' => 19.0,
+                'apiKey' => '=2',
+                'my.var.with.subnames' => 21,
+                'user' => 'root'
+            )),
+            array('prod', array(
+                'print_errors' => false,
+                'debug' => false,
+                'gourdin' => 0,
+                'server' => 'sql21',
+                'tva' => 19.6,
+                'apiKey' => 'qd4qs64d6q6=fgh4f6ùftgg==sdr',
+                'my.var.with.subnames' => 21,
+                'user' => 'root'
+            )),            
+        );
     }
 }
