@@ -61,13 +61,13 @@ class Display extends Command
         
         foreach($variables as $variable)
         {
-            $value = '<error>NOT FOUND</error>';
             try
             {
                 $value = $reader->read($variable);
             }
             catch(\RuntimeException $e)
             {
+                $value = '<error>NOT FOUND</error>';
             }
             
             $this->output->writeln(sprintf(
