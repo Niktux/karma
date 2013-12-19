@@ -21,7 +21,8 @@ class Display extends Command
     
     const
         ENV_DEV = 'dev',
-        NO_FILTERING = 'karma-nofiltering';
+        NO_FILTERING = 'karma-nofiltering',
+        FILTER_WILDCARD = '*';
     
     protected function configure()
     {
@@ -30,7 +31,7 @@ class Display extends Command
             ->setDescription('Display environment variable set')
             
             ->addOption('env',     null, InputOption::VALUE_REQUIRED, 'Target environment',           self::ENV_DEV)
-            ->addOption('value',   null, InputOption::VALUE_REQUIRED, 'Display only variable with this value')
+            ->addOption('value',   null, InputOption::VALUE_REQUIRED, 'Display only variable with this value', self::NO_FILTERING)
             ->addOption('confDir', null, InputOption::VALUE_REQUIRED, 'Configuration root directory', Application::DEFAULT_CONF_DIRECTORY)
             ->addOption('master',  null, InputOption::VALUE_REQUIRED, 'Configuration master file',    Application::DEFAULT_MASTER_FILE)
         ;
@@ -72,12 +73,14 @@ class Display extends Command
         
         foreach($variables as $variable)
         {
-            if($filter === self::NO_FILTERING || $values[$variable] === $filter)
+            $value = $values[$variable];
+            
+            if($filter === self::NO_FILTERING || $this->matchFilter($value, $filter))
             {
                 $this->output->writeln(sprintf(
                    '<fg=cyan>%s</fg=cyan> = %s',
                     $variable,
-                    $this->formatValue($values[$variable])
+                    $this->formatValue($value)
                 ));
             }
         }
@@ -103,5 +106,24 @@ class Display extends Command
         }
         
         return $value;
+    }
+    
+    private function matchFilter($value, $filter)
+    {
+        if(stripos($filter, self::FILTER_WILDCARD) !== false)
+        {
+            $filter = $this->convertToRegex($filter);
+            
+            return preg_match($filter, $value);
+        }
+        
+        return $filter === $value;
+    }
+    
+    private function convertToRegex($filter)
+    {
+        $filter = str_replace(self::FILTER_WILDCARD, '.*', $filter);
+        
+        return "~^$filter$~";
     }
 }
