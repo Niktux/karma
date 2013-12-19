@@ -56,25 +56,40 @@ class Display extends Command
     
     private function displayValues(Configuration $reader)
     {
-        $variables = $reader->getAllVariables();
+        $values = $reader->getAllValuesForEnvironment();
+        
+        $variables = array_keys($values);
         sort($variables);
         
         foreach($variables as $variable)
         {
-            try
-            {
-                $value = $reader->read($variable);
-            }
-            catch(\RuntimeException $e)
-            {
-                $value = '<error>NOT FOUND</error>';
-            }
-            
             $this->output->writeln(sprintf(
                '<fg=cyan>%s</fg=cyan> = %s',
                 $variable,
-                $value
+                $this->formatValue($values[$variable])
             ));
         }
+    }
+    
+    private function formatValue($value)
+    {
+        if($value === false)
+        {
+            $value = 'false';
+        }
+        elseif($value === true)
+        {
+            $value = 'true';
+        }
+        elseif($value === null)
+        {
+            $value = '<fg=white;options=bold>NULL</fg=white;options=bold>';
+        }
+        elseif($value === Configuration::NOT_FOUND)
+        { 
+            $value = '<error>NOT FOUND</error>';
+        }
+        
+        return $value;
     }
 }
