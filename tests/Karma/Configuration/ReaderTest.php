@@ -1,11 +1,22 @@
 <?php
 
 use Karma\Configuration\Reader;
+use Karma\Configuration;
 
 require_once __DIR__ . '/ParserTestCase.php';
 
 class ReaderTest extends ParserTestCase
 {
+    private
+        $reader;
+    
+    protected function setUp()
+    {
+        parent::setUp();
+        
+        $this->reader = new Reader($this->parser, self::MASTERFILE_PATH);
+    }
+    
     public function providerTestRead()
     {
         return array(
@@ -52,9 +63,7 @@ class ReaderTest extends ParserTestCase
      */
     public function testRead($variable, $environment, $expectedValue)
     {
-        $reader = new Reader($this->parser, self::MASTERFILE_PATH);
-        
-        $this->assertSame($expectedValue, $reader->read($variable, $environment));
+        $this->assertSame($expectedValue, $this->reader->read($variable, $environment));
     }
     
     /**
@@ -62,10 +71,9 @@ class ReaderTest extends ParserTestCase
      */
     public function testReadWithDefaultEnvironment($variable, $environment, $expectedValue)
     {
-        $reader = new Reader($this->parser, self::MASTERFILE_PATH);
-        $reader->setDefaultEnvironment($environment);
+        $this->reader->setDefaultEnvironment($environment);
     
-        $this->assertSame($expectedValue, $reader->read($variable));
+        $this->assertSame($expectedValue, $this->reader->read($variable));
     }
     
     /**
@@ -74,8 +82,7 @@ class ReaderTest extends ParserTestCase
      */
     public function testReadNotFoundValue($variable, $environment)
     {
-        $reader = new Reader($this->parser, self::MASTERFILE_PATH);
-        $reader->read($variable, $environment);
+        $this->reader->read($variable, $environment);
     }
     
     public function providerTestReadNotFoundValue()
@@ -88,8 +95,7 @@ class ReaderTest extends ParserTestCase
     
     public function testGetAllVariables()
     {
-        $reader = new Reader($this->parser, self::MASTERFILE_PATH);
-        $variables = $reader->getAllVariables();
+        $variables = $this->reader->getAllVariables();
         sort($variables);
         
         $expected = array('print_errors', 'debug', 'gourdin', 'server', 'tva', 'apiKey', 'my.var.with.subnames', 'user');

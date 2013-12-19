@@ -16,7 +16,7 @@ class ParserTestCase extends \PHPUnit_Framework_TestCase
         $parser,
         $variables;
     
-    public function setUp()
+    protected function setUp()
     {
         $contentMaster = <<<CONFFILE
 [includes]
