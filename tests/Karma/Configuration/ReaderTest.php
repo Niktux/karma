@@ -85,4 +85,16 @@ class ReaderTest extends ParserTestCase
             array('server', 'dev'),
         );
     }
+    
+    public function testGetAllVariables()
+    {
+        $reader = new Reader($this->parser, self::MASTERFILE_PATH);
+        $variables = $reader->getAllVariables();
+        sort($variables);
+        
+        $expected = array('print_errors', 'debug', 'gourdin', 'server', 'tva', 'apiKey', 'my.var.with.subnames', 'user');
+        sort($expected);
+        
+        $this->assertSame($expected, $variables);
+    }
 }

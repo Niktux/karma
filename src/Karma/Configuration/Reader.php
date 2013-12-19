@@ -67,4 +67,9 @@ class Reader implements Configuration
             $environment
         ));
     }
+    
+    public function getAllVariables()
+    {
+        return array_keys($this->variables);
+    }
 }

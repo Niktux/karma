@@ -44,4 +44,15 @@ class InMemoryReaderTest extends PHPUnit_Framework_TestCase
             array('donotexist', 'dev', null),
         );
     }
+    
+    public function testGetAllVariables()
+    {
+        $variables = $this->reader->getAllVariables();
+        sort($variables);
+        
+        $expected = array('foo', 'bar', 'baz');
+        sort($expected);
+        
+        $this->assertSame($expected, $variables);
+    }
 }
