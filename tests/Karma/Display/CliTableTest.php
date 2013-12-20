@@ -37,14 +37,14 @@ RESULT
                 array('Variable', 'Dev', 'Production'),
                 array('x', 153, 15.24),
                 array('db.password', null, 'root'),
-                array('toto', '0', false),
+                array('toto', '0', true),
             ), <<<RESULT
 |---------------------------------|
 | Variable    | Dev  | Production |
 |---------------------------------|
 | x           | 153  | 15.24      |
 | db.password | NULL | root       |
-| toto        | 0    | false      |
+| toto        | 0    | true       |
 |---------------------------------|
 RESULT
             ),            
