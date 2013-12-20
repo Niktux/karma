@@ -29,11 +29,11 @@ class HydratorTest extends PHPUnit_Framework_TestCase
      */
     public function testSimple($environment, $expectedBValue)
     {
-        $this->fs->write('a.php', '');
-        $this->fs->write('b.php-dist', '<%var%>');
-        $this->fs->write('c.php', '<%var%>');
-        $this->fs->write('d.php-dist', 'var');
-        $this->fs->write('e.php-dist', '<%var %>');
+        $this->write('a.php', '');
+        $this->write('b.php-dist', '<%var%>');
+        $this->write('c.php', '<%var%>');
+        $this->write('d.php-dist', 'var');
+        $this->write('e.php-dist', '<%var %>');
         
         $this->hydrator->hydrate($environment);
         
@@ -58,14 +58,42 @@ class HydratorTest extends PHPUnit_Framework_TestCase
     
     public function testDryRun()
     {
-        $this->fs->write('a.php', '');
-        $this->fs->write('b.php-dist', '<%var%>');
-        $this->fs->write('c.php', '<%var%>');
+        $this->write('a.php', '');
+        $this->write('b.php-dist', '<%var%>');
+        $this->write('c.php', '<%var%>');
     
         $this->hydrator
             ->setDryRun()
             ->hydrate('dev');
     
         $this->assertFalse($this->fs->has('b.php'));
+    }
+    
+    public function testTrappedFilenames()
+    {
+        $existingFiles = array('a.php', 'b.php-dist', 'c.php-dis', 'd.php-distt', 'e.php-dist.dist', 'f.dist', 'g-dist.php', 'h.php-dist-dist');
+        
+        foreach($existingFiles as $file)
+        {
+            $this->write($file);
+        }
+        
+        $this->hydrator->hydrate('prod');
+        
+        $createdFiles = array('b.php', 'h.php-dist');
+        $allFiles = array_merge($existingFiles, $createdFiles);
+
+        // check there is no extra generated file
+        $this->assertSame(count($allFiles), count($this->fs->keys()));
+        
+        foreach($allFiles as $file)
+        {
+            $this->assertTrue($this->fs->has($file), "File $file should be created");
+        }
+    }
+    
+    private function write($name, $content = null)
+    {
+        $this->fs->write($name, $content);
     }
 }
