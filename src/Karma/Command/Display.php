@@ -13,16 +13,15 @@ use Karma\Hydrator;
 use Karma\Configuration\InMemoryReader;
 use Karma\Application;
 use Karma\Configuration;
+use Karma\Configuration\ValueFilter;
 
 class Display extends Command
 {
     use \Karma\Logging\OutputAware;
-    use \Karma\Configuration\FilterInputVariable;
     
     const
         ENV_DEV = 'dev',
-        NO_FILTERING = 'karma-nofiltering',
-        FILTER_WILDCARD = '*';
+        NO_FILTERING = 'karma-nofiltering';
     
     protected function configure()
     {
@@ -55,10 +54,9 @@ class Display extends Command
         $reader = $app['configuration'];
         $reader->setDefaultEnvironment($input->getOption('env'));
         
-        $filter = self::NO_FILTERING;
         if($input->hasOption('value'))
         {
-            $filter = $this->filterValue($input->getOption('value'));
+            $filter = $input->getOption('value');
         }
         
         $this->displayValues($reader, $filter);
@@ -68,21 +66,22 @@ class Display extends Command
     {
         $values = $reader->getAllValuesForEnvironment();
         
+        if($filter !== self::NO_FILTERING)
+        {
+            $valueFilter = new ValueFilter($values);
+            $values = $valueFilter->filter($filter);    
+        }
+        
         $variables = array_keys($values);
         sort($variables);
         
         foreach($variables as $variable)
         {
-            $value = $values[$variable];
-            
-            if($filter === self::NO_FILTERING || $this->matchFilter($value, $filter))
-            {
-                $this->output->writeln(sprintf(
-                   '<fg=cyan>%s</fg=cyan> = %s',
-                    $variable,
-                    $this->formatValue($value)
-                ));
-            }
+            $this->output->writeln(sprintf(
+               '<fg=cyan>%s</fg=cyan> = %s',
+                $variable,
+                $this->formatValue($values[$variable])
+            ));
         }
     }
     
@@ -106,24 +105,5 @@ class Display extends Command
         }
         
         return $value;
-    }
-    
-    private function matchFilter($value, $filter)
-    {
-        if(stripos($filter, self::FILTER_WILDCARD) !== false)
-        {
-            $filter = $this->convertToRegex($filter);
-            
-            return preg_match($filter, $value);
-        }
-        
-        return $filter === $value;
-    }
-    
-    private function convertToRegex($filter)
-    {
-        $filter = str_replace(self::FILTER_WILDCARD, '.*', $filter);
-        
-        return "~^$filter$~";
     }
 }

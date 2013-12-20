@@ -6,6 +6,11 @@ trait FilterInputVariable
 {
     private function filterValue($value)
     {
+        if(! is_string($value))
+        {
+            return $value;
+        }
+        
         $value = trim($value);
     
         $knowValues = array(
