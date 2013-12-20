@@ -50,7 +50,7 @@ class ValueFilter
     
     private function escapeRegexSpecialCharacters($filter)
     {
-        return strtr($filter ,array(
+        return strtr($filter, array(
             '.' => '\.',        	
             '?' => '\?',        	
             '+' => '\+',        	
