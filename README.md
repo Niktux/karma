@@ -1,7 +1,15 @@
 Karma [![Build Status](http://jenkins.deboo.fr/job/Karma/badge/icon)](http://jenkins.deboo.fr/job/Karma/)
 =====
 
-PHP CLI tool to hydrate source code with environment dependent values
+PHP CLI tool to hydrate source code with environment dependent values 
+
+
+QA
+--
+
+[![SensioLabsInsight](https://insight.sensiolabs.com/projects/94083ab1-1613-46c1-b380-ec575926ae39/big.png)](https://insight.sensiolabs.com/projects/94083ab1-1613-46c1-b380-ec575926ae39)
+
+
 
 Installation
 ------------
