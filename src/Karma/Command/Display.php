@@ -78,26 +78,4 @@ class Display extends Command
             ));
         }
     }
-    
-    private function formatValue($value)
-    {
-        if($value === false)
-        {
-            $value = 'false';
-        }
-        elseif($value === true)
-        {
-            $value = 'true';
-        }
-        elseif($value === null)
-        {
-            $value = '<fg=white;options=bold>NULL</fg=white;options=bold>';
-        }
-        elseif($value === Configuration::NOT_FOUND)
-        { 
-            $value = '<error>NOT FOUND</error>';
-        }
-        
-        return $value;
-    }
 }

@@ -29,4 +29,26 @@ class Command extends \Symfony\Component\Console\Command\Command
         $this->app['configuration.path']       = $input->getOption('confDir');
         $this->app['configuration.masterFile'] = $input->getOption('master');
     }
+    
+    protected function formatValue($value)
+    {
+        if($value === false)
+        {
+            $value = 'false';
+        }
+        elseif($value === true)
+        {
+            $value = 'true';
+        }
+        elseif($value === null)
+        {
+            $value = '<fg=white;options=bold>NULL</fg=white;options=bold>';
+        }
+        elseif($value === Configuration::NOT_FOUND)
+        {
+            $value = '<error>NOT FOUND</error>';
+        }
+    
+        return $value;
+    }
 }
