@@ -9,7 +9,8 @@ class CliTable
         $nbColumns,
         $columnsSize,
         $header,
-        $rows;
+        $rows,
+        $valueRenderFunction;
     
     public function __construct(array $values)
     {
@@ -19,6 +20,14 @@ class CliTable
         $this->nbColumns = count($this->header);
         
         $this->rows = $values;
+        $this->valueRenderFunction = null;
+    }
+    
+    public function setValueRenderingFunction(\Closure $function)
+    {
+        $this->valueRenderFunction = $function;
+        
+        return $this;
     }
     
     public function render()
@@ -91,6 +100,12 @@ class CliTable
         elseif($value === null)
         {
             $value = 'NULL';
+        }
+        
+        if($this->valueRenderFunction instanceof \Closure)
+        {
+            $f = $this->valueRenderFunction;
+            $value = $f($value);
         }
         
         return (string) $value;
