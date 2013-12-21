@@ -12,6 +12,12 @@
          bootstrap="vendor/autoload.php"
 >
 
+<testsuites>
+  <testsuite name="Karma Test Suite">
+    <directory>./tests/*Test.php</directory>
+  </testsuite>
+</testsuites>
+
 <filter>
   <blacklist>
     <directory suffix=".php">vendor</directory>
