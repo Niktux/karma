@@ -4,15 +4,6 @@ namespace Karma\Command;
 
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Input\InputOption;
-use Gaufrette\Filesystem;
-use Gaufrette\Adapter\Local;
-use Karma\Finder;
-use Karma\Hydrator;
-use Karma\Configuration\InMemoryReader;
-use Karma\Application;
-use Karma\Configuration;
-use Karma\Configuration\ValueFilter;
 use Symfony\Component\Console\Input\InputArgument;
 use Karma\Display\CliTable;
 use Karma\Command;
