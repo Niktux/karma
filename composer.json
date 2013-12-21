@@ -30,5 +30,8 @@
 		"psr-0" : {
 			"Karma" : "src"
 		}
+	},
+	"support" : {
+		"issues" : "https://github.com/Niktux/karma/issues"
 	}
 }
