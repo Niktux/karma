@@ -52,14 +52,14 @@ RESULT
     public function testValueRenderingFunction()
     {
         $table = new CliTable(array(
-        	array('', 'e1', 'e2'),
-        	array('a', 'a1', 'a2'),
-        	array('B', 'B1', 'B2'),
-        	array('cccc', 'cccc1', 'cccc2'),
+            array('', 'e1', 'e2'),
+            array('a', 'a1', 'a2'),
+            array('B', 'B1', 'B2'),
+            array('cccc', 'cccc1', 'cccc2'),
         ));
         
         $table->setValueRenderingFunction(function ($value){
-        	return strtoupper($value);
+            return strtoupper($value);
         });
         
         $expected = <<<RESULT
@@ -74,4 +74,29 @@ RESULT;
         
         $this->assertSame($expected, $table->render());
     }
+    
+    public function testEnableFormattingTags()
+    {
+        $table = new CliTable(array(
+            array('', 'e1', 'e2'),
+            array('a', 'a1', 'a2'),
+            array('B', 'B1', 'B2'),
+            array('<color=blue>cccc</color>', 'cccc1', 'cccc2'),
+        ));
+    
+        $table->enableFormattingTags();
+    
+        // Expects thats tags have no impact on column size computation
+        $expected = <<<RESULT
+|----------------------|
+|      | e1    | e2    |
+|----------------------|
+| a    | a1    | a2    |
+| B    | B1    | B2    |
+| <color=blue>cccc</color> | cccc1 | cccc2 |
+|----------------------|
+RESULT;
+    
+        $this->assertSame($expected, $table->render());
+    }    
 }

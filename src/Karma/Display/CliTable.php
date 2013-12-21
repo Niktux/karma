@@ -5,28 +5,34 @@ namespace Karma\Display;
 class CliTable
 {
     private
-        $values,
         $nbColumns,
         $columnsSize,
         $header,
         $rows,
-        $valueRenderFunction;
+        $valueRenderFunction,
+        $enableFormattingTags;
     
     public function __construct(array $values)
     {
-        $this->values = $values;
-        
         $this->header = array_shift($values);
         $this->nbColumns = count($this->header);
-        
         $this->rows = $values;
+        
         $this->valueRenderFunction = null;
+        $this->enableFormattingTags = false;
     }
     
     public function setValueRenderingFunction(\Closure $function)
     {
         $this->valueRenderFunction = $function;
         
+        return $this;
+    }
+    
+    public function enableFormattingTags($value = true)
+    {
+        $this->enableFormattingTags = (bool) $value;
+
         return $this;
     }
     
@@ -80,9 +86,13 @@ class CliTable
             for($i = 0; $i < $this->nbColumns; $i++)
             {
                 $value = $this->renderValueAsString($row[$i]);
-                $length = strlen($value);
                 
-                $this->columnsSize[$i] = max($length, $this->columnsSize[$i]);
+                if($this->enableFormattingTags === true)
+                {
+                    $value = strip_tags($value);
+                }
+                
+                $this->columnsSize[$i] = max(strlen($value), $this->columnsSize[$i]);
             }
         }
     }
