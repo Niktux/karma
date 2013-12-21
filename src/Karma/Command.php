@@ -8,6 +8,8 @@ use Symfony\Component\Console\Input\InputOption;
 
 class Command extends \Symfony\Component\Console\Command\Command
 {
+    use \Karma\Logging\OutputAware;
+    
     protected
         $app;
     
@@ -21,6 +23,8 @@ class Command extends \Symfony\Component\Console\Command\Command
     
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $this->setOutput($output);
+        
         $this->app = new Application();
         $this->app['configuration.path']       = $input->getOption('confDir');
         $this->app['configuration.masterFile'] = $input->getOption('master');

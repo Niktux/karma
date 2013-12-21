@@ -4,7 +4,6 @@ namespace Karma\Command;
 
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputOption;
 use Gaufrette\Filesystem;
 use Gaufrette\Adapter\Local;
@@ -14,31 +13,30 @@ use Karma\Configuration\InMemoryReader;
 use Karma\Application;
 use Karma\Configuration;
 use Karma\Configuration\ValueFilter;
+use Karma\Command;
 
 class Display extends Command
 {
-    use \Karma\Logging\OutputAware;
-    
     const
         ENV_DEV = 'dev',
         NO_FILTERING = 'karma-nofiltering';
     
     protected function configure()
     {
+        parent::configure();
+        
         $this
             ->setName('display')
             ->setDescription('Display environment variable set')
             
             ->addOption('env',     null, InputOption::VALUE_REQUIRED, 'Target environment',           self::ENV_DEV)
             ->addOption('value',   null, InputOption::VALUE_REQUIRED, 'Display only variable with this value', self::NO_FILTERING)
-            ->addOption('confDir', null, InputOption::VALUE_REQUIRED, 'Configuration root directory', Application::DEFAULT_CONF_DIRECTORY)
-            ->addOption('master',  null, InputOption::VALUE_REQUIRED, 'Configuration master file',    Application::DEFAULT_MASTER_FILE)
         ;
     }
     
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->setOutput($output);
+        parent::execute($input, $output);
         
         $environment = $input->getOption('env'); 
         
@@ -47,11 +45,7 @@ class Display extends Command
             $environment
         ));
         
-        $app = new \Karma\Application();
-        $app['configuration.path']       = $input->getOption('confDir');
-        $app['configuration.masterFile'] = $input->getOption('master');
-        
-        $reader = $app['configuration'];
+        $reader = $this->app['configuration'];
         $reader->setDefaultEnvironment($input->getOption('env'));
         
         if($input->hasOption('value'))

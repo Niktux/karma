@@ -6,7 +6,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 trait OutputAware
 {
-    private
+    protected
         $output = null;
 
     public function setOutput(OutputInterface $output)

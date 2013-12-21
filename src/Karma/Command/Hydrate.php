@@ -5,7 +5,6 @@ namespace Karma\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputOption;
 use Gaufrette\Filesystem;
 use Gaufrette\Adapter\Local;
@@ -14,16 +13,17 @@ use Karma\Hydrator;
 use Karma\Configuration\InMemoryReader;
 use Karma\Application;
 use Karma\Logging\OutputInterfaceAdapter;
+use Karma\Command;
 
 class Hydrate extends Command
 {
-    use \Karma\Logging\OutputAware;
-    
     const
         ENV_DEV = 'dev';
     
     protected function configure()
     {
+        parent::configure();
+        
         $this
             ->setName('hydrate')
             ->setDescription('Hydrate dist files')
@@ -32,15 +32,13 @@ class Hydrate extends Command
             
             ->addOption('env',     null, InputOption::VALUE_REQUIRED, 'Target environment',           self::ENV_DEV)
             ->addOption('suffix',  null, InputOption::VALUE_REQUIRED, 'File suffix',                  Application::DEFAULT_DISTFILE_SUFFIX)
-            ->addOption('confDir', null, InputOption::VALUE_REQUIRED, 'Configuration root directory', Application::DEFAULT_CONF_DIRECTORY)
-            ->addOption('master',  null, InputOption::VALUE_REQUIRED, 'Configuration master file',    Application::DEFAULT_MASTER_FILE)
             ->addOption('dry-run', null, InputOption::VALUE_NONE, 'Simulation mode')
         ;
     }
     
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->setOutput($output);
+        parent::execute($input, $output);
         
         $environment = $input->getOption('env'); 
         
@@ -50,13 +48,10 @@ class Hydrate extends Command
             $environment
         ));
         
-        $app = new \Karma\Application();
-        $app['sources.path']             = $input->getArgument('sourcePath');
-        $app['distFiles.suffix']         = $input->getOption('suffix');
-        $app['configuration.path']       = $input->getOption('confDir');
-        $app['configuration.masterFile'] = $input->getOption('master');
+        $this->app['sources.path']     = $input->getArgument('sourcePath');
+        $this->app['distFiles.suffix'] = $input->getOption('suffix');
         
-        $hydrator = $app['hydrator'];
+        $hydrator = $this->app['hydrator'];
         $hydrator->setLogger(new OutputInterfaceAdapter($output));
         
         if($input->hasOption('dry-run'))
