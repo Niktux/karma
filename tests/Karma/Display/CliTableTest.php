@@ -99,4 +99,27 @@ RESULT;
     
         $this->assertSame($expected, $table->render());
     }    
+    
+    /**
+     * @dataProvider providerTestSanityChecks
+     * @expectedException \InvalidArgumentException
+     */
+    public function testSanityChecks(array $values)
+    {
+        $table = new CliTable($values);
+        $table->render();
+    }
+    
+    public function providerTestSanityChecks()
+    {
+        return array(
+            'empty array' => array(array()),
+                        
+            'one dim array' => array(array('a', 'b', 'c')),
+            'one dim assoc array' => array(array('a' => 0, 'b' => 1, 'c' => 2)),
+                        
+            'two dim array but inconsistent row length #1' => array(array(array('a'), array('b', 'c'))),
+            'two dim array but inconsistent row length #2' => array(array(array('a', 'b'), array('c'))),
+        );
+    }
 }
