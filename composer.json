@@ -12,6 +12,9 @@
 		"environment"
 	],
 	"homepage" : "https://github.com/Niktux/karma",
+	"license" : [
+		"MIT"
+	],
 	"require" : {
 		"symfony/console" : "~2.4",
 		"monolog/monolog" : "~1",
