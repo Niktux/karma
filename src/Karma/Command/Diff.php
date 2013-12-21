@@ -48,6 +48,7 @@ class Diff extends Command
         $diff = $this->getDifferentValues($environment1, $environment2);
         
         $table = new CliTable($diff);
+        $table->enableFormattingTags();
         $output->writeln($table->render());
     }
     
@@ -66,7 +67,11 @@ class Diff extends Command
             
             if($value1 !== $value2)
             {
-                $table[] = array($name, $value1, $value2);
+                $table[] = array(
+                    $name,
+                    $this->formatValue($value1),
+                    $this->formatValue($value2)
+                );
             }
         }
         
