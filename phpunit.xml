@@ -14,7 +14,7 @@
 
 <testsuites>
   <testsuite name="Karma Test Suite">
-    <directory>./tests/*Test.php</directory>
+    <directory>./tests/</directory>
   </testsuite>
 </testsuites>
 
