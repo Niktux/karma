@@ -17,7 +17,7 @@ class Command extends \Symfony\Component\Console\Command\Command
     {
         $this
             ->addOption('confDir', null, InputOption::VALUE_REQUIRED, 'Configuration root directory', Application::DEFAULT_CONF_DIRECTORY)
-            ->addOption('master',  null, InputOption::VALUE_REQUIRED, 'Configuration master file',    Application::DEFAULT_MASTER_FILE)
+            ->addOption('master', null, InputOption::VALUE_REQUIRED, 'Configuration master file', Application::DEFAULT_MASTER_FILE)
         ;
     }
     
