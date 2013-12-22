@@ -96,4 +96,36 @@ class HydratorTest extends PHPUnit_Framework_TestCase
     {
         $this->fs->write($name, $content);
     }
+
+    public function testBackupFiles()
+    {
+        $this->write('a.php-dist');
+        $this->write('b.php-dist', '<%var%>');
+        $this->write('b.php', 'oldValue');
+        $this->write('c.php-dist');
+        
+        $this->hydrator
+            ->enableBackup()
+            ->hydrate('dev');
+        
+        $this->assertTrue($this->fs->has('a.php'));
+        $this->assertFalse($this->fs->has('a.php~'));
+        
+        $this->assertTrue($this->fs->has('b.php'));
+        $this->assertTrue($this->fs->has('b.php~'));
+        
+        $this->assertTrue($this->fs->has('c.php'));
+        $this->assertFalse($this->fs->has('c.php~'));
+        
+        $this->assertSame('42', $this->fs->read('b.php'));
+        $this->assertSame('oldValue', $this->fs->read('b.php~'));
+        
+        $this->hydrator->hydrate('dev');
+        
+        $this->assertTrue($this->fs->has('a.php~'));
+        $this->assertTrue($this->fs->has('b.php~'));
+        $this->assertTrue($this->fs->has('c.php~'));
+        
+        $this->assertSame('42', $this->fs->read('b.php~'));
+    }
 }

@@ -9,11 +9,15 @@ class Hydrator
 {
     use \Karma\Logging\LoggerAware;
     
+    const
+        BACKUP_SUFFIX = '~';
+    
     private
         $sources,
         $suffix,
         $reader,
-        $dryRun;
+        $dryRun,
+        $enableBackup;
     
     public function __construct(Filesystem $sources, $suffix, Configuration $reader)
     {
@@ -22,12 +26,21 @@ class Hydrator
         $this->sources = $sources;
         $this->suffix = $suffix;
         $this->reader = $reader;
+        
         $this->dryRun = false;
+        $this->enableBackup = false;
     }
     
     public function setDryRun($value = true)
     {
-        $this->dryRun = $value;
+        $this->dryRun = (bool) $value;
+        
+        return $this;
+    }
+    
+    public function enableBackup($value = true)
+    {
+        $this->enableBackup = (bool) $value;
         
         return $this;
     }
@@ -64,7 +77,8 @@ class Hydrator
 
         if($this->dryRun === false)
         {
-            $this->sources->write($targetFile, $targetContent);
+            $this->backupFile($targetFile);
+            $this->sources->write($targetFile, $targetContent, true);
         }
     }
     
@@ -80,5 +94,17 @@ class Hydrator
         }
         
         return $targetContent;
+    }
+    
+    private function backupFile($targetFile)
+    {
+        if($this->enableBackup === true)
+        {
+            if($this->sources->has($targetFile))
+            {
+                $backupFile = $targetFile . self::BACKUP_SUFFIX;
+                $this->sources->write($backupFile, $this->sources->read($targetFile), true);
+            }
+        }
     }
 }
