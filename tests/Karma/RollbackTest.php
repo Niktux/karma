@@ -84,6 +84,53 @@ class RollbackTest extends PHPUnit_Framework_TestCase
         }
     }
     
+    public function testDryRun()
+    {
+        $r = new Rollback($this->fs);
+    
+        $r->setSuffix('-dist')
+            ->setDryRun()
+            ->exec();
+    
+        $shouldExists = array(
+            'a.php-dist' => 'a',
+            'a.php' => 'a',
+            'a.php~' => 'old_a',
+                        
+            'notDistFile.php' => 'right',
+            'notDistFile.php~' => 'wrong',
+                        
+            'orphan.php~' => 'wrong',
+                        
+            'orphan2.php' => 'right',
+            'orphan2.php~' => 'wrong',
+                        
+            'b.php' => 'b',
+                        
+            'c.php~' => 'old_c',
+                        
+            'd.php-dist2' => 'd2',
+            'd.php' => 'd',
+            'd.php~' => 'old_d',
+                        
+            'subdir/s.php' => 's',
+            'subdir/s.php~' => 'old_s',
+        );
+    
+        $shouldNotExists = array('orphan.php', 'b.php~', 'c.php', 'd.php-dist');
+    
+        foreach($shouldExists as $f => $content)
+        {
+            $this->assertTrue($this->fs->has($f), "File $f should exists");
+            $this->assertSame($content, $this->fs->read($f));
+        }
+    
+        foreach($shouldNotExists as $f)
+        {
+            $this->assertFalse($this->fs->has($f), "File should not exists");
+        }
+    }
+    
     private function write($name, $content = null)
     {
         $this->fs->write($name, $content);

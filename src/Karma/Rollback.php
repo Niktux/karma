@@ -64,8 +64,11 @@ class Rollback
         {
             $this->info("Writing $targetFile");
             
-            $backupContent = $this->sources->read($backupFile);
-            $this->sources->write($targetFile, $backupContent, true);
+            if($this->dryRun === false)
+            {
+                $backupContent = $this->sources->read($backupFile);
+                $this->sources->write($targetFile, $backupContent, true);
+            }
         }
     }
 }
