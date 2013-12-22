@@ -5,18 +5,19 @@ namespace Karma\Display;
 class CliTable
 {
     private
+        $headers,
+        $rows,
         $nbColumns,
         $columnsSize,
-        $header,
-        $rows,
         $valueRenderFunction,
         $enableFormattingTags;
     
     public function __construct(array $values)
     {
-        $this->header = array_shift($values);
-        $this->nbColumns = count($this->header);
         $this->rows = $values;
+        
+        $this->headers = array();
+        $this->nbColumns = 0;
         
         $this->valueRenderFunction = null;
         $this->enableFormattingTags = false;
@@ -36,6 +37,13 @@ class CliTable
         return $this;
     }
     
+    public function setHeaders(array $headers)
+    {
+        $this->headers = $headers;
+        
+        return $this;
+    }
+    
     public function render()
     {
         $this->computeColumnsSize();
@@ -44,12 +52,16 @@ class CliTable
         $paddingSize = 2 * $this->nbColumns;
         $totalSize = array_sum($this->columnsSize) + $nbSeparators + $paddingSize;
 
-        $separatorRow = '|' . str_pad('', $totalSize - 2, '-') . '|';
+        $separatorRow = str_pad('|', $totalSize - 1, '-') . '|';
         
         $lines = array();
         $lines[] = $separatorRow;
-        $lines[] = $this->renderLine($this->header);
-        $lines[] = $separatorRow;
+        
+        if(! empty($this->headers))
+        {
+            $lines[] = $this->renderLine($this->headers);
+            $lines[] = $separatorRow;
+        }
         
         foreach($this->rows as $row)
         {
@@ -63,10 +75,28 @@ class CliTable
     
     private function computeColumnsSize()
     {
+        $this->computeNbColumns();
+        
         $this->columnsSize = array_pad(array(), $this->nbColumns, -1);
         
-        $this->updateColumnsSize(array($this->header));
+        if(! empty($this->headers))
+        {
+            $this->updateColumnsSize(array($this->headers));
+        }
+        
         $this->updateColumnsSize($this->rows);
+    }
+    
+    private function computeNbColumns()
+    {
+        $this->nbColumns = 0;
+        
+        foreach($this->rows as $row)
+        {
+            $this->nbColumns = max($this->nbColumns, count($row));    
+        }
+        
+        $this->nbColumns = max($this->nbColumns, count($this->headers));
     }
     
     private function updateColumnsSize(array $newValues)

@@ -7,17 +7,18 @@ class CliTableTest extends PHPUnit_Framework_TestCase
     /**
      * @dataProvider providerTestRender
      */
-    public function testRender($input, $expected)
+    public function testRender($headers, $input, $expected)
     {
         $table = new CliTable($input);
+        $table->setHeaders($headers);
+        
         $this->assertSame($expected, $table->render());
     }
     
     public function providerTestRender()
     {
         return array(
-            array(array(
-                array('Variable', 'Dev', 'Prod'),
+            array(array('Variable', 'Dev', 'Prod'), array(
                 array('x', 153, 15.24),
                 array('db.password', null, 'azertyroot1234#'),
                 array('toto', 'some_value', false),
@@ -31,8 +32,7 @@ class CliTableTest extends PHPUnit_Framework_TestCase
 |--------------------------------------------|
 RESULT
             ),
-            array(array(
-                array('Variable', 'Dev', 'Production'),
+            array(array('Variable', 'Dev', 'Production'), array(
                 array('x', 153, 15.24),
                 array('db.password', null, 'root'),
                 array('toto', '0', true),
@@ -52,13 +52,13 @@ RESULT
     public function testValueRenderingFunction()
     {
         $table = new CliTable(array(
-            array('', 'e1', 'e2'),
             array('a', 'a1', 'a2'),
             array('B', 'B1', 'B2'),
             array('cccc', 'cccc1', 'cccc2'),
         ));
         
-        $table->setValueRenderingFunction(function ($value){
+        $table->setHeaders(array('', 'e1', 'e2'))
+              ->setValueRenderingFunction(function ($value){
             return strtoupper($value);
         });
         
@@ -78,13 +78,13 @@ RESULT;
     public function testEnableFormattingTags()
     {
         $table = new CliTable(array(
-            array('', 'e1', 'e2'),
             array('a', 'a1', 'a2'),
             array('B', 'B1', 'B2'),
             array('<color=blue>cccc</color>', 'cccc1', 'cccc2'),
         ));
-    
-        $table->enableFormattingTags();
+
+        $table->setHeaders(array('', 'e1', 'e2'))
+              ->enableFormattingTags();
     
         // Expects thats tags have no impact on column size computation
         $expected = <<<RESULT
@@ -113,8 +113,6 @@ RESULT;
     public function providerTestSanityChecks()
     {
         return array(
-            'empty array' => array(array()),
-                        
             'one dim array' => array(array('a', 'b', 'c')),
             'one dim assoc array' => array(array('a' => 0, 'b' => 1, 'c' => 2)),
                         
