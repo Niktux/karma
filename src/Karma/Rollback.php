@@ -62,7 +62,7 @@ class Rollback
         
         if($this->sources->has($backupFile))
         {
-            $this->info("Writing $targetFile");
+            $this->info("  Writing $targetFile");
             
             if($this->dryRun === false)
             {
