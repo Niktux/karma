@@ -18,6 +18,7 @@ class ValueFilterTest extends PHPUnit_Framework_TestCase
             'number' => 0,
             'tenNumber' => 10,
             'numberAsString' => '10',
+            'stringWithStar' => 'b*te',
             'nullValue' => null,
         ));
     }
@@ -103,6 +104,19 @@ class ValueFilterTest extends PHPUnit_Framework_TestCase
                 'email' => 'root@db.org',
             )),
             array('db.*', array(
+            )),                        
+            array('b**te', array(
+                'stringWithStar' => 'b*te',
+            )),                        
+            array('b**t*', array(
+                'stringWithStar' => 'b*te',
+            )),                        
+            array('***te', array(
+            )),                        
+            array('b***', array(
+                'stringWithStar' => 'b*te',
+            )),                        
+            array('****', array(
             )),                        
         );
     }

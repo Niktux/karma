@@ -7,7 +7,8 @@ class ValueFilter
     use \Karma\Configuration\FilterInputVariable;
     
     const
-        FILTER_WILDCARD = '*';
+        FILTER_WILDCARD = '*',
+        ESCAPED_WILDCARD = '**';
     
     private
         $values;
@@ -43,8 +44,13 @@ class ValueFilter
     private function convertToRegex($filter)
     {
         $filter = $this->escapeRegexSpecialCharacters($filter);
+        
+        $escapedWildcardMarker = '@@@KARMA:ESCAPED_WILDCARD@@@';
+        
+        $filter = str_replace(self::ESCAPED_WILDCARD, $escapedWildcardMarker, $filter);
         $filter = str_replace(self::FILTER_WILDCARD, '.*', $filter);
-    
+        $filter = str_replace($escapedWildcardMarker, "\\*", $filter);
+        
         return "~^$filter$~";
     }
     
