@@ -25,9 +25,10 @@ class Hydrate extends Command
             
             ->addArgument('sourcePath', InputArgument::REQUIRED, 'source path to hydrate')
             
-            ->addOption('env',     null, InputOption::VALUE_REQUIRED, 'Target environment',           self::ENV_DEV)
-            ->addOption('suffix',  null, InputOption::VALUE_REQUIRED, 'File suffix',                  Application::DEFAULT_DISTFILE_SUFFIX)
+            ->addOption('env',     null, InputOption::VALUE_REQUIRED, 'Target environment', self::ENV_DEV)
+            ->addOption('suffix',  null, InputOption::VALUE_REQUIRED, 'File suffix',        Application::DEFAULT_DISTFILE_SUFFIX)
             ->addOption('dry-run', null, InputOption::VALUE_NONE, 'Simulation mode')
+            ->addOption('backup',  null, InputOption::VALUE_NONE, 'Backup overwritten files')
         ;
     }
     
@@ -49,10 +50,16 @@ class Hydrate extends Command
         $hydrator = $this->app['hydrator'];
         $hydrator->setLogger(new OutputInterfaceAdapter($output));
         
-        if($input->hasOption('dry-run'))
+        if($input->getOption('dry-run'))
         {
             $this->output->writeln("<fg=cyan>*** Run in dry-run mode ***</fg=cyan>");
             $hydrator->setDryRun();
+        }
+        
+        if($input->getOption('backup'))
+        {
+            $this->output->writeln("<fg=cyan>Backup enabled</fg=cyan>");
+            $hydrator->enableBackup();
         }
             
         $hydrator->hydrate($environment);
