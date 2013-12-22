@@ -36,35 +36,17 @@ class Diff extends Command
             $environment2
         ));
         
-        $diff = $this->getDifferentValues($environment1, $environment2);
+        $diff = $this->app['configuration']->compareEnvironments($environment1, $environment2);
         
         $table = new CliTable($diff);
-        $table->enableFormattingTags();
-        $table->setValueRenderingFunction(function($value){
-        	return $this->formatValue($value);
-        });
+        
+        $table->enableFormattingTags()
+                ->setHeaders(array($environment1, $environment2))
+                ->displayKeys()
+                ->setValueRenderingFunction(function($value){
+                    return $this->formatValue($value);
+                });
+                
         $output->writeln($table->render());
-    }
-    
-    private function getDifferentValues($environment1, $environment2)
-    {
-        $reader = $this->app['configuration'];
-        $values1 = $reader->getAllValuesForEnvironment($environment1);
-        $values2 = $reader->getAllValuesForEnvironment($environment2);
-        
-        $table = array();
-        $table[] = array('', $environment1, $environment2);
-        
-        foreach($values1 as $name => $value1)
-        {
-            $value2 = $values2[$name];
-            
-            if($value1 !== $value2)
-            {
-                $table[] = array($name, $value1, $value2);
-            }
-        }
-        
-        return $table;
     }
 }
