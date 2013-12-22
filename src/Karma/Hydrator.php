@@ -9,9 +9,6 @@ class Hydrator
 {
     use \Karma\Logging\LoggerAware;
     
-    const
-        BACKUP_SUFFIX = '~';
-    
     private
         $sources,
         $suffix,
@@ -102,7 +99,7 @@ class Hydrator
         {
             if($this->sources->has($targetFile))
             {
-                $backupFile = $targetFile . self::BACKUP_SUFFIX;
+                $backupFile = $targetFile . Application::BACKUP_SUFFIX;
                 $this->sources->write($backupFile, $this->sources->read($targetFile), true);
             }
         }

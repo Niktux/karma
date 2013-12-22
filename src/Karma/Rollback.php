@@ -43,7 +43,7 @@ class Rollback
     private function rollback($file)
     {
         $targetFile = substr($file, 0, strlen($this->suffix) * -1);
-        $backupFile = $targetFile . Hydrator::BACKUP_SUFFIX;
+        $backupFile = $targetFile . Application::BACKUP_SUFFIX;
         
         if($this->sources->has($backupFile))
         {
