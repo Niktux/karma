@@ -3,15 +3,19 @@
 namespace Karma;
 
 use Gaufrette\Filesystem;
+use Psr\Log\NullLogger;
 
 class Rollback
 {
+    use \Karma\Logging\LoggerAware;
+    
     private
         $sources,
         $suffix; 
     
     public function __construct(Filesystem $sources)
     {
+        $this->logger = new NullLogger();
         $this->sources = $sources;
         $this->suffix = Application::DEFAULT_DISTFILE_SUFFIX;
     }
@@ -42,11 +46,14 @@ class Rollback
     
     private function rollback($file)
     {
+        $this->debug("- $file");
+        
         $targetFile = substr($file, 0, strlen($this->suffix) * -1);
         $backupFile = $targetFile . Application::BACKUP_SUFFIX;
         
         if($this->sources->has($backupFile))
         {
+            $this->info("Writing $targetFile");
             $backupContent = $this->sources->read($backupFile);
             $this->sources->write($targetFile, $backupContent, true);
         }
