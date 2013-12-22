@@ -19,6 +19,8 @@ class HydratorTest extends PHPUnit_Framework_TestCase
             'var:dev' => 42,
             'var:preprod' => 51,
             'var:prod' => 69,
+            'db.user:dev' => 'root',
+            'db.user:preprod' => 'someUser',
         ));
         
         $this->hydrator = new Hydrator($this->fs, $suffix, $reader);
@@ -27,32 +29,35 @@ class HydratorTest extends PHPUnit_Framework_TestCase
     /**
      * @dataProvider providerTestSimple
      */
-    public function testSimple($environment, $expectedBValue)
+    public function testSimple($environment, $expectedBValue, $expectedFValue)
     {
         $this->write('a.php');
         $this->write('b.php-dist', '<%var%>');
         $this->write('c.php', '<%var%>');
         $this->write('d.php-dist', 'var');
         $this->write('e.php-dist', '<%var %>');
+        $this->write('f.php-dist', '<%db.user%>');
         
         $this->hydrator->hydrate($environment);
         
         $this->assertTrue($this->fs->has('b.php'));
         $this->assertTrue($this->fs->has('d.php'));
         $this->assertTrue($this->fs->has('e.php'));
+        $this->assertTrue($this->fs->has('f.php'));
         
         $this->assertSame($expectedBValue, $this->fs->read('b.php'));
         
         $this->assertSame('<%var%>', $this->fs->read('c.php'));
         $this->assertSame('var', $this->fs->read('d.php'));
         $this->assertSame('<%var %>', $this->fs->read('e.php'));
+        $this->assertSame($expectedFValue, $this->fs->read('f.php'));
     }
     
     public function providerTestSimple()
     {
         return array(
-            array('dev', '42'),
-            array('preprod', '51'),
+            array('dev', '42', 'root'),
+            array('preprod', '51', 'someUser'),
         );
     }
     
