@@ -40,6 +40,9 @@ class Diff extends Command
         
         $table = new CliTable($diff);
         $table->enableFormattingTags();
+        $table->setValueRenderingFunction(function($value){
+        	return $this->formatValue($value);
+        });
         $output->writeln($table->render());
     }
     
@@ -58,11 +61,7 @@ class Diff extends Command
             
             if($value1 !== $value2)
             {
-                $table[] = array(
-                    $name,
-                    $this->formatValue($value1),
-                    $this->formatValue($value2)
-                );
+                $table[] = array($name, $value1, $value2);
             }
         }
         
