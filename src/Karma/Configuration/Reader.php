@@ -95,4 +95,24 @@ class Reader implements Configuration
         
         return $result;
     }
+    
+    public function compareEnvironments($environment1, $environment2)
+    {
+        $values1 = $this->getAllValuesForEnvironment($environment1);
+        $values2 = $this->getAllValuesForEnvironment($environment2);
+        
+        $diff = array();
+        
+        foreach($values1 as $name => $value1)
+        {
+            $value2 = $values2[$name];
+            
+            if($value1 !== $value2)
+            {
+                $diff[$name] = array($value1, $value2);
+            }
+        }
+        
+        return $diff;
+    }
 }

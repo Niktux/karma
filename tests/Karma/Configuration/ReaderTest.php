@@ -48,6 +48,7 @@ class ReaderTest extends ParserTestCase
             array('server', 'qualif', 'rec21'),   
              
             array('tva', 'dev', 19.0),
+            array('tva', 'preprod', 20.5),
             array('tva', 'default', 19.6),
 
             array('apiKey', 'dev', '=2'),
@@ -151,7 +152,36 @@ class ReaderTest extends ParserTestCase
                 'apiKey' => 'qd4qs64d6q6=fgh4f6ùftgg==sdr',
                 'my.var.with.subnames' => 21,
                 'user' => 'root'
-            )),            
+            )),                                 
+        );
+    }
+    
+    /**
+     * @dataProvider providerTestDiff
+     */
+    public function testDiff($environment1, $environment2, $expectedDiff)
+    {
+        $diff = $this->reader->compareEnvironments($environment1, $environment2);
+        
+        $this->assertSame($expectedDiff, $diff);
+    }
+    
+    public function providerTestDiff()
+    {
+        return array(
+            array('dev', 'prod', array(
+                'print_errors' => array(true, false),
+                'debug' => array(true, false),
+                'gourdin' => array(2, 0),
+                'tva' => array(19.0, 19.6),
+                'server' => array(Configuration::NOT_FOUND, 'sql21'),
+                'apiKey' => array('=2', 'qd4qs64d6q6=fgh4f6ùftgg==sdr'),
+            )),
+            array('preprod', 'prod', array(
+                'gourdin' => array(1, 0),
+                'tva' => array(20.5, 19.6),
+                'server' => array('prod21', 'sql21'),
+            )),                        
         );
     }
 }
