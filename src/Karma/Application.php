@@ -62,5 +62,12 @@ class Application extends \Pimple
         $this['hydrator'] = function($c) {
             return new Hydrator($c['sources.fileSystem'], $c['distFiles.suffix'], $c['configuration']);    
         };
+        
+        $this['rollback'] = function($c) {
+            $r = new Rollback($c['sources.fileSystem']);
+            $r->setSuffix( $c['distFiles.suffix']);
+
+            return $r;
+        };
     }
 }
