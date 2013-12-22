@@ -28,7 +28,10 @@ class OutputInterfaceAdapter implements LoggerInterface
     
     public function log($level, $message, array $context = array())
     {
-        $this->output->writeln($message, $this->convertLevel($level));
+        if($this->convertLevel($level) <= $this->output->getVerbosity())
+        {
+            $this->output->writeln($message, OutputInterface::OUTPUT_NORMAL);
+        }
     }
     
     private function convertLevel($level)
