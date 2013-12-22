@@ -127,7 +127,7 @@ RESULT;
     public function testDisplayKeys($enableKeys, $expected)
     {
         $values = array(
-        	'key1' => array('a', 'bb'),
+            'key1' => array('a', 'bb'),
             'key2' => array(true, 3),
             array(42, 51),
             'key4' => array(null, 12),
@@ -146,7 +146,7 @@ RESULT;
     public function providerTestDisplayKeys()
     {
         return array(
-        	array(true, <<<RESULT
+            array(true, <<<RESULT
 |--------------------|
 |      | colA | colB |
 |--------------------|
