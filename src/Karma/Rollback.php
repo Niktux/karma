@@ -11,19 +11,28 @@ class Rollback
     
     private
         $sources,
-        $suffix; 
+        $suffix,
+        $dryRun; 
     
     public function __construct(Filesystem $sources)
     {
         $this->logger = new NullLogger();
         $this->sources = $sources;
         $this->suffix = Application::DEFAULT_DISTFILE_SUFFIX;
+        $this->dryRun = false;
     }
     
     public function setSuffix($suffix)
     {
         $this->suffix = $suffix;
         
+        return $this;
+    }
+    
+    public function setDryRun($value = true)
+    {
+        $this->dryRun = (bool) $value;
+    
         return $this;
     }
     
@@ -54,6 +63,7 @@ class Rollback
         if($this->sources->has($backupFile))
         {
             $this->info("Writing $targetFile");
+            
             $backupContent = $this->sources->read($backupFile);
             $this->sources->write($targetFile, $backupContent, true);
         }

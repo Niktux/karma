@@ -12,6 +12,7 @@ class Console
         $app->add(new Command\Hydrate());
         $app->add(new Command\Display());
         $app->add(new Command\Diff());
+        $app->add(new Command\Rollback());
         $app->run();
     }
 }

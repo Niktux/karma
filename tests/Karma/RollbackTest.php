@@ -18,6 +18,9 @@ class RollbackTest extends PHPUnit_Framework_TestCase
         $this->write('notDistFile.php~', 'wrong');
         
         $this->write('orphan.php~', 'wrong');
+
+        $this->write('orphan2.php', 'right');
+        $this->write('orphan2.php~', 'wrong');
         
         $this->write('b.php-dist', 'b');
         $this->write('b.php', 'b');
@@ -51,6 +54,9 @@ class RollbackTest extends PHPUnit_Framework_TestCase
                         
             'orphan.php~' => 'wrong',
                         
+            'orphan2.php' => 'right',
+            'orphan2.php~' => 'wrong',
+                        
             'b.php' => 'b',
                         
             'c.php' => 'old_c',
@@ -64,7 +70,7 @@ class RollbackTest extends PHPUnit_Framework_TestCase
             'subdir/s.php~' => 'old_s',
         );
 
-        $shouldNotExists = array('orphan.php', 'b.php~', 'd.php-dist');
+        $shouldNotExists = array('orphan.php', 'orphan2.php-dist', 'b.php~', 'd.php-dist');
         
         foreach($shouldExists as $f => $content)
         {
