@@ -42,12 +42,7 @@ class Display extends Command
         $reader = $this->app['configuration'];
         $reader->setDefaultEnvironment($input->getOption('env'));
         
-        if($input->hasOption('value'))
-        {
-            $filter = $input->getOption('value');
-        }
-        
-        $this->displayValues($reader, $filter);
+        $this->displayValues($reader, $input->getOption('value'));
     }
     
     private function displayValues(Configuration $reader, $filter = self::NO_FILTERING)
