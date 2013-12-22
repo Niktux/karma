@@ -10,7 +10,8 @@ class CliTable
         $nbColumns,
         $columnsSize,
         $valueRenderFunction,
-        $enableFormattingTags;
+        $enableFormattingTags,
+        $displayKeys;
     
     public function __construct(array $values)
     {
@@ -21,6 +22,7 @@ class CliTable
         
         $this->valueRenderFunction = null;
         $this->enableFormattingTags = false;
+        $this->displayKeys = false;
     }
     
     public function setValueRenderingFunction(\Closure $function)
@@ -40,12 +42,20 @@ class CliTable
     public function setHeaders(array $headers)
     {
         $this->headers = $headers;
-        
+
+        return $this;
+    }
+    
+    public function displayKeys($value = true)
+    {
+        $this->displayKeys = (bool) $value;
+    
         return $this;
     }
     
     public function render()
     {
+        $this->manageKeys();
         $this->computeColumnsSize();
         
         $nbSeparators = $this->nbColumns + 1;
@@ -71,6 +81,25 @@ class CliTable
         $lines[] = $separatorRow;
         
         return implode(PHP_EOL, $lines);
+    }
+    
+    private function manageKeys()
+    {
+        if($this->displayKeys !== true)
+        {
+            return;
+        }
+        
+        if(! empty($this->headers))
+        {
+            array_unshift($this->headers, '');
+        }
+        
+        foreach($this->rows as $key => $row)
+        {
+            array_unshift($row, $key);
+            $this->rows[$key] = $row;     
+        }
     }
     
     private function computeColumnsSize()

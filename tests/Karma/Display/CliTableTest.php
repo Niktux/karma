@@ -120,4 +120,56 @@ RESULT;
             'two dim array but inconsistent row length #2' => array(array(array('a', 'b'), array('c'))),
         );
     }
+    
+    /**
+     * @dataProvider providerTestDisplayKeys
+     */
+    public function testDisplayKeys($enableKeys, $expected)
+    {
+        $values = array(
+        	'key1' => array('a', 'bb'),
+            'key2' => array(true, 3),
+            array(42, 51),
+            'key4' => array(null, 12),
+            array(82, 86),
+        );
+        
+        $table = new CliTable($values);
+        $table->setHeaders(array('colA', 'colB'));
+        
+        $result = $table->displayKeys($enableKeys)
+            ->render();
+        
+        $this->assertSame($expected, $result);
+    }
+    
+    public function providerTestDisplayKeys()
+    {
+        return array(
+        	array(true, <<<RESULT
+|--------------------|
+|      | colA | colB |
+|--------------------|
+| key1 | a    | bb   |
+| key2 | true | 3    |
+| 0    | 42   | 51   |
+| key4 | NULL | 12   |
+| 1    | 82   | 86   |
+|--------------------|
+RESULT
+            ),
+            array(false, <<<RESULT
+|-------------|
+| colA | colB |
+|-------------|
+| a    | bb   |
+| true | 3    |
+| 42   | 51   |
+| NULL | 12   |
+| 82   | 86   |
+|-------------|
+RESULT
+            ),                     
+        );
+    }
 }
