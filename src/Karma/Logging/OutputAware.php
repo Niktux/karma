@@ -51,7 +51,7 @@ trait OutputAware
                     $message = "<fg=$textColor>$message</fg=$textColor>";
                 });
     
-                    $this->output->write($messages, $newline, $type);
+                $this->output->write($messages, $newline, $type);
             }
         }
     }
