@@ -34,5 +34,8 @@
 	},
 	"support" : {
 		"issues" : "https://github.com/Niktux/karma/issues"
-	}
+	},
+	"bin" : [
+		"karma"
+	]
 }
