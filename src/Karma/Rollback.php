@@ -42,7 +42,7 @@ class Rollback
 
         foreach($distFiles as $file)
         {
-            $this->rollback($file);
+            $this->rollbackFile($file);
         }
     }
     
@@ -53,7 +53,7 @@ class Rollback
         return $finder->findFiles($this->suffix);
     }
     
-    private function rollback($file)
+    private function rollbackFile($file)
     {
         $this->debug("- $file");
         
