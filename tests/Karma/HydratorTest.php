@@ -29,7 +29,7 @@ class HydratorTest extends PHPUnit_Framework_TestCase
      */
     public function testSimple($environment, $expectedBValue)
     {
-        $this->write('a.php', '');
+        $this->write('a.php');
         $this->write('b.php-dist', '<%var%>');
         $this->write('c.php', '<%var%>');
         $this->write('d.php-dist', 'var');
@@ -58,7 +58,7 @@ class HydratorTest extends PHPUnit_Framework_TestCase
     
     public function testDryRun()
     {
-        $this->write('a.php', '');
+        $this->write('a.php');
         $this->write('b.php-dist', '<%var%>');
         $this->write('c.php', '<%var%>');
     
