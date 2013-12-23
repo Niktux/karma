@@ -183,22 +183,88 @@ CONFFILE
             
             ),
             'variable name syntax error' => array(<<<CONFFILE
-[includes]
+[variables]
 toto =
     prod = 2
 CONFFILE
             
             ),
             'variable without value' => array(<<<CONFFILE
-[includes]
+[variables]
 toto :
     prod = 2
 tata :
 titi :
-    dev = 3                
+    dev = 3
+CONFFILE
+            
+            ),
+            'external file not found' => array(<<<CONFFILE
+[externals]
+notfound.conf
+CONFFILE
+            
+            ),
+            'external variable without any external file' => array(<<<CONFFILE
+[variables]
+toto :
+    prod = <external>
+CONFFILE
+            
+            ),
+            'external variable not found in external file' => array(<<<CONFFILE
+[externals]
+empty.conf
+
+[variables]
+toto :
+    prod = <external>
 CONFFILE
             
             ),
         );
+    }
+    
+    public function testExternal()
+    {
+        $masterContent = <<<CONFFILE
+[externals]
+external.conf
+
+[variables]
+db.pass:
+    dev = 1234
+    prod = <external>
+    default = root
+CONFFILE;
+        
+        $externalContent = <<<CONFFILE
+[variables]
+db.pass:
+    prod = veryComplexPass
+CONFFILE;
+        
+        $files = array(
+            'master.conf' => $masterContent,
+            'external.conf' => $externalContent,
+        );
+        
+        $parser = new Parser(new Filesystem(new InMemory($files)));
+
+        $variables = $parser->parse('master.conf');
+        
+        $expected = array(
+            'dev' => '1234',
+            'prod' => 'veryComplexPass',
+            'preprod' => 'root',
+        );
+        
+        foreach($expected as $environment => $expectedValue)
+        {
+            $this->assertArrayHasKey('db.pass', $variables);
+            $this->assertArrayHasKey('env', $variables['db.pass']);
+            $this->assertArrayHasKey($environment, $variables['db.pass']['env']);
+            $this->assertSame($expectedValue, $variables['db.pass']['env'][$environment]);
+        }
     }
 }
