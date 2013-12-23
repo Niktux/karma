@@ -87,17 +87,36 @@ All commands are these options :
 
 Hydrate command
 ---------------
-TODO
-(options : dry-run, suffix, env, backup)
+Injects configuration values and generate target files (main command)
+```
+karma hydrate [--confDir="..."] [--master="..."] [--env="..."] [--suffix="..."] [--dry-run] [--backup] sourcePath
+```
+
+Specific options :
+* *dry-run* : TODO
+* *suffix* : TODO
+* *env* : TODO
+* *backup* : TODO
+
 
 Rollback command
 ----------------
-TODO
-(options : dry-run, suffix)
+Restore generated files to their previous content (if backuped when hydrated)
+```
+karma rollback [--confDir="..."] [--master="..."] [--suffix="..."] [--dry-run] sourcePath
+```
+
+Specific options :
+* *dry-run* : TODO
+* *suffix* : TODO
 
 Display command
 ---------------
 Display all values for given environment
+
+```
+karma display [--confDir="..."] [--master="..."] [--env="..."] [--value="..."]
+```
 
 Specific options :
 * *env* : environment values to display (default : dev)
@@ -120,12 +139,85 @@ karma display --env=prod --value=*www*
 
 Diff command
 ------------
-TODO
-(no option)
+Display values differences between two environment
+
+```
+karma diff [--confDir="..."] [--master="..."] env1 env2
+```
+
+
+Example : 
+```
+karma diff dev prod
+```
+
+will output this kind of display :
+
+```
+Diff between dev and prod
+|---------------------------------------|
+|              | dev       | prod       |
+|---------------------------------------|
+| print_errors | true      | false      |
+| server       | NOT FOUND | sql21      |
+| search       | localhost | search21   |
+| nullInProd   | true      | NULL       |
+| db.user      | root      | <external> |
+|---------------------------------------|
+```
 
 Configuration files syntax
 --------------------------
 TODO
 (includes, default fallback, managing different env, external values, ...)
+
+While this documentation section is not written, please read this full example : 
+
+master.conf
+````
+[includes]
+db.conf
+subdir/other.conf
+
+[variables]
+var1:
+    dev = value1
+    staging, preprod = value2
+    prod = value3
+    default = value4
+    
+var2:
+    preprod, prod = valA
+    default = valB
+```
+
+db.conf
+````
+[externals]
+secured.conf
+
+[variables]
+db.user:
+    prod = <external>
+    default = root
+    
+db.password:
+    prod = <external>
+    default = 
+```
+
+secured.conf
+````
+[includes]
+otherSecured.conf
+
+[variables]
+db.user:
+    prod = sqluser
+
+db.password:
+    prod = ThisIsASecretData
+```
+
 
 
