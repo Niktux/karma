@@ -70,10 +70,53 @@ User=myUser
 Pass=awfulPassword
 ```
 
-Options
--------
+Commands
+--------
 
+* **hydrate** : injects configuration values and generate target files (main command)
+* **rollback** : restore generated files to their previous content (if backuped when hydrated)
+* **display** : display all values for given environment
+* **diff** : display values differences between two environment
+
+To come : 
+* **check** : exec some sanity checks
+
+All commands are these options : 
+* *confDir* : directory where conf files are stored (default : conf/)
+* *master* : first configuration file to parse (default : master.conf)
+
+Hydrate command
+---------------
 TODO
-* hydrate options (dry-run, master, confDir, suffix, ...)
-* others command : rollback, display, check
-* conf file syntax (includes, default fallback, managing different env)
+(options : dry-run, suffix, env, backup)
+
+Rollback command
+----------------
+TODO
+(options : dry-run, suffix)
+
+Display command
+---------------
+Display all values for given environment
+
+Specific options :
+* *env* : environment values to display (default : dev)
+* *value* : filter, display only values that match this filter (optional)
+
+*value* supports wildcard character ```*``` 
+
+Wilcard can be escaped like this ```**```
+
+Note that escaped wildcard is interpreted before wildcard. Ambigous expressions like ```***``` is understood as ```star then wildcard```
+
+Diff command
+------------
+TODO
+(no option)
+
+Configuration files syntax
+--------------------------
+TODO
+(includes, default fallback, managing different env, external values, ...)
+
+
