@@ -100,6 +100,8 @@ class Parser
 
             $this->currentParser->parse($line);
         }
+        
+        $this->parsers[self::VARIABLES]->endOfFileCheck();
     }
     
     private function extractLines($filePath)

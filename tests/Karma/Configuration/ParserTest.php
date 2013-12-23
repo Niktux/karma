@@ -199,6 +199,16 @@ titi :
 CONFFILE
             
             ),
+            'last variable without value' => array(<<<CONFFILE
+[variables]
+toto :
+    prod = 2
+tata :
+    dev = 3
+titi :
+CONFFILE
+            
+            ),
             'external file not found' => array(<<<CONFFILE
 [externals]
 notfound.conf
