@@ -6,6 +6,7 @@ use Gaufrette\Filesystem;
 use Karma\Configuration\Parser\NullParser;
 use Karma\Configuration\Parser\IncludeParser;
 use Karma\Configuration\Parser\VariableParser;
+use Karma\Configuration\Parser\ExternalParser;
 use Psr\Log\NullLogger;
 
 class Parser
@@ -14,7 +15,8 @@ class Parser
     
     const
         INCLUDES = 'includes',
-        VARIABLES = 'variables';
+        VARIABLES = 'variables',
+        EXTERNALS = 'externals';
     
     private
         $parsers,
@@ -30,8 +32,9 @@ class Parser
         $this->parsers = array(
             self::INCLUDES => new IncludeParser(),
             self::VARIABLES => new VariableParser(),  
+            self::EXTERNALS => new ExternalParser(),  
         );
-        
+
         $this->parsedFiles = array();
         $this->fs = $fs; 
         $this->eol = "\n";
