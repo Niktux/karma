@@ -109,6 +109,15 @@ Wilcard can be escaped like this ```**```
 
 Note that escaped wildcard is interpreted before wildcard. Ambigous expressions like ```***``` is understood as ```star then wildcard```
 
+Examples : 
+```
+karma display --env=dev
+karma display --env=prod
+karma display --env=prod --value=false
+karma display --env=prod --value=*2
+karma display --env=prod --value=*www*
+```
+
 Diff command
 ------------
 TODO
