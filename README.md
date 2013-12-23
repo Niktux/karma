@@ -25,6 +25,7 @@ Use composer :
     }
 }
 ```
+In the documentation above, replace ```karma``` by ```vendor/bin/karma```.
 
 
 Basic Usage 
