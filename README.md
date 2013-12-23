@@ -41,7 +41,7 @@ Pass=<%db.pass%>
 ```
 master.conf:
 ```
-[Variables]
+[variables]
 db.host:
   prod = mysql.domain.com
   default = 127.0.0.1
