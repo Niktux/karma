@@ -14,14 +14,19 @@ class Reader implements Configuration
     private
         $defaultEnvironment,
         $variables,
-        $externalVariables;
+        $externalReader;
     
     public function __construct(array $variables, array $externalVariables)
     {
         $this->defaultEnvironment = self::DEFAULT_VALUE_FOR_ENVIRONMENT_PARAMETER;
         
         $this->variables = $variables;
-        $this->externalVariables= $externalVariables;
+        
+        $this->externalReader = null;
+        if(! empty($externalVariables))
+        {
+            $this->externalReader = new Reader($externalVariables, array());
+        }
     }    
     
     public function setDefaultEnvironment($environment)
@@ -80,7 +85,16 @@ class Reader implements Configuration
     
     private function processExternal($variable, $environment)
     {
-       return 'notImplementedYet';
+        if(! $this->externalReader instanceof Reader)
+        {
+            throw new \RuntimeException(sprintf(
+                'There is no external variables. %s can not be resolve for environment %s',
+                $variable,
+                $environment
+            ));    
+        }
+        
+        return $this->externalReader->read($variable, $environment);
     }
     
     public function getAllVariables()

@@ -223,7 +223,7 @@ CONFFILE;
         
         $expected = array(
             'dev' => 1234,
-            'prod' => 'veryComplexPass ',
+            'prod' => 'veryComplexPass',
             'preprod' => 'root',
         );
         
@@ -241,14 +241,19 @@ CONFFILE;
     {
         $parser = new Parser(new Filesystem(new InMemory(array(
             self::MASTERFILE_PATH => $contentMaster,
-            'empty.conf' => ''
+            'empty.conf' => '',
+            'totoDev.conf' => <<<CONFFILE
+[Variables]
+toto:
+    dev = someDevValue
+CONFFILE
         ))));
     
         $parser
             ->enableIncludeSupport()
             ->enableExternalSupport();
         
-        $variables = $parser->parse($masterFilePath);
+        $variables = $parser->parse(self::MASTERFILE_PATH);
         $reader = new Reader($variables, $parser->getExternalVariables());
         $reader->read('toto', 'prod');
     }
@@ -261,7 +266,6 @@ CONFFILE;
 toto :
     prod = <external>
 CONFFILE
-    
             ),
             'external variable not found in external file' => array(<<<CONFFILE
 [externals]
@@ -271,7 +275,15 @@ empty.conf
 toto :
     prod = <external>
 CONFFILE
+            ),
+            'external variable found in external file but not for the correct environment' => array(<<<CONFFILE
+[externals]
+totoDev.conf
     
+[variables]
+toto :
+    prod = <external>
+CONFFILE
             ),
         );
     }    
