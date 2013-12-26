@@ -53,7 +53,10 @@ class Application extends \Pimple
         };
         
         $this['configuration'] = function($c) {
-            return new Reader($c['parser'], $c['configuration.masterFile']);    
+            $parser = $c['parser'];
+            $variables = $parser->parse($c['configuration.masterFile']);
+            
+            return new Reader($variables, $parser->getExternalVariables());    
         };
         
         $this['sources.fileSystem.adapter'] = function($c) {

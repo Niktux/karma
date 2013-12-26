@@ -17,7 +17,8 @@ class ReaderTest extends ParserTestCase
     {
         parent::setUp();
         
-        $this->reader = new Reader($this->parser, self::MASTERFILE_PATH);
+        $variables = $this->parser->parse(self::MASTERFILE_PATH);
+        $this->reader = new Reader($variables, $this->parser->getExternalVariables());
     }
     
     public function providerTestRead()
@@ -214,10 +215,11 @@ CONFFILE;
         
         $parser = new Parser(new Filesystem(new InMemory($files)));
         
-        $parser->enableIncludeSupport()
-            ->enableExternalSupport();
+        $variables = $parser->enableIncludeSupport()
+            ->enableExternalSupport()
+            ->parse(self::MASTERFILE_PATH);
 
-        $reader = new Reader($parser, 'master.conf');
+        $reader = new Reader($variables, $parser->getExternalVariables());
         
         $expected = array(
             'dev' => 1234,
@@ -246,7 +248,8 @@ CONFFILE;
             ->enableIncludeSupport()
             ->enableExternalSupport();
         
-        $reader = new Reader($parser, self::MASTERFILE_PATH);
+        $variables = $parser->parse($masterFilePath);
+        $reader = new Reader($variables, $parser->getExternalVariables());
         $reader->read('toto', 'prod');
     }
     

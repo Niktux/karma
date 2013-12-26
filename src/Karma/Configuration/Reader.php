@@ -14,14 +14,14 @@ class Reader implements Configuration
     private
         $defaultEnvironment,
         $variables,
-        $parser;
+        $externalVariables;
     
-    public function __construct(Parser $parser, $masterFilePath)
+    public function __construct(array $variables, array $externalVariables)
     {
         $this->defaultEnvironment = self::DEFAULT_VALUE_FOR_ENVIRONMENT_PARAMETER;
         
-        $this->parser = $parser;
-        $this->variables = $this->parser->parse($masterFilePath);
+        $this->variables = $variables;
+        $this->externalVariables= $externalVariables;
     }    
     
     public function setDefaultEnvironment($environment)
@@ -80,8 +80,6 @@ class Reader implements Configuration
     
     private function processExternal($variable, $environment)
     {
-       $externals = $this->parser->getExternalVariables();
-
        return 'notImplementedYet';
     }
     
