@@ -203,6 +203,12 @@ notfound.conf
 CONFFILE
             
             ),
+            'invalid name format for include file' => array(<<<CONFFILE
+[includes]
+notADotConfFile
+CONFFILE
+            
+            ),
         );
     }
     
