@@ -30,9 +30,7 @@ class Parser
         $this->logger = new NullLogger();
         
         $this->parsers = array(
-            self::INCLUDES => new IncludeParser(),
             self::VARIABLES => new VariableParser(),  
-            self::EXTERNALS => new ExternalParser(),  
         );
 
         $this->parsedFiles = array();
@@ -43,6 +41,26 @@ class Parser
     public function setEOL($eol)
     {
         $this->eol = $eol;
+        
+        return $this;
+    }
+    
+    public function enableIncludeSupport()
+    {
+        if(! isset($this->parsers[self::INCLUDES]))
+        {
+            $this->parsers[self::INCLUDES] = new IncludeParser();
+        }
+        
+        return $this;
+    }
+    
+    public function enableExternalSupport()
+    {
+        if(! isset($this->parsers[self::EXTERNALS]))
+        {
+            $this->parsers[self::EXTERNALS] = new ExternalParser(new Parser($this->fs));
+        }
         
         return $this;
     }

@@ -75,6 +75,9 @@ CONFFILE;
         $fs = new Filesystem($adapter);
         
         $this->parser = new Parser($fs);
-        $this->parser->setLogger(new OutputInterfaceAdapter(new ConsoleOutput(OutputInterface::VERBOSITY_QUIET)));
+        $this->parser
+            ->enableIncludeSupport()
+            ->enableExternalSupport()
+            ->setLogger(new OutputInterfaceAdapter(new ConsoleOutput(OutputInterface::VERBOSITY_QUIET)));
     }
 }

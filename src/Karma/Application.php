@@ -44,7 +44,12 @@ class Application extends \Pimple
         };
         
         $this['parser'] = function($c) {
-            return new Parser($c['configuration.fileSystem']);    
+            $parser = new Parser($c['configuration.fileSystem']);
+
+            $parser->enableIncludeSupport()
+                ->enableExternalSupport();
+            
+            return $parser;
         };
         
         $this['configuration'] = function($c) {

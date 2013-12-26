@@ -82,7 +82,10 @@ var2:
 CONFFILE
         ))));
         
-        $this->parser->parse(self::MASTERFILE_PATH);
+        $this->parser
+            ->enableIncludeSupport()
+            ->enableExternalSupport()
+            ->parse(self::MASTERFILE_PATH);
     }
     
     public function providerTestSyntaxError()
@@ -260,6 +263,9 @@ CONFFILE;
         );
         
         $parser = new Parser(new Filesystem(new InMemory($files)));
+        
+        $parser->enableIncludeSupport()
+            ->enableExternalSupport();
 
         $variables = $parser->parse('master.conf');
         
