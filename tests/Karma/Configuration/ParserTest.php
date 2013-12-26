@@ -96,33 +96,28 @@ CONFFILE
 print_errors:
     default:true
 CONFFILE
-
             ), 
             'missing variables' => array(<<<CONFFILE
 print_errors:
     default:true
 CONFFILE
-
             ), 
             'include not found' => array(<<<CONFFILE
 [includes]
 empty.conf
 notfound.conf
 CONFFILE
-                      
             ),
             'variables mispelled' => array(<<<CONFFILE
 [variable]
 toto:
     tata = titi
 CONFFILE
-            
             ),
             'missing variable name' => array(<<<CONFFILE
 [variables]
 prod = value
 CONFFILE
-            
             ),
             'duplicated variables' => array(<<<CONFFILE
 [variables]
@@ -131,7 +126,6 @@ toto:
 toto:
     dev = titi
 CONFFILE
-                
             ),
             'duplicated variables with some spaces before' => array(<<<CONFFILE
 [variables]
@@ -140,7 +134,6 @@ CONFFILE
 toto:
     dev = titi
 CONFFILE
-                            
             ),
             'duplicated variables with some spaces after' => array(<<<CONFFILE
 [variables]
@@ -149,7 +142,6 @@ toto :
 toto:
     dev = titi
 CONFFILE
-                            
             ),
             'duplicated variables with some spaces both' => array(<<<CONFFILE
 [variables]
@@ -158,7 +150,6 @@ toto :
  toto:
     dev = titi
 CONFFILE
-                            
             ),
             'duplicated variables in different files' => array(<<<CONFFILE
 [includes]
@@ -167,7 +158,6 @@ vicious.conf
 viciousDuplicatedVariable:
     prod = tata
 CONFFILE
-            
             ),            
             'duplicated environment' => array(<<<CONFFILE
 [variables]
@@ -176,21 +166,18 @@ toto:
     preprod, recette = titi
     dev, prod, qualif = tutu
 CONFFILE
-            
             ),
             'missing : after variable name' => array(<<<CONFFILE
 [variables]
 toto
     prod = 2
 CONFFILE
-            
             ),
             'variable name syntax error' => array(<<<CONFFILE
 [variables]
 toto =
     prod = 2
 CONFFILE
-            
             ),
             'variable without value' => array(<<<CONFFILE
 [variables]
@@ -200,7 +187,6 @@ tata :
 titi :
     dev = 3
 CONFFILE
-            
             ),
             'last variable without value' => array(<<<CONFFILE
 [variables]
@@ -210,7 +196,6 @@ tata :
     dev = 3
 titi :
 CONFFILE
-            
             ),
             'external file not found' => array(<<<CONFFILE
 [externals]
