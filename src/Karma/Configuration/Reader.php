@@ -8,17 +8,20 @@ class Reader implements Configuration
 {
     const
         DEFAULT_ENVIRONMENT = 'default',
-        DEFAULT_VALUE_FOR_ENVIRONMENT_PARAMETER = 'prod';
+        DEFAULT_VALUE_FOR_ENVIRONMENT_PARAMETER = 'prod',
+        EXTERNAL = '<external>';
     
     private
         $defaultEnvironment,
-        $variables;
+        $variables,
+        $parser;
     
     public function __construct(Parser $parser, $masterFilePath)
     {
         $this->defaultEnvironment = self::DEFAULT_VALUE_FOR_ENVIRONMENT_PARAMETER;
         
-        $this->variables = $parser->parse($masterFilePath);
+        $this->parser = $parser;
+        $this->variables = $this->parser->parse($masterFilePath);
     }    
     
     public function setDefaultEnvironment($environment)
@@ -57,7 +60,14 @@ class Reader implements Configuration
         {
             if(array_key_exists($searchedEnvironment, $envs))
             {
-                return $envs[$searchedEnvironment];
+                $value = $envs[$searchedEnvironment];
+                
+                if($value === self::EXTERNAL)
+                {
+                    $value = $this->processExternal($variable, $environment);
+                }
+                
+                return $value;
             }
         }
         
@@ -66,6 +76,13 @@ class Reader implements Configuration
             $variable,
             $environment
         ));
+    }
+    
+    private function processExternal($variable, $environment)
+    {
+       $externals = $this->parser->getExternalVariables();
+
+       return 'notImplementedYet';
     }
     
     public function getAllVariables()

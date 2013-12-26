@@ -91,9 +91,12 @@ class Parser
                 $this->readFile($file);
             }
             
-            $includeParser = $this->parsers[self::INCLUDES];
-            $files = $includeParser->getCollectedFiles();
-            
+            if(isset($this->parsers[self::INCLUDES]))
+            {
+                $includeParser = $this->parsers[self::INCLUDES];
+                $files = $includeParser->getCollectedFiles();
+            }
+
             // Avoid loop
             $files = array_diff($files, $this->parsedFiles);
         }
@@ -189,5 +192,22 @@ class Parser
     private function getVariables()
     {
         return $this->parsers[self::VARIABLES]->getVariables();
+    }
+    
+    public function getFileSystem()
+    {
+        return $this->fs;
+    }
+    
+    public function getExternalVariables()
+    {
+        $variables = array();
+        
+        if(isset($this->parsers[self::EXTERNALS]))
+        {
+            $variables = $this->parsers[self::EXTERNALS]->getExternalVariables();
+        }
+        
+        return $variables;
     }
 }

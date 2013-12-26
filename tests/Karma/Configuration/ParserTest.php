@@ -218,23 +218,6 @@ notfound.conf
 CONFFILE
             
             ),
-            'external variable without any external file' => array(<<<CONFFILE
-[variables]
-toto :
-    prod = <external>
-CONFFILE
-            
-            ),
-            'external variable not found in external file' => array(<<<CONFFILE
-[externals]
-empty.conf
-
-[variables]
-toto :
-    prod = <external>
-CONFFILE
-            
-            ),
         );
     }
     
@@ -270,9 +253,9 @@ CONFFILE;
         $variables = $parser->parse('master.conf');
         
         $expected = array(
-            'dev' => '1234',
-            'prod' => 'veryComplexPass',
-            'preprod' => 'root',
+            'dev' => 1234,
+            'prod' => '<external>',
+            'default' => 'root',
         );
         
         foreach($expected as $environment => $expectedValue)

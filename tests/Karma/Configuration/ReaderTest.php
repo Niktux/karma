@@ -2,6 +2,9 @@
 
 use Karma\Configuration\Reader;
 use Karma\Configuration;
+use Karma\Configuration\Parser;
+use Gaufrette\Filesystem;
+use Gaufrette\Adapter\InMemory;
 
 require_once __DIR__ . '/ParserTestCase.php';
 
@@ -184,4 +187,89 @@ class ReaderTest extends ParserTestCase
             )),                        
         );
     }
+
+    public function testExternal()
+    {
+        $masterContent = <<<CONFFILE
+[externals]
+external.conf
+
+[variables]
+db.pass:
+    dev = 1234
+    prod = <external>
+    default = root
+CONFFILE;
+        
+        $externalContent = <<<CONFFILE
+[variables]
+db.pass:
+    prod = veryComplexPass
+CONFFILE;
+        
+        $files = array(
+            'master.conf' => $masterContent,
+            'external.conf' => $externalContent,
+        );
+        
+        $parser = new Parser(new Filesystem(new InMemory($files)));
+        
+        $parser->enableIncludeSupport()
+            ->enableExternalSupport();
+
+        $reader = new Reader($parser, 'master.conf');
+        
+        $expected = array(
+            'dev' => 1234,
+            'prod' => 'veryComplexPass ',
+            'preprod' => 'root',
+        );
+        
+        foreach($expected as $environment => $expectedValue)
+        {
+            $this->assertSame($expectedValue, $reader->read('db.pass', $environment));
+        }
+    }
+    
+    /**
+     * @dataProvider providerTestExternalError
+     * @expectedException \RuntimeException
+     */
+    public function testExternalError($contentMaster)
+    {
+        $parser = new Parser(new Filesystem(new InMemory(array(
+            self::MASTERFILE_PATH => $contentMaster,
+            'empty.conf' => ''
+        ))));
+    
+        $parser
+            ->enableIncludeSupport()
+            ->enableExternalSupport();
+        
+        $reader = new Reader($parser, self::MASTERFILE_PATH);
+        $reader->read('toto', 'prod');
+    }
+    
+    public function providerTestExternalError()
+    {
+        return array(
+            'external variable without any external file' => array(<<<CONFFILE
+[variables]
+toto :
+    prod = <external>
+CONFFILE
+    
+            ),
+            'external variable not found in external file' => array(<<<CONFFILE
+[externals]
+empty.conf
+    
+[variables]
+toto :
+    prod = <external>
+CONFFILE
+    
+            ),
+        );
+    }    
 }
