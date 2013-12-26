@@ -8,17 +8,25 @@ class Reader implements Configuration
 {
     const
         DEFAULT_ENVIRONMENT = 'default',
-        DEFAULT_VALUE_FOR_ENVIRONMENT_PARAMETER = 'prod';
+        DEFAULT_VALUE_FOR_ENVIRONMENT_PARAMETER = 'prod',
+        EXTERNAL = '<external>';
     
     private
         $defaultEnvironment,
-        $variables;
+        $variables,
+        $externalReader;
     
-    public function __construct(Parser $parser, $masterFilePath)
+    public function __construct(array $variables, array $externalVariables)
     {
         $this->defaultEnvironment = self::DEFAULT_VALUE_FOR_ENVIRONMENT_PARAMETER;
         
-        $this->variables = $parser->parse($masterFilePath);
+        $this->variables = $variables;
+        
+        $this->externalReader = null;
+        if(! empty($externalVariables))
+        {
+            $this->externalReader = new Reader($externalVariables, array());
+        }
     }    
     
     public function setDefaultEnvironment($environment)
@@ -57,7 +65,14 @@ class Reader implements Configuration
         {
             if(array_key_exists($searchedEnvironment, $envs))
             {
-                return $envs[$searchedEnvironment];
+                $value = $envs[$searchedEnvironment];
+                
+                if($value === self::EXTERNAL)
+                {
+                    $value = $this->processExternal($variable, $environment);
+                }
+                
+                return $value;
             }
         }
         
@@ -66,6 +81,20 @@ class Reader implements Configuration
             $variable,
             $environment
         ));
+    }
+    
+    private function processExternal($variable, $environment)
+    {
+        if(! $this->externalReader instanceof Reader)
+        {
+            throw new \RuntimeException(sprintf(
+                'There is no external variables. %s can not be resolve for environment %s',
+                $variable,
+                $environment
+            ));    
+        }
+        
+        return $this->externalReader->read($variable, $environment);
     }
     
     public function getAllVariables()

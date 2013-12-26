@@ -13,12 +13,14 @@ class VariableParser extends AbstractGroupParser
     
     private
         $currentVariable,
-        $variables;
+        $variables,
+        $valueFound;
     
     public function __construct()
     {
         $this->currentVariable = null;
         $this->variables = array();
+        $this->valueFound = false;
     }
     
     public function parse($line)
@@ -45,8 +47,21 @@ class VariableParser extends AbstractGroupParser
         return $variableName;
     }
     
+    private function checkCurrentVariableState()
+    {
+        if($this->currentVariable !== null && $this->valueFound === false)
+        {
+            throw new \RuntimeException(sprintf(
+                'Variable %s has no value (declared in file %s)',
+                $this->currentVariable,
+                $this->variables[$this->currentVariable]['file']
+            ));
+        }
+    }
+        
     private function changeCurrentVariable($variableName)
     {
+        $this->checkCurrentVariableState();
         $this->currentVariable = $variableName;
 
         if(isset($this->variables[$this->currentVariable]))
@@ -62,6 +77,8 @@ class VariableParser extends AbstractGroupParser
             'env' => array(),
             'file' => $this->currentFilePath,
         );
+        
+        $this->valueFound = false;
     }
     
     private function parseEnvironmentValue($line)
@@ -101,6 +118,8 @@ class VariableParser extends AbstractGroupParser
             
             $this->variables[$this->currentVariable]['env'][$environment] = $value;
         }
+        
+        $this->valueFound = true;
     }
     
     public function getVariables()
@@ -113,5 +132,10 @@ class VariableParser extends AbstractGroupParser
         parent::setCurrentFile($filePath);
         
         $this->currentVariable = null;
+    }
+    
+    public function endOfFileCheck()
+    {
+        $this->checkCurrentVariableState();
     }
 }

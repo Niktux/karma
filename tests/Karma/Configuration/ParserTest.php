@@ -82,7 +82,10 @@ var2:
 CONFFILE
         ))));
         
-        $this->parser->parse(self::MASTERFILE_PATH);
+        $this->parser
+            ->enableIncludeSupport()
+            ->enableExternalSupport()
+            ->parse(self::MASTERFILE_PATH);
     }
     
     public function providerTestSyntaxError()
@@ -93,33 +96,28 @@ CONFFILE
 print_errors:
     default:true
 CONFFILE
-
             ), 
             'missing variables' => array(<<<CONFFILE
 print_errors:
     default:true
 CONFFILE
-
             ), 
             'include not found' => array(<<<CONFFILE
 [includes]
 empty.conf
 notfound.conf
 CONFFILE
-                      
             ),
             'variables mispelled' => array(<<<CONFFILE
 [variable]
 toto:
     tata = titi
 CONFFILE
-            
             ),
             'missing variable name' => array(<<<CONFFILE
 [variables]
 prod = value
 CONFFILE
-            
             ),
             'duplicated variables' => array(<<<CONFFILE
 [variables]
@@ -128,7 +126,6 @@ toto:
 toto:
     dev = titi
 CONFFILE
-                
             ),
             'duplicated variables with some spaces before' => array(<<<CONFFILE
 [variables]
@@ -137,7 +134,6 @@ CONFFILE
 toto:
     dev = titi
 CONFFILE
-                            
             ),
             'duplicated variables with some spaces after' => array(<<<CONFFILE
 [variables]
@@ -146,7 +142,6 @@ toto :
 toto:
     dev = titi
 CONFFILE
-                            
             ),
             'duplicated variables with some spaces both' => array(<<<CONFFILE
 [variables]
@@ -155,7 +150,6 @@ toto :
  toto:
     dev = titi
 CONFFILE
-                            
             ),
             'duplicated variables in different files' => array(<<<CONFFILE
 [includes]
@@ -164,7 +158,6 @@ vicious.conf
 viciousDuplicatedVariable:
     prod = tata
 CONFFILE
-            
             ),            
             'duplicated environment' => array(<<<CONFFILE
 [variables]
@@ -173,32 +166,89 @@ toto:
     preprod, recette = titi
     dev, prod, qualif = tutu
 CONFFILE
-            
             ),
             'missing : after variable name' => array(<<<CONFFILE
 [variables]
 toto
     prod = 2
 CONFFILE
-            
             ),
             'variable name syntax error' => array(<<<CONFFILE
-[includes]
+[variables]
 toto =
     prod = 2
 CONFFILE
-            
             ),
             'variable without value' => array(<<<CONFFILE
-[includes]
+[variables]
 toto :
     prod = 2
 tata :
 titi :
-    dev = 3                
+    dev = 3
+CONFFILE
+            ),
+            'last variable without value' => array(<<<CONFFILE
+[variables]
+toto :
+    prod = 2
+tata :
+    dev = 3
+titi :
+CONFFILE
+            ),
+            'external file not found' => array(<<<CONFFILE
+[externals]
+notfound.conf
 CONFFILE
             
             ),
         );
+    }
+    
+    public function testExternal()
+    {
+        $masterContent = <<<CONFFILE
+[externals]
+external.conf
+
+[variables]
+db.pass:
+    dev = 1234
+    prod = <external>
+    default = root
+CONFFILE;
+        
+        $externalContent = <<<CONFFILE
+[variables]
+db.pass:
+    prod = veryComplexPass
+CONFFILE;
+        
+        $files = array(
+            'master.conf' => $masterContent,
+            'external.conf' => $externalContent,
+        );
+        
+        $parser = new Parser(new Filesystem(new InMemory($files)));
+        
+        $parser->enableIncludeSupport()
+            ->enableExternalSupport();
+
+        $variables = $parser->parse('master.conf');
+        
+        $expected = array(
+            'dev' => 1234,
+            'prod' => '<external>',
+            'default' => 'root',
+        );
+        
+        foreach($expected as $environment => $expectedValue)
+        {
+            $this->assertArrayHasKey('db.pass', $variables);
+            $this->assertArrayHasKey('env', $variables['db.pass']);
+            $this->assertArrayHasKey($environment, $variables['db.pass']['env']);
+            $this->assertSame($expectedValue, $variables['db.pass']['env'][$environment]);
+        }
     }
 }

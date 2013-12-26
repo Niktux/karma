@@ -6,6 +6,7 @@ use Gaufrette\Filesystem;
 use Karma\Configuration\Parser\NullParser;
 use Karma\Configuration\Parser\IncludeParser;
 use Karma\Configuration\Parser\VariableParser;
+use Karma\Configuration\Parser\ExternalParser;
 use Psr\Log\NullLogger;
 
 class Parser
@@ -14,7 +15,8 @@ class Parser
     
     const
         INCLUDES = 'includes',
-        VARIABLES = 'variables';
+        VARIABLES = 'variables',
+        EXTERNALS = 'externals';
     
     private
         $parsers,
@@ -28,10 +30,9 @@ class Parser
         $this->logger = new NullLogger();
         
         $this->parsers = array(
-            self::INCLUDES => new IncludeParser(),
             self::VARIABLES => new VariableParser(),  
         );
-        
+
         $this->parsedFiles = array();
         $this->fs = $fs; 
         $this->eol = "\n";
@@ -40,6 +41,26 @@ class Parser
     public function setEOL($eol)
     {
         $this->eol = $eol;
+        
+        return $this;
+    }
+    
+    public function enableIncludeSupport()
+    {
+        if(! isset($this->parsers[self::INCLUDES]))
+        {
+            $this->parsers[self::INCLUDES] = new IncludeParser();
+        }
+        
+        return $this;
+    }
+    
+    public function enableExternalSupport()
+    {
+        if(! isset($this->parsers[self::EXTERNALS]))
+        {
+            $this->parsers[self::EXTERNALS] = new ExternalParser(new Parser($this->fs));
+        }
         
         return $this;
     }
@@ -70,9 +91,12 @@ class Parser
                 $this->readFile($file);
             }
             
-            $includeParser = $this->parsers[self::INCLUDES];
-            $files = $includeParser->getCollectedFiles();
-            
+            if(isset($this->parsers[self::INCLUDES]))
+            {
+                $includeParser = $this->parsers[self::INCLUDES];
+                $files = $includeParser->getCollectedFiles();
+            }
+
             // Avoid loop
             $files = array_diff($files, $this->parsedFiles);
         }
@@ -100,6 +124,8 @@ class Parser
 
             $this->currentParser->parse($line);
         }
+        
+        $this->parsers[self::VARIABLES]->endOfFileCheck();
     }
     
     private function extractLines($filePath)
@@ -166,5 +192,22 @@ class Parser
     private function getVariables()
     {
         return $this->parsers[self::VARIABLES]->getVariables();
+    }
+    
+    public function getFileSystem()
+    {
+        return $this->fs;
+    }
+    
+    public function getExternalVariables()
+    {
+        $variables = array();
+        
+        if(isset($this->parsers[self::EXTERNALS]))
+        {
+            $variables = $this->parsers[self::EXTERNALS]->getExternalVariables();
+        }
+        
+        return $variables;
     }
 }
