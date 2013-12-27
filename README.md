@@ -228,9 +228,6 @@ db.password:
 
 secured.conf
 ````
-[includes]
-otherSecured.conf
-
 [variables]
 db.user:
     prod = sqluser
