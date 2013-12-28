@@ -7,7 +7,6 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Karma\Application;
-use Karma\Logging\OutputInterfaceAdapter;
 use Karma\Command;
 
 class Hydrate extends Command
@@ -48,7 +47,6 @@ class Hydrate extends Command
         $this->app['distFiles.suffix'] = $input->getOption('suffix');
         
         $hydrator = $this->app['hydrator'];
-        $hydrator->setLogger(new OutputInterfaceAdapter($output));
         
         if($input->getOption('dry-run'))
         {

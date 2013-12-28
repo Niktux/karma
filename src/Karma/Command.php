@@ -5,6 +5,7 @@ namespace Karma;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputOption;
+use Karma\Logging\OutputInterfaceAdapter;
 
 class Command extends \Symfony\Component\Console\Command\Command
 {
@@ -28,6 +29,7 @@ class Command extends \Symfony\Component\Console\Command\Command
         $this->app = new Application();
         $this->app['configuration.path']       = $input->getOption('confDir');
         $this->app['configuration.masterFile'] = $input->getOption('master');
+        $this->app['logger'] = new OutputInterfaceAdapter($output);
     }
     
     protected function formatValue($value)

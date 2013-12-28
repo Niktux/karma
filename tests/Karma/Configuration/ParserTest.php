@@ -197,12 +197,6 @@ tata :
 titi :
 CONFFILE
             ),
-            'external file not found' => array(<<<CONFFILE
-[externals]
-notfound.conf
-CONFFILE
-            
-            ),
             'invalid name format for include file' => array(<<<CONFFILE
 [includes]
 notADotConfFile
