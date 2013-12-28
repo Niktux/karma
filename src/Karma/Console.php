@@ -13,6 +13,7 @@ class Console
         $app->add(new Command\Display());
         $app->add(new Command\Diff());
         $app->add(new Command\Rollback());
+        $app->add(new Command\VCS());
         $app->run();
     }
 }
