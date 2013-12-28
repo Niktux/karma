@@ -22,6 +22,9 @@ class ParserTestCase extends \PHPUnit_Framework_TestCase
 [includes]
 db.conf
 
+[externals]
+externalFileNotFound.conf
+                
 [variables]
 print_errors:
     prod, preprod = false
