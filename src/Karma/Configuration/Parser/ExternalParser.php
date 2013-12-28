@@ -23,16 +23,10 @@ class ExternalParser extends AbstractGroupParser
     {
         $file = trim($line);
         
-        if(! $this->parser->getFileSystem()->has($file))
+        if($this->parser->getFileSystem()->has($file))
         {
-            throw new \RuntimeException(sprintf(
-               'External file %s not found (referenced from %s)',
-                $file,
-                $this->currentFilePath
-            ));
+            $this->variables = $this->parser->parse($file);
         }
-        
-        $this->variables = $this->parser->parse($file);
     }
     
     public function getExternalVariables()
