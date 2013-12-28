@@ -3,7 +3,6 @@
 namespace Karma\Configuration\Parser;
 
 use Karma\Configuration\Parser;
-use Gaufrette\Filesystem;
 
 class ExternalParser extends AbstractGroupParser
 {
