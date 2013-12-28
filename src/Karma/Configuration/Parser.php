@@ -71,7 +71,10 @@ class Parser
         {
             $this->parseFromMasterFile($masterFilePath);
             
-            return $this->getVariables();
+            $variables = $this->getVariables();
+            $this->printExternalFilesStatus();
+            
+            return $variables;
         }
         catch(\RuntimeException $e)
         {
@@ -209,5 +212,33 @@ class Parser
         }
         
         return $variables;
+    }
+    
+    private function printExternalFilesStatus()
+    {
+        $files = $this->getExternalFilesStatus();
+        
+        foreach($files as $file => $status)
+        {
+            $message = sprintf(
+               'External file %s was %s',
+               $file,
+               $status['found'] ? 'found' : '<options=bold>not found</options=bold>'
+            );
+            
+            $this->warning($message);
+        }
+    }
+    
+    private function getExternalFilesStatus()
+    {
+        $files = array();
+        
+        if(isset($this->parsers[self::EXTERNALS]))
+        {
+            $files = $this->parsers[self::EXTERNALS]->getExternalFilesStatus();
+        }
+        
+        return $files;
     }
 }
