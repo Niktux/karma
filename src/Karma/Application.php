@@ -35,6 +35,10 @@ class Application extends \Pimple
     
     private function initializeServices()
     {
+        $this['logger'] = $this->share(function($c) {
+            return new \Psr\Log\NullLogger();    
+        });
+        
         $this['configuration.fileSystem.adapter'] = function($c) {
             return new Local($c['configuration.path']);
         };
@@ -47,7 +51,8 @@ class Application extends \Pimple
             $parser = new Parser($c['configuration.fileSystem']);
 
             $parser->enableIncludeSupport()
-                ->enableExternalSupport();
+                ->enableExternalSupport()
+                ->setLogger($c['logger']);
             
             return $parser;
         };
@@ -68,12 +73,17 @@ class Application extends \Pimple
         };
         
         $this['hydrator'] = function($c) {
-            return new Hydrator($c['sources.fileSystem'], $c['distFiles.suffix'], $c['configuration']);    
+            $hydrator = new Hydrator($c['sources.fileSystem'], $c['distFiles.suffix'], $c['configuration']);
+
+            $hydrator->setLogger($c['logger']);
+            
+            return $hydrator;
         };
         
         $this['rollback'] = function($c) {
             $r = new Rollback($c['sources.fileSystem']);
-            $r->setSuffix( $c['distFiles.suffix']);
+            $r->setSuffix( $c['distFiles.suffix'])
+                ->setLogger($c['logger']);
 
             return $r;
         };

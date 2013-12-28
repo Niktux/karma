@@ -7,7 +7,6 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Karma\Application;
-use Karma\Logging\OutputInterfaceAdapter;
 use Karma\Command;
 
 class Rollback extends Command
@@ -40,7 +39,6 @@ class Rollback extends Command
         $this->app['distFiles.suffix'] = $input->getOption('suffix');
         
         $rollback = $this->app['rollback'];
-        $rollback->setLogger(new OutputInterfaceAdapter($output));
         
         if($input->getOption('dry-run'))
         {
