@@ -73,7 +73,7 @@ class Application extends \Pimple
         };
         
         $this['hydrator'] = function($c) {
-            $hydrator = new Hydrator($c['sources.fileSystem'], $c['configuration']);
+            $hydrator = new Hydrator($c['sources.fileSystem'], $c['configuration'], $c['finder']);
 
             $hydrator->setLogger($c['logger'])
                 ->setSuffix($c['distFiles.suffix']);

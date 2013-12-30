@@ -4,6 +4,7 @@ use Gaufrette\Filesystem;
 use Gaufrette\Adapter\InMemory;
 use Karma\Hydrator;
 use Karma\Configuration\Reader;
+use Karma\Finder;
 
 class RollbackTest extends PHPUnit_Framework_TestCase
 {
@@ -40,7 +41,8 @@ class RollbackTest extends PHPUnit_Framework_TestCase
         $this->write('subdir/s.php', 's');
         $this->write('subdir/s.php~', 'old_s');
         
-        $this->rollback = new Hydrator($this->fs, new Reader(array(), array()));
+        $reader = new Reader(array(), array());
+        $this->rollback = new Hydrator($this->fs, $reader, new Finder($this->fs));
     }
     
     public function testRollback()

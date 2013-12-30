@@ -14,16 +14,18 @@ class Hydrator
         $suffix,
         $reader,
         $dryRun,
-        $enableBackup;
+        $enableBackup,
+        $finder;
     
-    public function __construct(Filesystem $sources, Configuration $reader)
+    public function __construct(Filesystem $sources, Configuration $reader, Finder $finder)
     {
         $this->logger = new NullLogger();
         
         $this->sources = $sources;
-        $this->suffix = Application::DEFAULT_DISTFILE_SUFFIX;
         $this->reader = $reader;
+        $this->finder = $finder;
         
+        $this->suffix = Application::DEFAULT_DISTFILE_SUFFIX;
         $this->dryRun = false;
         $this->enableBackup = false;
     }
@@ -66,9 +68,7 @@ class Hydrator
     
     private function collectDistFiles()
     {
-        $finder = new Finder($this->sources);
-        
-        return $finder->findFiles($this->suffix);
+        return $this->finder->findFiles($this->suffix);
     }
     
     private function hydrateFile($file, $environment)

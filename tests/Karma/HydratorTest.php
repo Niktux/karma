@@ -4,6 +4,7 @@ use Gaufrette\Filesystem;
 use Gaufrette\Adapter\InMemory;
 use Karma\Hydrator;
 use Karma\Configuration\InMemoryReader;
+use Karma\Finder;
 
 class HydratorTest extends PHPUnit_Framework_TestCase
 {
@@ -22,7 +23,7 @@ class HydratorTest extends PHPUnit_Framework_TestCase
             'db.user:preprod' => 'someUser',
         ));
         
-        $this->hydrator = new Hydrator($this->fs, $reader);
+        $this->hydrator = new Hydrator($this->fs, $reader, new Finder($this->fs));
         $this->hydrator->setSuffix('-dist');
     }
     
