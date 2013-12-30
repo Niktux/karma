@@ -148,7 +148,7 @@ class CliTable
                 
                 if($this->enableFormattingTags === true)
                 {
-                    $value = strip_tags($value);
+                    $value = $this->stripTags($value);
                 }
                 
                 $this->columnsSize[$i] = max(strlen($value), $this->columnsSize[$i]);
@@ -180,6 +180,11 @@ class CliTable
         return (string) $value;
     }
     
+    private function stripTags($value)
+    {
+        return preg_replace ('/<[^>]*>/', '', $value);     
+    }
+    
     private function renderLine(array $row)
     {
         $columns = array();
@@ -187,9 +192,30 @@ class CliTable
         for($i = 0; $i < $this->nbColumns; $i++)
         {
             $value = $this->renderValueAsString($row[$i]);
-            $columns[] = '| ' . str_pad($value, $this->columnsSize[$i], ' ') . ' ';
+            
+            $displayedString = str_pad(
+                $value,
+                $this->computeRealColumnSizeFor($value, $this->columnsSize[$i]),
+                ' '
+            );
+            
+            $columns[] = sprintf('| %s ', $displayedString);
         }
         
         return implode('', $columns) . '|';
+    }
+    
+    private function computeRealColumnSizeFor($value, $columnSize)
+    {
+        $displayedValue = $value;
+        
+        if($this->enableFormattingTags === true)
+        {
+            $displayedValue = $this->stripTags($displayedValue);
+        }
+        
+        $paddingLength = $columnSize - strlen($displayedValue);
+        
+        return strlen($value) + $paddingLength;
     }
 }

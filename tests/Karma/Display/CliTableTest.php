@@ -75,25 +75,49 @@ RESULT;
         $this->assertSame($expected, $table->render());
     }
     
-    public function testEnableFormattingTags()
+    public function testWeirdCharacter()
     {
         $table = new CliTable(array(
             array('a', 'a1', 'a2'),
             array('B', 'B1', 'B2'),
-            array('<color=blue>cccc</color>', 'cccc1', 'cccc2'),
+            array('x<y2', 'cccc1', 'cccc2'),
         ));
-
+        
         $table->setHeaders(array('', 'e1', 'e2'))
               ->enableFormattingTags();
-    
-        // Expects thats tags have no impact on column size computation
+        
         $expected = <<<RESULT
 |----------------------|
 |      | e1    | e2    |
 |----------------------|
 | a    | a1    | a2    |
 | B    | B1    | B2    |
-| <color=blue>cccc</color> | cccc1 | cccc2 |
+| x<y2 | cccc1 | cccc2 |
+|----------------------|
+RESULT;
+        
+        $this->assertSame($expected, $table->render());
+    }
+    
+    public function testEnableFormattingTags()
+    {
+        $table = new CliTable(array(
+            array('a', 'a1', 'a2'),
+            array('B', 'B1', 'B2'),
+            array('<color=blue>c</color>', 'cccc1', 'cccc2'),
+        ));
+
+        $table->setHeaders(array('1234', 'e1', 'e2'))
+              ->enableFormattingTags();
+    
+        // Expects thats tags have no impact on column size computation
+        $expected = <<<RESULT
+|----------------------|
+| 1234 | e1    | e2    |
+|----------------------|
+| a    | a1    | a2    |
+| B    | B1    | B2    |
+| <color=blue>c</color>    | cccc1 | cccc2 |
 |----------------------|
 RESULT;
     
