@@ -72,6 +72,10 @@ class Application extends \Pimple
             return new Filesystem($c['sources.fileSystem.adapter']);
         };
         
+        $this['sources.fileSystem.finder'] = function($c) {
+            return $c['sources.fileSystem'];
+        };
+        
         $this['hydrator'] = function($c) {
             $hydrator = new Hydrator($c['sources.fileSystem'], $c['configuration'], $c['finder']);
 
@@ -82,7 +86,7 @@ class Application extends \Pimple
         };
         
         $this['finder'] = function($c) {
-            return new Finder($this['sources.fileSystem']);
+            return new Finder($this['sources.fileSystem.finder']);
         };
     }
 }
