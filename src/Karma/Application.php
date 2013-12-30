@@ -6,6 +6,7 @@ use Karma\Configuration\Reader;
 use Karma\Configuration\Parser;
 use Gaufrette\Filesystem;
 use Gaufrette\Adapter\Local;
+use Gaufrette\Adapter\Cache;
 
 class Application extends \Pimple
 {
@@ -73,7 +74,11 @@ class Application extends \Pimple
         };
         
         $this['sources.fileSystem.finder'] = function($c) {
-            return $c['sources.fileSystem'];
+            //return $c['sources.fileSystem'];
+            $cache = new Local('cache/karma', true);
+            $adapter = new Cache($c['sources.fileSystem.adapter'], $cache, 3600, $cache);
+            
+            return new Filesystem($adapter);
         };
         
         $this['hydrator'] = function($c) {
