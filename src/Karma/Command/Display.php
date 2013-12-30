@@ -6,8 +6,8 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Karma\Configuration;
-use Karma\Configuration\ValueFilter;
 use Karma\Command;
+use Karma\Configuration\ValueFilterIterator;
 
 class Display extends Command
 {
@@ -47,23 +47,21 @@ class Display extends Command
     
     private function displayValues(Configuration $reader, $filter = self::NO_FILTERING)
     {
-        $values = $reader->getAllValuesForEnvironment();
+        $values = new \ArrayIterator($reader->getAllValuesForEnvironment());
         
         if($filter !== self::NO_FILTERING)
         {
-            $valueFilter = new ValueFilter($values);
-            $values = $valueFilter->filter($filter);    
+            $values = new ValueFilterIterator($filter, $values);
         }
         
-        $variables = array_keys($values);
-        sort($variables);
+        $values->ksort();
         
-        foreach($variables as $variable)
+        foreach($values as $variable => $value)
         {
             $this->output->writeln(sprintf(
                '<fg=cyan>%s</fg=cyan> = %s',
                 $variable,
-                $this->formatValue($values[$variable])
+                $this->formatValue($value)
             ));
         }
     }
