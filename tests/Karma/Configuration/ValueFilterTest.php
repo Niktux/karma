@@ -1,12 +1,16 @@
 <?php
 
-use Karma\Configuration\ValueFilter;
+use Karma\Configuration\ValueFilterIterator;
+use Gaufrette\Adapter\iterator_to_array;
 
 class ValueFilterTest extends PHPUnit_Framework_TestCase
 {
+    private
+        $values;
+    
     protected function setUp()
     {
-        $this->valueFilter = new ValueFilter(array(
+        $this->values = new ArrayIterator(array(
             'db.user' => 'root',
             'db.pass' => 'rootroot',
             'db.host' => '192.160.13.12',
@@ -28,9 +32,9 @@ class ValueFilterTest extends PHPUnit_Framework_TestCase
      */
     public function testFilter($filter, $expected)
     {
-        $result = $this->valueFilter->filter($filter);
-
-        $this->assertSame($expected, $result);
+        $it = new ValueFilterIterator($filter, $this->values);
+        
+        $this->assertSame($expected, iterator_to_array($it));
     }
     
     public function providerTestFilter()
