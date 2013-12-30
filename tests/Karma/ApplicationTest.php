@@ -22,9 +22,10 @@ class ApplicationTest extends PHPUnit_Framework_TestCase
     public function providerTestContainer()
     {
         return array(
-        	array('hydrator', 'Karma\\Hydrator'),
-        	array('parser', 'Karma\\Configuration\\Parser'),
-        	array('configuration', 'Karma\\Configuration'),
+            array('hydrator', 'Karma\\Hydrator'),
+            array('parser', 'Karma\\Configuration\\Parser'),
+            array('configuration', 'Karma\\Configuration'),
+            array('finder', 'Karma\\Finder'),
         );
     }
 }

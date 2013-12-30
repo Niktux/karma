@@ -80,5 +80,9 @@ class Application extends \Pimple
             
             return $hydrator;
         };
+        
+        $this['finder'] = function($c) {
+            return new Finder($this['sources.fileSystem']);
+        };
     }
 }
