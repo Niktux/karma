@@ -38,14 +38,14 @@ class Rollback extends Command
         $this->app['sources.path']     = $input->getArgument('sourcePath');
         $this->app['distFiles.suffix'] = $input->getOption('suffix');
         
-        $rollback = $this->app['rollback'];
+        $hydrator = $this->app['hydrator'];
         
         if($input->getOption('dry-run'))
         {
             $this->output->writeln("<fg=cyan>*** Run in dry-run mode ***</fg=cyan>");
-            $rollback->setDryRun();
+            $hydrator->setDryRun();
         }
         
-        $rollback->exec();
+        $hydrator->rollback();
     }
 }
