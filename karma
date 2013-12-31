@@ -3,5 +3,5 @@
 
 require 'vendor/autoload.php';
 
-$console = new Karma\Console();
+$console = new Karma\Console(new Karma\Application());
 $console->run();
