@@ -210,24 +210,35 @@ CONFFILE
     {
         $masterContent = <<<CONFFILE
 [externals]
-external.conf
+external1.conf
+external2.conf
 
 [variables]
 db.pass:
     dev = 1234
     prod = <external>
     default = root
+db.user:
+    staging = <external>
+    default = root
 CONFFILE;
         
-        $externalContent = <<<CONFFILE
+        $externalContent1 = <<<CONFFILE
 [variables]
 db.pass:
     prod = veryComplexPass
 CONFFILE;
         
+        $externalContent2 = <<<CONFFILE
+[variables]
+db.user:
+    staging = someUser
+CONFFILE;
+        
         $files = array(
             'master.conf' => $masterContent,
-            'external.conf' => $externalContent,
+            'external1.conf' => $externalContent1,
+            'external2.conf' => $externalContent2,
         );
         
         $parser = new Parser(new Filesystem(new InMemory($files)));
@@ -238,17 +249,26 @@ CONFFILE;
         $variables = $parser->parse('master.conf');
         
         $expected = array(
-            'dev' => 1234,
-            'prod' => '<external>',
-            'default' => 'root',
+            'db.pass' => array(
+                'dev' => 1234,
+                'prod' => '<external>',
+                'default' => 'root',
+            ),
+            'db.user' => array(
+                'staging' => '<external>',
+                'default' => 'root',
+            ),
         );
         
-        foreach($expected as $environment => $expectedValue)
+        foreach($expected as $variable => $info)
         {
-            $this->assertArrayHasKey('db.pass', $variables);
-            $this->assertArrayHasKey('env', $variables['db.pass']);
-            $this->assertArrayHasKey($environment, $variables['db.pass']['env']);
-            $this->assertSame($expectedValue, $variables['db.pass']['env'][$environment]);
+            foreach($info as $environment => $expectedValue)
+            {
+                $this->assertArrayHasKey($variable, $variables);
+                $this->assertArrayHasKey('env', $variables[$variable]);
+                $this->assertArrayHasKey($environment, $variables[$variable]['env']);
+                $this->assertSame($expectedValue, $variables[$variable]['env'][$environment]);
+            }
         }
     }
 }

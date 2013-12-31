@@ -193,24 +193,35 @@ class ReaderTest extends ParserTestCase
     {
         $masterContent = <<<CONFFILE
 [externals]
-external.conf
+external1.conf
+external2.conf
 
 [variables]
 db.pass:
     dev = 1234
     prod = <external>
     default = root
+db.user:
+    preprod = <external>
+    default = userdb
 CONFFILE;
         
-        $externalContent = <<<CONFFILE
+        $externalContent1 = <<<CONFFILE
 [variables]
 db.pass:
     prod = veryComplexPass
 CONFFILE;
         
+        $externalContent2 = <<<CONFFILE
+[variables]
+db.user:
+    preprod = foobar
+CONFFILE;
+        
         $files = array(
             'master.conf' => $masterContent,
-            'external.conf' => $externalContent,
+            'external1.conf' => $externalContent1,
+            'external2.conf' => $externalContent2,
         );
         
         $parser = new Parser(new Filesystem(new InMemory($files)));
@@ -222,14 +233,24 @@ CONFFILE;
         $reader = new Reader($variables, $parser->getExternalVariables());
         
         $expected = array(
-            'dev' => 1234,
-            'prod' => 'veryComplexPass',
-            'preprod' => 'root',
+            'db.pass' => array(
+                'dev' => 1234,
+                'prod' => 'veryComplexPass',
+                'preprod' => 'root',
+            ),
+            'db.user' => array(
+                'dev' => 'userdb',
+                'prod' => 'userdb',
+                'preprod' => 'foobar',
+            ),
         );
         
-        foreach($expected as $environment => $expectedValue)
+        foreach($expected as $variable => $info)
         {
-            $this->assertSame($expectedValue, $reader->read('db.pass', $environment));
+            foreach($info as $environment => $expectedValue)
+            {
+                $this->assertSame($expectedValue, $reader->read($variable, $environment));
+            }
         }
     }
     
