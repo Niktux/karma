@@ -1,7 +1,8 @@
 <?php
 
-use Gaufrette\Adapter\InMemory;
 require_once __DIR__ . '/CommandTestCase.php';
+
+use Gaufrette\Adapter\InMemory;
 
 class HydrateTest extends CommandTestCase
 {
