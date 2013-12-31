@@ -6,9 +6,6 @@ use Gaufrette\Adapter\InMemory;
 
 class RollbackCommandTest extends CommandTestCase
 {
-    protected
-        $mock;
-    
     protected function setUp()
     {
         parent::setUp();
@@ -16,12 +13,6 @@ class RollbackCommandTest extends CommandTestCase
         $this->app['sources.fileSystem.adapter'] = new InMemory(array(
         	'src/file' => '',
         ));
-
-        $this->mock = $this->getMock(
-            'Karma\Hydrator',
-            array(),
-            array($this->app['sources.fileSystem'], $this->app['configuration'], $this->app['finder'])
-        );
     }
     
     /**
@@ -29,10 +20,15 @@ class RollbackCommandTest extends CommandTestCase
      */
     public function testOptions($option, $expectedMethodCall)
     {
-        $this->mock->expects($this->once())
+        $mock = $this->getMock(
+            'Karma\Hydrator',
+            array(),
+            array($this->app['sources.fileSystem'], $this->app['configuration'], $this->app['finder'])
+        );
+        $mock->expects($this->once())
             ->method($expectedMethodCall);
         
-        $this->app['hydrator'] = $this->mock;
+        $this->app['hydrator'] = $mock;
         
         $this->runCommand('rollback', array(
             $option => true,
