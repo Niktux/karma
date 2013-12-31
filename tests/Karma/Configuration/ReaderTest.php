@@ -308,4 +308,46 @@ CONFFILE
             ),
         );
     }    
+    
+    /**
+     * @expectedException \RuntimeException
+     */
+    public function testExternalConflict()
+    {
+        $contentMaster = <<<CONFFILE
+[externals]
+ext1.conf
+ext2.conf
+        
+[variables]
+v1:
+    prod = <external>
+CONFFILE;
+
+    $contentExt1 = <<< CONFFILE
+[variables]
+v1:
+    prod = foo
+CONFFILE;
+        
+    $contentExt2 = <<< CONFFILE
+[variables]
+v1:
+    prod = bar
+CONFFILE;
+        
+        $parser = new Parser(new Filesystem(new InMemory(array(
+            self::MASTERFILE_PATH => $contentMaster,
+            'ext1.conf' => $contentExt1,
+            'ext2.conf' => $contentExt2
+        ))));
+    
+        $parser
+            ->enableIncludeSupport()
+            ->enableExternalSupport();
+        
+        $variables = $parser->parse(self::MASTERFILE_PATH);
+        $reader = new Reader($variables, $parser->getExternalVariables());
+        $reader->read('v1', 'prod');
+    }
 }
