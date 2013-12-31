@@ -14,6 +14,13 @@ class Command extends \Symfony\Component\Console\Command\Command
     protected
         $app;
     
+    public function __construct(Application $app)
+    {
+        parent::__construct();
+        
+        $this->app = $app;
+    }
+    
     protected function configure()
     {
         $this
@@ -26,7 +33,6 @@ class Command extends \Symfony\Component\Console\Command\Command
     {
         $this->setOutput($output);
         
-        $this->app = new Application();
         $this->app['configuration.path']       = $input->getOption('confDir');
         $this->app['configuration.masterFile'] = $input->getOption('master');
         $this->app['logger'] = new OutputInterfaceAdapter($output);
