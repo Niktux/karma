@@ -26,6 +26,7 @@ class Command extends \Symfony\Component\Console\Command\Command
         $this
             ->addOption('confDir', null, InputOption::VALUE_REQUIRED, 'Configuration root directory', Application::DEFAULT_CONF_DIRECTORY)
             ->addOption('master', null, InputOption::VALUE_REQUIRED, 'Configuration master file', Application::DEFAULT_MASTER_FILE)
+            ->addOption('cache', null, InputOption::VALUE_NONE, 'Cache the dist files list')
         ;
     }
     
@@ -36,6 +37,16 @@ class Command extends \Symfony\Component\Console\Command\Command
         $this->app['configuration.path']       = $input->getOption('confDir');
         $this->app['configuration.masterFile'] = $input->getOption('master');
         $this->app['logger'] = new OutputInterfaceAdapter($output);
+        
+        if($input->getOption('cache'))
+        {
+            $this->enableFinderCache();
+        }
+    }
+    
+    private function enableFinderCache()
+    {
+        $this->app['sources.fileSystem.finder'] = $this->app['sources.fileSystem.cached'];
     }
     
     protected function formatValue($value)

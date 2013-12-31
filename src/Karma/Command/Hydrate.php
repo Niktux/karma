@@ -8,6 +8,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Karma\Application;
 use Karma\Command;
+use Gaufrette\Adapter\Local;
+use Gaufrette\Adapter\Cache;
+use Gaufrette\Filesystem;
 
 class Hydrate extends Command
 {

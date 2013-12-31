@@ -4,9 +4,8 @@ require_once __DIR__ . '/CommandTestCase.php';
 
 use Gaufrette\Adapter\InMemory;
 use Gaufrette\Filesystem;
-use Karma\Application;
 
-class HydrateTest extends CommandTestCase
+class RollbackCommandTest extends CommandTestCase
 {
     protected function setUp()
     {
@@ -27,15 +26,14 @@ class HydrateTest extends CommandTestCase
             array(),
             array($this->app['sources.fileSystem'], $this->app['configuration'], $this->app['finder'])
         );
-        
         $mock->expects($this->once())
             ->method($expectedMethodCall);
         
         $this->app['hydrator'] = $mock;
         
-        $this->runCommand('hydrate', array(
+        $this->runCommand('rollback', array(
             $option => true,
-            'sourcePath' => 'src/',
+            'sourcePath' => 'src/'
         ));
     }
     
@@ -43,7 +41,6 @@ class HydrateTest extends CommandTestCase
     {
         return array(
         	array('--dry-run', 'setDryRun'),
-        	array('--backup', 'enableBackup'),
         );
     }
     
@@ -51,23 +48,23 @@ class HydrateTest extends CommandTestCase
     {
         $cacheAdapter = new InMemory(array());
         $this->app['finder.cache.adapter'] = $cacheAdapter;
-        
+    
         $cache = new Filesystem($cacheAdapter);
         $this->assertEmpty($cache->keys());
-        
+    
         // exec without cache
-        $this->runCommand('hydrate', array(
+        $this->runCommand('rollback', array(
             'sourcePath' => 'src/',
         ));
-        
+    
         $this->assertEmpty($cache->keys());
-        
+    
         // exec with cache
-        $this->runCommand('hydrate', array(
+        $this->runCommand('rollback', array(
             '--cache' => true,
             'sourcePath' => 'src/',
         ));
-        
+    
         $this->assertNotEmpty($cache->keys());
-    }
+    }    
 }
