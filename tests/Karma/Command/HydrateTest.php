@@ -3,12 +3,11 @@
 require_once __DIR__ . '/CommandTestCase.php';
 
 use Gaufrette\Adapter\InMemory;
+use Gaufrette\Filesystem;
+use Karma\Application;
 
 class HydrateTest extends CommandTestCase
 {
-    protected
-        $mock;
-    
     protected function setUp()
     {
         parent::setUp();
@@ -16,12 +15,6 @@ class HydrateTest extends CommandTestCase
         $this->app['sources.fileSystem.adapter'] = new InMemory(array(
         	'src/file' => '',
         ));
-
-        $this->mock = $this->getMock(
-            'Karma\Hydrator',
-            array(),
-            array($this->app['sources.fileSystem'], $this->app['configuration'], $this->app['finder'])
-        );
     }
     
     /**
@@ -29,14 +22,20 @@ class HydrateTest extends CommandTestCase
      */
     public function testOptions($option, $expectedMethodCall)
     {
-        $this->mock->expects($this->once())
+        $mock = $this->getMock(
+            'Karma\Hydrator',
+            array(),
+            array($this->app['sources.fileSystem'], $this->app['configuration'], $this->app['finder'])
+        );
+        
+        $mock->expects($this->once())
             ->method($expectedMethodCall);
         
-        $this->app['hydrator'] = $this->mock;
+        $this->app['hydrator'] = $mock;
         
         $this->runCommand('hydrate', array(
             $option => true,
-            'sourcePath' => 'src/'
+            'sourcePath' => 'src/',
         ));
     }
     
@@ -46,5 +45,29 @@ class HydrateTest extends CommandTestCase
         	array('--dry-run', 'setDryRun'),
         	array('--backup', 'enableBackup'),
         );
+    }
+    
+    public function testCache()
+    {
+        $cacheAdapter = new InMemory(array());
+        $this->app['finder.cache.adapter'] = $cacheAdapter;
+        
+        $cache = new Filesystem($cacheAdapter);
+        $this->assertEmpty($cache->keys());
+        
+        // exec without cache
+        $this->runCommand('hydrate', array(
+            'sourcePath' => 'src/',
+        ));
+        
+        $this->assertEmpty($cache->keys());
+        
+        // exec with cache
+        $this->runCommand('hydrate', array(
+            '--cache' => true,
+            'sourcePath' => 'src/',
+        ));
+        
+        $this->assertNotEmpty($cache->keys());
     }
 }

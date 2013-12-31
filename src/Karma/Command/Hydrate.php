@@ -8,6 +8,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Karma\Application;
 use Karma\Command;
+use Gaufrette\Adapter\Local;
+use Gaufrette\Adapter\Cache;
+use Gaufrette\Filesystem;
 
 class Hydrate extends Command
 {
@@ -28,6 +31,7 @@ class Hydrate extends Command
             ->addOption('suffix', null, InputOption::VALUE_REQUIRED, 'File suffix', Application::DEFAULT_DISTFILE_SUFFIX)
             ->addOption('dry-run', null, InputOption::VALUE_NONE, 'Simulation mode')
             ->addOption('backup', null, InputOption::VALUE_NONE, 'Backup overwritten files')
+            ->addOption('cache', null, InputOption::VALUE_NONE, 'Cache the dist files list')
         ;
     }
     
@@ -46,6 +50,11 @@ class Hydrate extends Command
         $this->app['sources.path']     = $input->getArgument('sourcePath');
         $this->app['distFiles.suffix'] = $input->getOption('suffix');
         
+        if($input->getOption('cache'))
+        {
+            $this->enableFinderCache();
+        }
+        
         $hydrator = $this->app['hydrator'];
         
         if($input->getOption('dry-run'))
@@ -61,5 +70,10 @@ class Hydrate extends Command
         }
             
         $hydrator->hydrate($environment);
+    }
+    
+    private function enableFinderCache()
+    {
+        $this->app['sources.fileSystem.finder'] = $this->app['sources.fileSystem.cached'];
     }
 }

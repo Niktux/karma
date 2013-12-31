@@ -14,7 +14,9 @@ class Application extends \Pimple
         DEFAULT_DISTFILE_SUFFIX = '-dist',
         DEFAULT_CONF_DIRECTORY = 'conf',
         DEFAULT_MASTER_FILE = 'master.conf',
-        BACKUP_SUFFIX = '~';
+        BACKUP_SUFFIX = '~',
+        FINDER_CACHE_DIRECTORY = 'cache/karma',
+        FINDER_CACHE_DURATION = 86400;
     
     public function __construct()
     {
@@ -74,11 +76,7 @@ class Application extends \Pimple
         };
         
         $this['sources.fileSystem.finder'] = function($c) {
-            //return $c['sources.fileSystem'];
-            $cache = new Local('cache/karma', true);
-            $adapter = new Cache($c['sources.fileSystem.adapter'], $cache, 3600, $cache);
-            
-            return new Filesystem($adapter);
+            return $c['sources.fileSystem'];
         };
         
         $this['hydrator'] = function($c) {
@@ -90,8 +88,27 @@ class Application extends \Pimple
             return $hydrator;
         };
         
+        $this['finder.cache.path'] = self::FINDER_CACHE_DIRECTORY;
+        $this['finder.cache.duration'] = self::FINDER_CACHE_DURATION;
+        
         $this['finder'] = function($c) {
             return new Finder($this['sources.fileSystem.finder']);
+        };
+        
+        $this['finder.cache.adapter'] = function($c) {
+            return new Local($c['finder.cache.path'], true);
+        };
+        
+        $this['sources.fileSystem.cached'] = function($c) {
+            $cache = $c['finder.cache.adapter'];
+            $adapter = new Cache(
+                $c['sources.fileSystem.adapter'],
+                $cache,
+                $c['finder.cache.duration'],
+                $cache
+            );
+            
+            return new Filesystem($adapter);
         };
     }
 }
