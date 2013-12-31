@@ -3,6 +3,7 @@
 require_once __DIR__ . '/CommandTestCase.php';
 
 use Gaufrette\Adapter\InMemory;
+use Gaufrette\Filesystem;
 
 class RollbackCommandTest extends CommandTestCase
 {
@@ -42,4 +43,28 @@ class RollbackCommandTest extends CommandTestCase
         	array('--dry-run', 'setDryRun'),
         );
     }
+    
+    public function testCache()
+    {
+        $cacheAdapter = new InMemory(array());
+        $this->app['finder.cache.adapter'] = $cacheAdapter;
+    
+        $cache = new Filesystem($cacheAdapter);
+        $this->assertEmpty($cache->keys());
+    
+        // exec without cache
+        $this->runCommand('rollback', array(
+            'sourcePath' => 'src/',
+        ));
+    
+        $this->assertEmpty($cache->keys());
+    
+        // exec with cache
+        $this->runCommand('rollback', array(
+            '--cache' => true,
+            'sourcePath' => 'src/',
+        ));
+    
+        $this->assertNotEmpty($cache->keys());
+    }    
 }
