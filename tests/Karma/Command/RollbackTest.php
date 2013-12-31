@@ -20,7 +20,7 @@ class RollbackCommandTest extends CommandTestCase
         $this->mock = $this->getMock(
             'Karma\Hydrator',
             array(),
-            array($this->app['sources.fileSystem'], $this->app['configuration'])
+            array($this->app['sources.fileSystem'], $this->app['configuration'], $this->app['finder'])
         );
     }
     
