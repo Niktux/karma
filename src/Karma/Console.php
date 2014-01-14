@@ -15,6 +15,7 @@ class Console
         $this->app->add(new Command\Display($dic));
         $this->app->add(new Command\Diff($dic));
         $this->app->add(new Command\Rollback($dic));
+        $this->app->add(new Command\Check($dic));
     }
         
     public function run()

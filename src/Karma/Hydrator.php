@@ -8,6 +8,9 @@ use Psr\Log\NullLogger;
 class Hydrator
 {
     use \Karma\Logging\LoggerAware;
+
+    const
+        VARIABLE_REGEX = '~<%(?P<variableName>[A-Za-z0-9_\.]+)%>~';
     
     private
         $sources,
@@ -88,7 +91,7 @@ class Hydrator
     
     private function injectValues($sourceFile, $content, $environment)
     {
-        $targetContent = preg_replace_callback('~<%(?P<variableName>[A-Za-z0-9_\.]+)%>~', function(array $matches) use($environment){
+        $targetContent = preg_replace_callback(self::VARIABLE_REGEX, function(array $matches) use($environment){
             return $this->reader->read($matches['variableName'], $environment);
         }, $content, -1, $count);
         

@@ -28,7 +28,7 @@ CONFFILE;
         ));
     }
 
-    protected function runCommand($commandName, array $commandArguments = array())
+    protected function runCommand($commandName, array $commandArguments = array(), array $options = array())
     {
         $console = new Console($this->app);
         $command = $console
@@ -42,7 +42,7 @@ CONFFILE;
             $commandArguments
         );
         
-        $this->commandTester->execute($commandArguments);
+        $this->commandTester->execute($commandArguments, $options);
     }
     
     protected function assertDisplay($regex)
