@@ -32,11 +32,6 @@ class OutputAwareTest extends PHPUnit_Framework_TestCase
     public function testWarning()
     {
         $this->warning('foo', false);
-        $this->assertEmpty($this->buffer->fetch());
-        
-        $this->buffer->setVerbosity(OutputInterface::VERBOSITY_VERBOSE);
-
-        $this->warning('foo', false);
         $this->assertSame("<fg=yellow>foo</fg=yellow>", $this->buffer->fetch());
     
         $this->warning('bar', true);
@@ -45,14 +40,6 @@ class OutputAwareTest extends PHPUnit_Framework_TestCase
     
     public function testInfo()
     {
-        $this->info('foo', false);
-        $this->assertEmpty($this->buffer->fetch());
-    
-        $this->buffer->setVerbosity(OutputInterface::VERBOSITY_VERBOSE);
-        $this->info('foo', false);
-        $this->assertEmpty($this->buffer->fetch());
-        
-        $this->buffer->setVerbosity(OutputInterface::VERBOSITY_VERY_VERBOSE);
         $this->info('foo', false);
         $this->assertSame("<fg=white>foo</fg=white>", $this->buffer->fetch());
     
@@ -66,14 +53,6 @@ class OutputAwareTest extends PHPUnit_Framework_TestCase
         $this->assertEmpty($this->buffer->fetch());
     
         $this->buffer->setVerbosity(OutputInterface::VERBOSITY_VERBOSE);
-        $this->debug('foo', false);
-        $this->assertEmpty($this->buffer->fetch());
-        
-        $this->buffer->setVerbosity(OutputInterface::VERBOSITY_VERY_VERBOSE);
-        $this->debug('foo', false);
-        $this->assertEmpty($this->buffer->fetch());
-    
-        $this->buffer->setVerbosity(OutputInterface::VERBOSITY_DEBUG);
         $this->debug('foo', false);
         $this->assertSame("<fg=white>foo</fg=white>", $this->buffer->fetch());
     
