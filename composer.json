@@ -1,6 +1,6 @@
 {
 	"name" : "niktux/karma",
-	"description" : "hydrate code with environment dependent values",
+	"description" : "CLI tool to manage environment dependent configuration",
 	"type" : "script",
 	"authors" : [{
 			"name" : "Nicolas Le Nardou",
