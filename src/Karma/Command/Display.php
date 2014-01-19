@@ -54,6 +54,8 @@ class Display extends Command
             $values = new ValueFilterIterator($filter, $values);
         }
         
+        $this->output->writeln('');
+        
         $values->ksort();
         
         foreach($values as $variable => $value)

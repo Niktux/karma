@@ -19,9 +19,9 @@ class OutputInterfaceAdapter implements LoggerInterface
         $this->output = $output;
         
         $this->levelConversionTable = array(
-            LogLevel::DEBUG => OutputInterface::VERBOSITY_VERY_VERBOSE,
-            LogLevel::INFO => OutputInterface::VERBOSITY_VERBOSE,
-            LogLevel::WARNING => OutputInterface::VERBOSITY_VERBOSE,
+            LogLevel::DEBUG => OutputInterface::VERBOSITY_VERBOSE,
+            LogLevel::INFO => OutputInterface::VERBOSITY_NORMAL,
+            LogLevel::WARNING => OutputInterface::VERBOSITY_NORMAL,
             LogLevel::ERROR => OutputInterface::VERBOSITY_NORMAL
         );
     }
