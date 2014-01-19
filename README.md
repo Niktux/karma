@@ -31,7 +31,7 @@ In the documentation below, replace ```karma``` by ```vendor/bin/karma```.
 Full Documentation
 ------------------
 Full and clean documentation is been writing.
-You can find it here : http://karma.deboo.fr/
+You can find it here : http://karma-php.com/
 
 Documentation below will be deprecated soon
 
