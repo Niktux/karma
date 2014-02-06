@@ -17,6 +17,7 @@ report/
 # Test data
 env/
 data/
+.karma
 
 # Cache
 cache/
