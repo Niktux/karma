@@ -12,7 +12,7 @@ class Application extends \Pimple
 {
     const
         DEFAULT_DISTFILE_SUFFIX = '-dist',
-        DEFAULT_CONF_DIRECTORY = '../conf',
+        DEFAULT_CONF_DIRECTORY = 'env',
         DEFAULT_MASTER_FILE = 'master.conf',
         BACKUP_SUFFIX = '~',
         FINDER_CACHE_DIRECTORY = 'cache/karma',
