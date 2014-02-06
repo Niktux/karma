@@ -16,7 +16,8 @@ class Application extends \Pimple
         DEFAULT_MASTER_FILE = 'master.conf',
         BACKUP_SUFFIX = '~',
         FINDER_CACHE_DIRECTORY = 'cache/karma',
-        FINDER_CACHE_DURATION = 86400;
+        FINDER_CACHE_DURATION = 86400,
+        PROFILE_FILENAME = '.karma';
     
     public function __construct()
     {
@@ -49,6 +50,18 @@ class Application extends \Pimple
         $this['configuration.fileSystem'] = function($c) {
             return new Filesystem($c['configuration.fileSystem.adapter']);    
         };
+        
+        $this['profile.fileSystem.adapter'] = function($c) {
+            return new Local(getcwd());
+        };
+        
+        $this['profile.fileSystem'] = function($c) {
+            return new Filesystem($c['profile.fileSystem.adapter']);    
+        };
+        
+        $this['profile'] = $this->share(function($c) {
+            return new ProfileReader($c['profile.fileSystem']);
+        });
         
         $this['parser'] = function($c) {
             $parser = new Parser($c['configuration.fileSystem']);

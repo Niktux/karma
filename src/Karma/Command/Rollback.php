@@ -21,7 +21,7 @@ class Rollback extends Command
             
             ->addArgument('sourcePath', InputArgument::REQUIRED, 'source path to hydrate')
             
-            ->addOption('suffix', null, InputOption::VALUE_REQUIRED, 'File suffix', Application::DEFAULT_DISTFILE_SUFFIX)
+            ->addOption('suffix', null, InputOption::VALUE_REQUIRED, 'File suffix', null)
             ->addOption('dry-run', null, InputOption::VALUE_NONE, 'Simulation mode')
         ;
     }
@@ -30,13 +30,25 @@ class Rollback extends Command
     {
         parent::execute($input, $output);
         
+        $suffix = $input->getOption('suffix');
+        if($suffix === null)
+        {
+            $suffix = Application::DEFAULT_DISTFILE_SUFFIX;
+        
+            $profile = $this->app['profile'];
+            if($profile->hasTemplatesSuffix())
+            {
+                $suffix = $profile->getTemplatesSuffix();
+            }
+        }
+        
         $this->output->writeln(sprintf(
             '<info>Rollback <comment>%s</comment></info>',
             $input->getArgument('sourcePath')
         ));
         
         $this->app['sources.path']     = $input->getArgument('sourcePath');
-        $this->app['distFiles.suffix'] = $input->getOption('suffix');
+        $this->app['distFiles.suffix'] = $suffix;
         
         $hydrator = $this->app['hydrator'];
         
