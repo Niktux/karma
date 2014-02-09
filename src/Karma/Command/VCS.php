@@ -33,8 +33,10 @@ class VCS extends Command
     {
         parent::execute($input, $output);
 
-        $result = $this->vcs->isTracked('src/Karma/Finder.php');
-        
+        $filepath = 'src/Karma/Finder.php';
+        $result = $this->vcs->isTracked($filepath);
         var_dump($result);
+        
+        $this->vcs->isIgnored($filepath);
     }
 }

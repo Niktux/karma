@@ -8,6 +8,7 @@ class Git implements Vcs
 {
     private
         $git,
+        $rootDirectory,
         $trackedFiles;
     
     public function __construct($rootDirectory)
@@ -15,6 +16,7 @@ class Git implements Vcs
         $wrapper = new GitWrapper();
         $this->git = $wrapper->workingCopy($rootDirectory);
         
+        $this->rootDirectory = $rootDirectory;
         $this->trackedFiles = null;
     }
     
@@ -39,20 +41,33 @@ class Git implements Vcs
     
     public function untrackFile($filepath)
     {
+        if($this->isTracked($filepath) === false)
+        {
+            return false;
+        }
+        
         $this->git->run(array(
         	'rm',
             '--cached',
             $filepath
         ));
+        
+        return true;
     }
     
     public function isIgnored($filepath)
     {
-    
+        // TODO find all .gitignore files
+        $cwd = getcwd();
+        chdir($this->rootDirectory);
+        
+        $content = file_get_contents('.gitignore');
+        var_dump($content);
+        
+        chdir($cwd);
     }
         
     public function ignoreFile($filepath)
     {
-        
     }
 }
