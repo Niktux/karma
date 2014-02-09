@@ -14,22 +14,61 @@ class Command extends \Symfony\Component\Console\Command\Command
     protected
         $app;
     
+    public function __construct(Application $app)
+    {
+        parent::__construct();
+        
+        $this->app = $app;
+    }
+    
     protected function configure()
     {
         $this
-            ->addOption('confDir', null, InputOption::VALUE_REQUIRED, 'Configuration root directory', Application::DEFAULT_CONF_DIRECTORY)
-            ->addOption('master', null, InputOption::VALUE_REQUIRED, 'Configuration master file', Application::DEFAULT_MASTER_FILE)
+            ->addOption('confDir', null, InputOption::VALUE_REQUIRED, 'Configuration root directory', null)
+            ->addOption('master', null, InputOption::VALUE_REQUIRED, 'Configuration master file', null)
+            ->addOption('cache', null, InputOption::VALUE_NONE, 'Cache the dist files list')
         ;
     }
     
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->setOutput($output);
+
+        $profile = $this->app['profile'];
         
-        $this->app = new Application();
-        $this->app['configuration.path']       = $input->getOption('confDir');
-        $this->app['configuration.masterFile'] = $input->getOption('master');
+        $confDir = $input->getOption('confDir');
+        if($confDir === null)
+        {
+            $confDir = Application::DEFAULT_CONF_DIRECTORY;
+            if($profile->hasConfigurationDirectory())
+            {
+                $confDir = $profile->getConfigurationDirectory();
+            }
+        } 
+        
+        $masterFile = $input->getOption('master');
+        if($masterFile === null)
+        {
+            $masterFile = Application::DEFAULT_MASTER_FILE;
+            if($profile->hasMasterFilename())
+            {
+                $masterFile = $profile->getMasterFilename();
+            }
+        } 
+        
+        $this->app['configuration.path']       = $confDir;
+        $this->app['configuration.masterFile'] = $masterFile;
         $this->app['logger'] = new OutputInterfaceAdapter($output);
+        
+        if($input->getOption('cache'))
+        {
+            $this->enableFinderCache();
+        }
+    }
+    
+    private function enableFinderCache()
+    {
+        $this->app['sources.fileSystem.finder'] = $this->app['sources.fileSystem.cached'];
     }
     
     protected function formatValue($value)

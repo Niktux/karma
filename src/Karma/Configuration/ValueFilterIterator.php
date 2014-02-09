@@ -2,7 +2,7 @@
 
 namespace Karma\Configuration;
 
-class ValueFilter
+class ValueFilterIterator extends \FilterIterator
 {
     use \Karma\Configuration\FilterInputVariable;
     
@@ -11,34 +11,35 @@ class ValueFilter
         ESCAPED_WILDCARD = '**';
     
     private
-        $values;
+        $isRegex,
+        $filter;
     
-    public function __construct(array $values)
+    public function __construct($filter, \Iterator $iterator)
     {
-        $this->values = $values;
-    }
-    
-    public function filter($filter)
-    {
+        parent::__construct($iterator);
+        
         $filter = $this->filterValue($filter);
-
-        return array_filter($this->values, $this->createFilterFunction($filter));
-    }
-    
-    private function createFilterFunction($filter)
-    {
+        
+        $this->isRegex = false;
         if(stripos($filter, self::FILTER_WILDCARD) !== false)
         {
+            $this->isRegex = true;
             $filter = $this->convertToRegex($filter);
-    
-            return function($value) use ($filter){
-                return preg_match($filter, $value);
-            };
         }
+        
+        $this->filter = $filter;
+    }
     
-        return function($value) use ($filter) {
-            return $filter === $value;
-        };
+    public function accept()
+    {
+        $value = $this->getInnerIterator()->current();
+        
+        if($this->isRegex === true)
+        {
+            return preg_match($this->filter, $value);
+        }
+        
+        return $value === $this->filter;
     }
     
     private function convertToRegex($filter)

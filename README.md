@@ -13,6 +13,7 @@ Service | Result
 --- | ---
 **Jenkins** | [![Build Status](http://jenkins.deboo.fr/job/Karma/badge/icon)](http://jenkins.deboo.fr/job/Karma/)
 **Travis CI** (PHP 5.4 + 5.5) | [![Build Status](https://travis-ci.org/Niktux/karma.png?branch=master)](https://travis-ci.org/Niktux/karma)
+**Scrutinizer** | [![Scrutinizer Quality Score](https://scrutinizer-ci.com/g/Niktux/karma/badges/quality-score.png?s=595d09c72316b5e706c3f78fb00807bc6b1515f1)](https://scrutinizer-ci.com/g/Niktux/karma/)
 **Packagist** | [![Latest Stable Version](https://poser.pugx.org/niktux/karma/v/stable.png)](https://packagist.org/packages/niktux/karma)
 
 Installation
@@ -21,7 +22,7 @@ Use composer :
 ```json
 {
     "require": {
-		    "niktux/karma" : "dev-master"
+		    "niktux/karma" : "1.0"
     }
 }
 ```
@@ -29,8 +30,7 @@ In the documentation below, replace ```karma``` by ```vendor/bin/karma```.
 
 Full Documentation
 ------------------
-Full and clean documentation is been writing.
-You can find it here : http://karma.deboo.fr/
+You can find it here : http://karma-php.com/
 
 Documentation below will be deprecated soon
 

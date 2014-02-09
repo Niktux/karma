@@ -25,7 +25,7 @@ class Hydrate extends Command
             ->addArgument('sourcePath', InputArgument::REQUIRED, 'source path to hydrate')
             
             ->addOption('env', null, InputOption::VALUE_REQUIRED, 'Target environment', self::ENV_DEV)
-            ->addOption('suffix', null, InputOption::VALUE_REQUIRED, 'File suffix', Application::DEFAULT_DISTFILE_SUFFIX)
+            ->addOption('suffix', null, InputOption::VALUE_REQUIRED, 'File suffix', null)
             ->addOption('dry-run', null, InputOption::VALUE_NONE, 'Simulation mode')
             ->addOption('backup', null, InputOption::VALUE_NONE, 'Backup overwritten files')
         ;
@@ -34,6 +34,18 @@ class Hydrate extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         parent::execute($input, $output);
+        
+        $suffix = $input->getOption('suffix');
+        if($suffix === null)
+        {
+            $suffix = Application::DEFAULT_DISTFILE_SUFFIX;
+            
+            $profile = $this->app['profile'];
+            if($profile->hasTemplatesSuffix())
+            {
+                $suffix = $profile->getTemplatesSuffix();
+            }
+        }
         
         $environment = $input->getOption('env'); 
         
@@ -44,7 +56,7 @@ class Hydrate extends Command
         ));
         
         $this->app['sources.path']     = $input->getArgument('sourcePath');
-        $this->app['distFiles.suffix'] = $input->getOption('suffix');
+        $this->app['distFiles.suffix'] = $suffix;
         
         $hydrator = $this->app['hydrator'];
         

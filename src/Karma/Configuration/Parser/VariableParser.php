@@ -67,9 +67,10 @@ class VariableParser extends AbstractGroupParser
         if(isset($this->variables[$this->currentVariable]))
         {
             throw new \RuntimeException(sprintf(
-                'Variable %s is already declared in %s',
+                'Variable %s is already declared in %s (raised from %s)',
                 $this->currentVariable,
-                $this->variables[$this->currentVariable]['file']
+                $this->variables[$this->currentVariable]['file'],
+                $this->currentFilePath
             ));
         }
         

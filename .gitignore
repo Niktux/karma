@@ -15,5 +15,9 @@ php_errors.log
 report/
 
 # Test data
-conf/
+env/
 data/
+.karma
+
+# Cache
+cache/

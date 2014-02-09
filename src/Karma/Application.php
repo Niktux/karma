@@ -6,14 +6,18 @@ use Karma\Configuration\Reader;
 use Karma\Configuration\Parser;
 use Gaufrette\Filesystem;
 use Gaufrette\Adapter\Local;
+use Gaufrette\Adapter\Cache;
 
 class Application extends \Pimple
 {
     const
         DEFAULT_DISTFILE_SUFFIX = '-dist',
-        DEFAULT_CONF_DIRECTORY = 'conf',
+        DEFAULT_CONF_DIRECTORY = 'env',
         DEFAULT_MASTER_FILE = 'master.conf',
-        BACKUP_SUFFIX = '~';
+        BACKUP_SUFFIX = '~',
+        FINDER_CACHE_DIRECTORY = 'cache/karma',
+        FINDER_CACHE_DURATION = 86400,
+        PROFILE_FILENAME = '.karma';
     
     public function __construct()
     {
@@ -47,6 +51,18 @@ class Application extends \Pimple
             return new Filesystem($c['configuration.fileSystem.adapter']);    
         };
         
+        $this['profile.fileSystem.adapter'] = function($c) {
+            return new Local(getcwd());
+        };
+        
+        $this['profile.fileSystem'] = function($c) {
+            return new Filesystem($c['profile.fileSystem.adapter']);    
+        };
+        
+        $this['profile'] = $this->share(function($c) {
+            return new ProfileReader($c['profile.fileSystem']);
+        });
+        
         $this['parser'] = function($c) {
             $parser = new Parser($c['configuration.fileSystem']);
 
@@ -72,20 +88,40 @@ class Application extends \Pimple
             return new Filesystem($c['sources.fileSystem.adapter']);
         };
         
+        $this['sources.fileSystem.finder'] = function($c) {
+            return $c['sources.fileSystem'];
+        };
+        
         $this['hydrator'] = function($c) {
-            $hydrator = new Hydrator($c['sources.fileSystem'], $c['distFiles.suffix'], $c['configuration']);
+            $hydrator = new Hydrator($c['sources.fileSystem'], $c['configuration'], $c['finder']);
 
-            $hydrator->setLogger($c['logger']);
+            $hydrator->setLogger($c['logger'])
+                ->setSuffix($c['distFiles.suffix']);
             
             return $hydrator;
         };
         
-        $this['rollback'] = function($c) {
-            $r = new Rollback($c['sources.fileSystem']);
-            $r->setSuffix( $c['distFiles.suffix'])
-                ->setLogger($c['logger']);
-
-            return $r;
+        $this['finder.cache.path'] = self::FINDER_CACHE_DIRECTORY;
+        $this['finder.cache.duration'] = self::FINDER_CACHE_DURATION;
+        
+        $this['finder'] = function($c) {
+            return new Finder($this['sources.fileSystem.finder']);
+        };
+        
+        $this['finder.cache.adapter'] = function($c) {
+            return new Local($c['finder.cache.path'], true);
+        };
+        
+        $this['sources.fileSystem.cached'] = function($c) {
+            $cache = $c['finder.cache.adapter'];
+            $adapter = new Cache(
+                $c['sources.fileSystem.adapter'],
+                $cache,
+                $c['finder.cache.duration'],
+                $cache
+            );
+            
+            return new Filesystem($adapter);
         };
     }
 }

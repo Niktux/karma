@@ -1,11 +1,16 @@
 <?php
 
-use Karma\Rollback;
 use Gaufrette\Filesystem;
 use Gaufrette\Adapter\InMemory;
+use Karma\Hydrator;
+use Karma\Configuration\Reader;
+use Karma\Finder;
 
 class RollbackTest extends PHPUnit_Framework_TestCase
 {
+    private
+        $rollback;
+    
     protected function setUp()
     {
         $this->fs = new Filesystem(new InMemory());
@@ -35,14 +40,16 @@ class RollbackTest extends PHPUnit_Framework_TestCase
         $this->write('subdir/s.php-dist', 's');
         $this->write('subdir/s.php', 's');
         $this->write('subdir/s.php~', 'old_s');
+        
+        $reader = new Reader(array(), array());
+        $this->rollback = new Hydrator($this->fs, $reader, new Finder($this->fs));
     }
     
     public function testRollback()
     {
-        $r = new Rollback($this->fs);
-        
-        $r->setSuffix('-dist')
-            ->exec();
+        $this->rollback
+            ->setSuffix('-dist')
+            ->rollback();
         
         $shouldExists = array(
             'a.php-dist' => 'a',
@@ -86,11 +93,10 @@ class RollbackTest extends PHPUnit_Framework_TestCase
     
     public function testDryRun()
     {
-        $r = new Rollback($this->fs);
-    
-        $r->setSuffix('-dist')
+        $this->rollback
+            ->setSuffix('-dist')
             ->setDryRun()
-            ->exec();
+            ->rollback();
     
         $shouldExists = array(
             'a.php-dist' => 'a',

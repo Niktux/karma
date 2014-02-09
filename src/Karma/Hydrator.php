@@ -14,19 +14,28 @@ class Hydrator
         $suffix,
         $reader,
         $dryRun,
-        $enableBackup;
+        $enableBackup,
+        $finder;
     
-    public function __construct(Filesystem $sources, $suffix, Configuration $reader)
+    public function __construct(Filesystem $sources, Configuration $reader, Finder $finder)
     {
         $this->logger = new NullLogger();
         
         $this->sources = $sources;
-        $this->suffix = $suffix;
         $this->reader = $reader;
+        $this->finder = $finder;
         
+        $this->suffix = Application::DEFAULT_DISTFILE_SUFFIX;
         $this->dryRun = false;
         $this->enableBackup = false;
     }
+
+    public function setSuffix($suffix)
+    {
+        $this->suffix = $suffix;
+    
+        return $this;
+    }    
     
     public function setDryRun($value = true)
     {
@@ -59,9 +68,7 @@ class Hydrator
     
     private function collectDistFiles()
     {
-        $finder = new Finder($this->sources);
-        
-        return $finder->findFiles($this->suffix);
+        return $this->finder->findFiles($this->suffix);
     }
     
     private function hydrateFile($file, $environment)
@@ -101,6 +108,35 @@ class Hydrator
             {
                 $backupFile = $targetFile . Application::BACKUP_SUFFIX;
                 $this->sources->write($backupFile, $this->sources->read($targetFile), true);
+            }
+        }
+    }
+    
+    public function rollback()
+    {
+        $distFiles = $this->collectDistFiles();
+    
+        foreach($distFiles as $file)
+        {
+            $this->rollbackFile($file);
+        }
+    }
+    
+    private function rollbackFile($file)
+    {
+        $this->debug("- $file");
+    
+        $targetFile = substr($file, 0, strlen($this->suffix) * -1);
+        $backupFile = $targetFile . Application::BACKUP_SUFFIX;
+    
+        if($this->sources->has($backupFile))
+        {
+            $this->info("  Writing $targetFile");
+    
+            if($this->dryRun === false)
+            {
+                $backupContent = $this->sources->read($backupFile);
+                $this->sources->write($targetFile, $backupContent, true);
             }
         }
     }
