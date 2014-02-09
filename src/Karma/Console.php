@@ -2,6 +2,8 @@
 
 namespace Karma;
 
+use Karma\VCS\Git;
+
 class Console
 {
     private
@@ -15,7 +17,9 @@ class Console
         $this->app->add(new Command\Display($dic));
         $this->app->add(new Command\Diff($dic));
         $this->app->add(new Command\Rollback($dic));
-        $this->app->add(new Command\VCS($dic));
+        
+        $git = new Git(getcwd());
+        $this->app->add(new Command\VCS($dic, $git));
     }
         
     public function run()

@@ -5,10 +5,20 @@ namespace Karma\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Karma\Command;
-use GitWrapper\GitWrapper;
+use Karma\Application;
 
 class VCS extends Command
 {
+    private
+        $vcs;
+    
+    public function __construct(Application $app, \Karma\VCS\Vcs $vcs)
+    {
+        parent::__construct($app);
+        
+        $this->vcs = $vcs;
+    }
+    
     protected function configure()
     {
         parent::configure();
@@ -22,10 +32,9 @@ class VCS extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         parent::execute($input, $output);
+
+        $result = $this->vcs->isTracked('src/Karma/Finder.php');
         
-        $wrapper = new GitWrapper();
-        $git = $wrapper->workingCopy(getcwd());
-        
-        $output->writeln($git->getStatus());
+        var_dump($result);
     }
 }
