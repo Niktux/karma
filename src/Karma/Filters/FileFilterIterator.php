@@ -2,23 +2,23 @@
 
 namespace Karma\Filters;
 
-class FileSuffixFilterIterator extends \FilterIterator implements \Countable
+class FileFilterIterator extends \FilterIterator implements \Countable
 {
     private
-        $suffix;
+        $regex;
     
-    public function __construct(\Iterator $iterator, $suffix)
+    public function __construct(\Iterator $iterator, $regex)
     {
         parent::__construct($iterator);
         
-        $this->suffix = $suffix;
+        $this->regex = $regex;
     }        
     
     public function accept()
     {
         $filename = $this->getInnerIterator()->current();
         
-        return is_string($filename) && preg_match("~$this->suffix$~", $filename);
+        return is_string($filename) && preg_match($this->regex, $filename);
     }
     
     public function count()

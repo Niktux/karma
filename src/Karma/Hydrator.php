@@ -68,7 +68,7 @@ class Hydrator
     
     private function collectDistFiles()
     {
-        return $this->finder->findFiles($this->suffix);
+        return $this->finder->findFiles("~$this->suffix$~");
     }
     
     private function hydrateFile($file, $environment)

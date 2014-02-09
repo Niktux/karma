@@ -3,7 +3,7 @@
 namespace Karma;
 
 use Gaufrette\Filesystem;
-use Karma\Filters\FileSuffixFilterIterator;
+use Karma\Filters\FileFilterIterator;
 
 class Finder
 {
@@ -15,11 +15,11 @@ class Finder
         $this->fs = $fs;
     }
     
-    public function findFiles($suffix)
+    public function findFiles($regex)
     {
-        return new FileSuffixFilterIterator(
+        return new FileFilterIterator(
             new \ArrayIterator($this->fs->keys()),
-            $suffix
+            $regex
         );
     }
 }
