@@ -12,11 +12,11 @@ class VCS extends Command
     private
         $vcs;
     
-    public function __construct(Application $app, \Karma\VCS\Vcs $vcs)
+    public function __construct(Application $app)
     {
         parent::__construct($app);
         
-        $this->vcs = $vcs;
+        $this->vcs = $app['git'];
     }
     
     protected function configure()

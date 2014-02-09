@@ -7,6 +7,7 @@ use Karma\Configuration\Parser;
 use Gaufrette\Filesystem;
 use Gaufrette\Adapter\Local;
 use Gaufrette\Adapter\Cache;
+use Karma\VCS\Git;
 
 class Application extends \Pimple
 {
@@ -29,6 +30,7 @@ class Application extends \Pimple
         $this->initializeProfile();
         $this->initializeFinder();
         $this->initializeSourceFileSystem();
+        $this->initializeVcs();
         
         $this->initializeServices();
     }
@@ -124,6 +126,23 @@ class Application extends \Pimple
         
         $this['finder.cache.adapter'] = function($c) {
             return new Local($c['finder.cache.path'], true);
+        };
+    }
+    
+    private function initializeVcs()
+    {
+        $this['rootPath'] = getcwd();
+        
+        $this['vcs.fileSystem.adapter'] = function($c) {
+            return new Local($c['rootPath']);
+        };
+        
+        $this['vcs.fileSystem'] = function($c) {
+            return new Filesystem($c['vcs.fileSystem.adapter']);
+        };
+        
+        $this['git'] = function($c) {
+            return new Git($this['vcs.fileSystem'], $this['rootPath']);    
         };
     }
     

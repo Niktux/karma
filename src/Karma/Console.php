@@ -17,9 +17,7 @@ class Console
         $this->app->add(new Command\Display($dic));
         $this->app->add(new Command\Diff($dic));
         $this->app->add(new Command\Rollback($dic));
-        
-        $git = new Git(getcwd());
-        $this->app->add(new Command\VCS($dic, $git));
+        $this->app->add(new Command\VCS($dic));
     }
         
     public function run()

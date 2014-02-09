@@ -3,19 +3,22 @@
 namespace Karma\VCS;
 
 use GitWrapper\GitWrapper;
+use Gaufrette\Filesystem;
 
 class Git implements Vcs
 {
     private
         $git,
+        $fs,
         $rootDirectory,
         $trackedFiles;
     
-    public function __construct($rootDirectory)
+    public function __construct(Filesystem $fs, $rootDirectory)
     {
         $wrapper = new GitWrapper();
         $this->git = $wrapper->workingCopy($rootDirectory);
         
+        $this->fs = $fs;
         $this->rootDirectory = $rootDirectory;
         $this->trackedFiles = null;
     }
