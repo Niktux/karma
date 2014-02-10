@@ -18,7 +18,7 @@ class VCS extends Command
         $this
             ->setName('vcs')
             ->setDescription('')
-            ->addArgument('sourcePath', InputArgument::REQUIRED, 'source path to hydrate')
+            ->addArgument('sourcePath', InputArgument::REQUIRED, 'source path')
             ->addOption('suffix', null, InputOption::VALUE_REQUIRED, 'File suffix', null)
         ;
     }
