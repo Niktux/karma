@@ -41,11 +41,13 @@ class VcsHandler
             
             if($this->vcs->isTracked($targetFile))
             {
+                $this->logger->info("Untrack $targetFile");
                 $this->vcs->untrackFile($targetFile);
             }
             
             if($this->vcs->isIgnored($targetFile) === false)
             {
+                $this->logger->info("Ignore $targetFile");
                 $this->vcs->ignoreFile($targetFile);
             }
         }
