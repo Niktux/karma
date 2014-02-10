@@ -2,8 +2,6 @@
 
 namespace Karma;
 
-use Karma\VCS\Git;
-
 class Console
 {
     private
