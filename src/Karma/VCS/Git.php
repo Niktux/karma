@@ -46,7 +46,10 @@ class Git implements Vcs
             'ls-files'
         ));
 
-        return explode(PHP_EOL, $output);
+        $lines = explode("\n", $output);
+        array_walk($lines, 'trim');
+        
+        return $lines;
     }
     
     public function untrackFile($filepath)
