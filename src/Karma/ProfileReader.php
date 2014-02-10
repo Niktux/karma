@@ -41,7 +41,7 @@ class ProfileReader
         catch(ParseException $e)
         {
             throw new \RuntimeException(sprintf(
-	           'Error while parsing profile : %s',
+               'Error while parsing profile : %s',
                 $e->getMessage()
             ));            
         }
