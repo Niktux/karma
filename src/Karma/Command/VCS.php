@@ -32,11 +32,7 @@ class VCS extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         parent::execute($input, $output);
-
-        $filepath = 'src/Karma/Finder.php';
-        $result = $this->vcs->isTracked($filepath);
-        var_dump($result);
         
-        $this->vcs->isIgnored($filepath);
+        // TODO
     }
 }
