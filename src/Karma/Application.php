@@ -7,7 +7,9 @@ use Karma\Configuration\Parser;
 use Gaufrette\Filesystem;
 use Gaufrette\Adapter\Local;
 use Gaufrette\Adapter\Cache;
+use Karma\VCS\Vcs;
 use Karma\VCS\Git;
+use Karma\VCS\Git\GitWrapperAdapter;
 
 class Application extends \Pimple
 {
@@ -141,9 +143,22 @@ class Application extends \Pimple
             return new Filesystem($c['vcs.fileSystem.adapter']);
         };
         
-        $this['git'] = function($c) {
-            return new Git($this['vcs.fileSystem'], $this['rootPath']);    
+        $this['git.command'] = function($c) {
+            return new GitWrapperAdapter();
         };
+        
+        $this['git'] = function($c) {
+            return new Git($this['vcs.fileSystem'], $this['rootPath'], $this['git.command']);    
+        };
+        
+        $this['vcsHandler'] = $this->protect(function (Vcs $vcs) {
+            $handler = new VcsHandler($vcs, $this['finder']);
+
+            $handler->setLogger($this['logger'])
+                ->setSuffix($this['distFiles.suffix']);
+            
+            return $handler;
+        });
     }
     
     private function initializeServices()
