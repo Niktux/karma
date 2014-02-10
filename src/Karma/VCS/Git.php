@@ -4,7 +4,6 @@ namespace Karma\VCS;
 
 use Gaufrette\Filesystem;
 use Karma\Finder;
-use Gaufrette\Adapter\iterator_to_array;
 
 class Git implements Vcs
 {

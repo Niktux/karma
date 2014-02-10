@@ -4,7 +4,6 @@ namespace Karma;
 
 use Karma\VCS\Vcs;
 use Psr\Log\NullLogger;
-use Gaufrette\Adapter\iterator_to_array;
 
 class VcsHandler
 {
@@ -30,14 +29,16 @@ class VcsHandler
         return $this;
     }
 
-    public function execute()
+    public function execute($rootPath = '.')
     {
+        $rootPath = $this->sanitizeDirectory($rootPath);
+        
         $it = $this->finder->findFiles("~$this->suffix$~");
         $suffixLength = strlen($this->suffix);
         
         foreach($it as $distFile)
         {
-            $targetFile = substr($distFile, 0, $suffixLength * -1);
+            $targetFile = $rootPath . substr($distFile, 0, $suffixLength * -1);
             
             if($this->vcs->isTracked($targetFile))
             {
@@ -51,5 +52,23 @@ class VcsHandler
                 $this->vcs->ignoreFile($targetFile);
             }
         }
+    }
+    
+    private function sanitizeDirectory($rootPath)
+    {
+        $directorySeparator = '/';
+        $rootPath = rtrim($rootPath, $directorySeparator);
+
+        if($rootPath === '.')
+        {
+            $rootPath = '';
+        }
+        
+        if(! empty($rootPath))
+        {
+            $rootPath .= $directorySeparator;
+        }
+        
+        return $rootPath;
     }
 }

@@ -151,6 +151,8 @@ class Application extends \Pimple
             return new Git($this['vcs.fileSystem'], $this['rootPath'], $this['git.command']);    
         };
         
+        $this['vcs'] = $this['git'];
+        
         $this['vcsHandler'] = $this->protect(function (Vcs $vcs) {
             $handler = new VcsHandler($vcs, $this['finder']);
 

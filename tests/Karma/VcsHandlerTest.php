@@ -32,20 +32,42 @@ class VcsHandlerTest extends PHPUnit_Framework_TestCase
     
     public function testExecute()
     {
-        $this->handler->execute();
+        $this->handler->execute('root');
+        
+        $expectedUntrackedFiles = array(
+            'root/some/path/to/tracked.yml',
+            'root/trackedAndIgnored.yml'
+        );
+        $this->assertSameArrayExceptOrder($expectedUntrackedFiles, $this->vcs->getUntrackedFiles());
+        
+        $expectedIgnoredFiles = array(
+        	'root/a.yml',
+        	'root/path/to/b.yml',
+        	'root/some/path/to/tracked.yml',
+        );
+        $this->assertSameArrayExceptOrder($expectedIgnoredFiles, $this->vcs->getIgnoredFiles());
+    }
+    
+    public function testRootDirIsDot()
+    {
+        $this->handler->execute('.');
         
         $expectedUntrackedFiles = array(
             'some/path/to/tracked.yml',
             'trackedAndIgnored.yml'
         );
         $this->assertSameArrayExceptOrder($expectedUntrackedFiles, $this->vcs->getUntrackedFiles());
+    }
+    
+    public function testRootDirIsEmpty()
+    {
+        $this->handler->execute('');
         
-        $expectedIgnoredFiles = array(
-        	'a.yml',
-        	'path/to/b.yml',
-        	'some/path/to/tracked.yml',
+        $expectedUntrackedFiles = array(
+            'some/path/to/tracked.yml',
+            'trackedAndIgnored.yml'
         );
-        $this->assertSameArrayExceptOrder($expectedIgnoredFiles, $this->vcs->getIgnoredFiles());
+        $this->assertSameArrayExceptOrder($expectedUntrackedFiles, $this->vcs->getUntrackedFiles());
     }
     
     private function assertSameArrayExceptOrder(array $expected, array $values)
