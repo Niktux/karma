@@ -16,7 +16,7 @@ class VCS extends Command
     {
         parent::__construct($app);
         
-        $this->vcs = $app['git'];
+        $this->vcs = $app['vcsHandler'];
     }
     
     protected function configure()
@@ -33,6 +33,6 @@ class VCS extends Command
     {
         parent::execute($input, $output);
         
-        // TODO
+        $this->vcs->execute();
     }
 }
