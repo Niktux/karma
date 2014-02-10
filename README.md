@@ -22,7 +22,7 @@ Use composer :
 ```json
 {
     "require": {
-		    "niktux/karma" : "1.2.0"
+		    "niktux/karma" : "1.3.*"
     }
 }
 ```
@@ -89,7 +89,7 @@ Commands
 To come : 
 * **check** : exec some sanity checks
 
-All commands are these options : 
+All commands have these options : 
 * *confDir* : directory where conf files are stored (default : conf/)
 * *master* : first configuration file to parse (default : master.conf)
 
@@ -192,56 +192,5 @@ Diff between dev and prod
 | db.user      | root      | <external> |
 |---------------------------------------|
 ```
-
-Configuration files syntax
---------------------------
-TODO
-(includes, default fallback, managing different env, external values, ...)
-
-While this documentation section is not written, please read this full example : 
-
-master.conf
-````
-[includes]
-db.conf
-subdir/other.conf
-
-[variables]
-var1:
-    dev = value1
-    staging, preprod = value2
-    prod = value3
-    default = value4
-    
-var2:
-    preprod, prod = valA
-    default = valB
-```
-
-db.conf
-````
-[externals]
-secured.conf
-
-[variables]
-db.user:
-    prod = <external>
-    default = root
-    
-db.password:
-    prod = <external>
-    default = 
-```
-
-secured.conf
-````
-[variables]
-db.user:
-    prod = sqluser
-
-db.password:
-    prod = ThisIsASecretData
-```
-
 
 
