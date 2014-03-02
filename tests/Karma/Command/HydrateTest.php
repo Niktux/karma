@@ -13,7 +13,7 @@ class HydrateTest extends CommandTestCase
         parent::setUp();
         
         $this->app['sources.fileSystem.adapter'] = new InMemory(array(
-        	'src/file' => '',
+            'src/file' => '',
         ));
     }
     
@@ -42,8 +42,8 @@ class HydrateTest extends CommandTestCase
     public function providerTestOptions()
     {
         return array(
-        	array('--dry-run', 'setDryRun'),
-        	array('--backup', 'enableBackup'),
+            array('--dry-run', 'setDryRun'),
+            array('--backup', 'enableBackup'),
         );
     }
     
