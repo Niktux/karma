@@ -67,12 +67,12 @@ class Application extends \Pimple
             return $parser;
         };
         
-        $this['configuration'] = function($c) {
+        $this['configuration'] = $this->share(function($c) {
             $parser = $c['parser'];
             $variables = $parser->parse($c['configuration.masterFile']);
             
             return new Reader($variables, $parser->getExternalVariables());    
-        };
+        });
     }
     
     private function initializeProfile()

@@ -70,4 +70,36 @@ class HydrateTest extends CommandTestCase
         
         $this->assertNotEmpty($cache->keys());
     }
+    
+    public function testOverride()
+    {
+        $this->runCommand('hydrate', array(
+            '--override' => 'db.user=toto',
+            'sourcePath' => 'src/',
+        ));
+        
+        $this->assertDisplay('~Set db.user with value toto~');
+    }
+    
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testDuplicatedOverrideOption()
+    {
+        $this->runCommand('hydrate', array(
+            '--override' => array('db.user=toto', 'other=value', 'db.user=tata'),
+            'sourcePath' => 'src/',
+        ));
+    }
+    
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testInvalidOverrideOption()
+    {
+        $this->runCommand('hydrate', array(
+            '--override' => 'db.user:tata',
+            'sourcePath' => 'src/',
+        ));
+    }
 }
