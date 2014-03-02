@@ -20,7 +20,7 @@ class InMemoryReader implements Configuration
     
     public function read($variable, $environment = null)
     {
-        if(isset($this->overridenVariables[$variable]))
+        if(array_key_exists($variable, $this->overridenVariables))
         {
             return $this->overridenVariables[$variable];
         }
