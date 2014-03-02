@@ -14,13 +14,15 @@ class Reader implements Configuration
     private
         $defaultEnvironment,
         $variables,
-        $externalReader;
+        $externalReader,
+        $overridenVariables;
     
     public function __construct(array $variables, array $externalVariables)
     {
         $this->defaultEnvironment = self::DEFAULT_VALUE_FOR_ENVIRONMENT_PARAMETER;
         
         $this->variables = $variables;
+        $this->overridenVariables = array();
         
         $this->externalReader = null;
         if(! empty($externalVariables))
@@ -41,6 +43,11 @@ class Reader implements Configuration
     
     public function read($variable, $environment = null)
     {
+        if(array_key_exists($variable, $this->overridenVariables))
+        {
+            return $this->overridenVariables[$variable];
+        }
+        
         if($environment === null)
         {
             $environment = $this->defaultEnvironment;
@@ -143,5 +150,12 @@ class Reader implements Configuration
         }
         
         return $diff;
+    }
+    
+    public function overrideVariable($variable, $value)
+    {
+        $this->overridenVariables[$variable] = $value;
+
+        return $this;
     }
 }

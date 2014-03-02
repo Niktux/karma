@@ -350,4 +350,49 @@ CONFFILE;
         $reader = new Reader($variables, $parser->getExternalVariables());
         $reader->read('v1', 'prod');
     }
+    
+    public function testOverrideVariable()
+    {
+        $environment = 'prod';
+        
+        $this->assertSame(false, $this->reader->read('print_errors', $environment));
+        $this->assertSame(false, $this->reader->read('debug', $environment));
+        $this->assertSame(0, $this->reader->read('gourdin', $environment));
+        
+        $this->reader->overrideVariable('debug', true);
+        
+        $this->assertSame(false, $this->reader->read('print_errors', $environment));
+        $this->assertSame(true, $this->reader->read('debug', $environment), 'read() must return the overriden value');
+        $this->assertSame(0, $this->reader->read('gourdin', $environment));
+        
+        $this->reader->overrideVariable('print_errors', true);
+        $this->reader->overrideVariable('debug', null);
+        
+        $this->assertSame(true, $this->reader->read('print_errors', $environment), 'read() must return the overriden value');
+        $this->assertSame(null, $this->reader->read('debug', $environment), 'read() must return the overriden value');
+        $this->assertSame(0, $this->reader->read('gourdin', $environment));
+    }
+    
+    public function testOverrideUnknownVariable()
+    {
+        $environment = 'prod';
+        $variable = 'UNKNOWN';
+        $value = 'some Value';
+        
+        $exceptionRaised = false;
+        
+        try
+        {
+            $this->reader->read($variable, $environment);
+        }       
+        catch(\RuntimeException $e)
+        {
+            $exceptionRaised = true;
+        }
+        
+        $this->assertTrue($exceptionRaised, 'An exception must be raised when reading unknown variable');
+        
+        $this->reader->overrideVariable($variable, $value);
+        $this->assertSame($value, $this->reader->read($variable, $environment), 'Read an overriden unknown variable must not raise an exception');
+    }
 }

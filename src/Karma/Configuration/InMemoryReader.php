@@ -8,16 +8,23 @@ class InMemoryReader implements Configuration
 {
     private
         $defaultEnvironment,
-        $values;
+        $values,
+        $overridenVariables;
     
     public function __construct(array $values = array())
     {
         $this->defaultEnvironment = 'dev';
         $this->values = $values;
+        $this->overridenVariables = array();
     }
     
     public function read($variable, $environment = null)
     {
+        if(array_key_exists($variable, $this->overridenVariables))
+        {
+            return $this->overridenVariables[$variable];
+        }
+        
         if($environment === null)
         {
             $environment = $this->defaultEnvironment;
@@ -61,5 +68,12 @@ class InMemoryReader implements Configuration
         }    
         
         return $result;
+    }
+    
+    public function overrideVariable($variable, $value)
+    {
+        $this->overridenVariables[$variable] = $value;
+
+        return $this;
     }
 }

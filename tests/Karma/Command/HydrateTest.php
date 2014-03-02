@@ -13,7 +13,7 @@ class HydrateTest extends CommandTestCase
         parent::setUp();
         
         $this->app['sources.fileSystem.adapter'] = new InMemory(array(
-        	'src/file' => '',
+            'src/file' => '',
         ));
     }
     
@@ -42,8 +42,8 @@ class HydrateTest extends CommandTestCase
     public function providerTestOptions()
     {
         return array(
-        	array('--dry-run', 'setDryRun'),
-        	array('--backup', 'enableBackup'),
+            array('--dry-run', 'setDryRun'),
+            array('--backup', 'enableBackup'),
         );
     }
     
@@ -69,5 +69,38 @@ class HydrateTest extends CommandTestCase
         ));
         
         $this->assertNotEmpty($cache->keys());
+    }
+    
+    public function testOverride()
+    {
+        $this->runCommand('hydrate', array(
+            '--override' => array('db.user=toto', 'api.key=azer=ty'),
+            'sourcePath' => 'src/',
+        ));
+        
+        $this->assertDisplay('~Set db.user with value toto~');
+        $this->assertDisplay('~Set api.key with value azer=ty~');
+    }
+    
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testDuplicatedOverrideOption()
+    {
+        $this->runCommand('hydrate', array(
+            '--override' => array('db.user=toto', 'other=value', 'db.user=tata'),
+            'sourcePath' => 'src/',
+        ));
+    }
+    
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testInvalidOverrideOption()
+    {
+        $this->runCommand('hydrate', array(
+            '--override' => 'db.user:tata',
+            'sourcePath' => 'src/',
+        ));
     }
 }
