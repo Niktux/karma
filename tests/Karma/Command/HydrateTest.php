@@ -74,11 +74,12 @@ class HydrateTest extends CommandTestCase
     public function testOverride()
     {
         $this->runCommand('hydrate', array(
-            '--override' => 'db.user=toto',
+            '--override' => array('db.user=toto', 'api.key=azer=ty'),
             'sourcePath' => 'src/',
         ));
         
         $this->assertDisplay('~Set db.user with value toto~');
+        $this->assertDisplay('~Set api.key with value azer=ty~');
     }
     
     /**
