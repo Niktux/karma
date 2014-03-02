@@ -144,4 +144,9 @@ class Reader implements Configuration
         
         return $diff;
     }
+    
+    public function overrideVariable($variable, $value)
+    {
+        
+    }
 }

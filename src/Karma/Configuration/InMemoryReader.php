@@ -62,4 +62,9 @@ class InMemoryReader implements Configuration
         
         return $result;
     }
+    
+    public function overrideVariable($variable, $value)
+    {
+        
+    }
 }

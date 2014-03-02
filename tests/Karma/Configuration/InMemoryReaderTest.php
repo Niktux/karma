@@ -97,4 +97,17 @@ class InMemoryReaderTest extends PHPUnit_Framework_TestCase
             )),
         );
     }
+    
+    public function testOverrideVariable()
+    {
+        $environment = 'dev';
+    
+        $this->assertSame('foodev', $this->reader->read('foo', $environment));
+        $this->assertSame('bardev', $this->reader->read('bar', $environment));
+    
+        $this->reader->overrideVariable('foo', 'foofoo');
+    
+        $this->assertSame('foofoo', $this->reader->read('foo', $environment));
+        $this->assertSame('bardev', $this->reader->read('bar', $environment));
+    }
 }
