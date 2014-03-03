@@ -58,10 +58,7 @@ class Command extends \Symfony\Component\Console\Command\Command
         
         $this->app['configuration.path']       = $confDir;
         $this->app['configuration.masterFile'] = $masterFile;
-        
-        $this->app['logger'] = $this->app->factory(function($c) use($output) {
-            return new OutputInterfaceAdapter($output);
-        });
+        $this->app['logger'] = new OutputInterfaceAdapter($output);
         
         if($input->getOption('cache'))
         {
@@ -71,9 +68,7 @@ class Command extends \Symfony\Component\Console\Command\Command
     
     private function enableFinderCache()
     {
-        $this->app['sources.fileSystem.finder'] = $this->app->factory(function ($c) {
-            return $c['sources.fileSystem.cached'];
-        });
+        $this->app['sources.fileSystem.finder'] = $this->app['sources.fileSystem.cached'];
     }
     
     protected function formatValue($value)

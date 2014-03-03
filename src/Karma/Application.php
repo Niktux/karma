@@ -68,12 +68,12 @@ class Application extends \Pimple
             return $parser;
         };
         
-        $this['configuration'] = function($c) {
+        $this['configuration'] = $this->share(function($c) {
             $parser = $c['parser'];
             $variables = $parser->parse($c['configuration.masterFile']);
             
             return new Reader($variables, $parser->getExternalVariables());    
-        };
+        });
     }
     
     private function initializeProfile()
@@ -86,9 +86,9 @@ class Application extends \Pimple
             return new Filesystem($c['profile.fileSystem.adapter']);    
         };
         
-        $this['profile'] = function($c) {
+        $this['profile'] = $this->share(function($c) {
             return new ProfileReader($c['profile.fileSystem']);
-        };
+        });
     }
     
     private function initializeSourceFileSystem()
@@ -101,9 +101,9 @@ class Application extends \Pimple
             return new Filesystem($c['sources.fileSystem.adapter']);
         };
         
-        $this['sources.fileSystem.finder'] = $this->factory(function($c) {
+        $this['sources.fileSystem.finder'] = function($c) {
             return $c['sources.fileSystem'];
-        });
+        };
         
         $this['sources.fileSystem.cached'] = function($c) {
             $cache = $c['finder.cache.adapter'];
@@ -123,9 +123,9 @@ class Application extends \Pimple
         $this['finder.cache.path'] = self::FINDER_CACHE_DIRECTORY;
         $this['finder.cache.duration'] = self::FINDER_CACHE_DURATION;
         
-        $this['finder'] = $this->factory(function($c) {
+        $this['finder'] = function($c) {
             return new Finder($this['sources.fileSystem.finder']);
-        });
+        };
         
         $this['finder.cache.adapter'] = function($c) {
             return new Local($c['finder.cache.path'], true);
@@ -166,17 +166,17 @@ class Application extends \Pimple
     
     private function initializeServices()
     {
-        $this['logger'] = $this->factory(function($c) {
+        $this['logger'] = $this->share(function($c) {
             return new \Psr\Log\NullLogger();    
         });
         
-        $this['hydrator'] = $this->factory(function($c) {
+        $this['hydrator'] = function($c) {
             $hydrator = new Hydrator($c['sources.fileSystem'], $c['configuration'], $c['finder']);
 
             $hydrator->setLogger($c['logger'])
                 ->setSuffix($c['distFiles.suffix']);
             
             return $hydrator;
-        });
+        };
     }
 }
