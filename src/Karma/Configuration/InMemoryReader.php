@@ -9,16 +9,25 @@ class InMemoryReader implements Configuration
     private
         $defaultEnvironment,
         $values,
-        $overridenVariables;
+        $overridenVariables,
+        $customData;
     
     public function __construct(array $values = array())
     {
         $this->defaultEnvironment = 'dev';
         $this->values = $values;
         $this->overridenVariables = array();
+        $this->customData = array();
     }
     
     public function read($variable, $environment = null)
+    {
+        $value = $this->readRaw($variable, $environment);
+        
+        return $this->handleCustomData($value);
+    }
+    
+    private function readRaw($variable, $environment = null)
     {
         if(array_key_exists($variable, $this->overridenVariables))
         {
@@ -75,5 +84,23 @@ class InMemoryReader implements Configuration
         $this->overridenVariables[$variable] = $value;
 
         return $this;
+    }
+    
+    public function setCustomData($customDataName, $value)
+    {
+        $key = '${' . $customDataName . '}';
+        $this->customData[$key] = $value;
+        
+        return $this;
+    }
+    
+    private function handleCustomData($value)
+    {
+        if(! is_string($value))
+        {
+            return $value;
+        }
+        
+        return strtr($value, $this->customData);
     }
 }

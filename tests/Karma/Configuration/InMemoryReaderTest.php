@@ -115,4 +115,32 @@ class InMemoryReaderTest extends PHPUnit_Framework_TestCase
         $this->assertSame('foofoo', $this->reader->read('foo', $environment));
         $this->assertSame(null, $this->reader->read('bar', $environment));
     }
+    
+    public function testCustomData()
+    {
+        $var = 'param';
+        
+        $reader = new InMemoryReader(array(
+            'param:dev' => '${param}',
+            'param:staging' => 'Some${nested}param',
+        ));
+        
+        $this->assertSame('${param}', $reader->read($var, 'dev'));
+        $this->assertSame('Some${nested}param', $reader->read($var, 'staging'));
+        
+        $reader->setCustomData('PARAM', 'caseSensitive');
+        
+        $this->assertSame('${param}', $reader->read($var, 'dev'));
+        $this->assertSame('Some${nested}param', $reader->read($var, 'staging'));
+        
+        $reader->setCustomData('param', 'foobar');
+        
+        $this->assertSame('foobar', $reader->read($var, 'dev'));
+        $this->assertSame('Some${nested}param', $reader->read($var, 'staging'));
+         
+        $reader->setCustomData('nested', 'Base');
+        
+        $this->assertSame('foobar', $reader->read($var, 'dev'));
+        $this->assertSame('SomeBaseparam', $reader->read($var, 'staging'));
+    }
 }

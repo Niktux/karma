@@ -15,7 +15,8 @@ class Reader implements Configuration
         $defaultEnvironment,
         $variables,
         $externalReader,
-        $overridenVariables;
+        $overridenVariables,
+        $customData;
     
     public function __construct(array $variables, array $externalVariables)
     {
@@ -23,6 +24,7 @@ class Reader implements Configuration
         
         $this->variables = $variables;
         $this->overridenVariables = array();
+        $this->customData = array();
         
         $this->externalReader = null;
         if(! empty($externalVariables))
@@ -42,6 +44,13 @@ class Reader implements Configuration
     }
     
     public function read($variable, $environment = null)
+    {
+        $value = $this->readRaw($variable, $environment);
+        
+        return $this->handleCustomData($value);
+    }
+    
+    private function readRaw($variable, $environment = null)
     {
         if(array_key_exists($variable, $this->overridenVariables))
         {
@@ -157,5 +166,23 @@ class Reader implements Configuration
         $this->overridenVariables[$variable] = $value;
 
         return $this;
+    }
+    
+    public function setCustomData($customDataName, $value)
+    {
+        $key = '${' . $customDataName . '}';
+        $this->customData[$key] = $value;
+    
+        return $this;
+    }
+    
+    private function handleCustomData($value)
+    {
+        if(! is_string($value))
+        {
+            return $value;
+        }
+    
+        return strtr($value, $this->customData);
     }
 }
