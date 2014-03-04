@@ -28,11 +28,11 @@ class Hydrate extends Command
             
             ->addArgument('sourcePath', InputArgument::REQUIRED, 'source path to hydrate')
             
-            ->addOption('env', null, InputOption::VALUE_REQUIRED, 'Target environment', self::ENV_DEV)
+            ->addOption('env', 'e', InputOption::VALUE_REQUIRED, 'Target environment', self::ENV_DEV)
             ->addOption('suffix', null, InputOption::VALUE_REQUIRED, 'File suffix', null)
             ->addOption('dry-run', null, InputOption::VALUE_NONE, 'Simulation mode')
-            ->addOption('backup', null, InputOption::VALUE_NONE, 'Backup overwritten files')
-            ->addOption('override', null, InputOption::VALUE_IS_ARRAY | InputOption::VALUE_REQUIRED, 'Override variable values', array())
+            ->addOption('backup', 'b', InputOption::VALUE_NONE, 'Backup overwritten files')
+            ->addOption('override', 'o', InputOption::VALUE_IS_ARRAY | InputOption::VALUE_REQUIRED, 'Override variable values', array())
         ;
     }
     

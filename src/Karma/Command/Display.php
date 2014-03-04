@@ -23,8 +23,8 @@ class Display extends Command
             ->setName('display')
             ->setDescription('Display environment variable set')
             
-            ->addOption('env', null, InputOption::VALUE_REQUIRED, 'Target environment', self::ENV_DEV)
-            ->addOption('value', null, InputOption::VALUE_REQUIRED, 'Display only variable with this value', self::NO_FILTERING)
+            ->addOption('env', 'e', InputOption::VALUE_REQUIRED, 'Target environment', self::ENV_DEV)
+            ->addOption('value', 'f', InputOption::VALUE_REQUIRED, 'Display only variable with this value', self::NO_FILTERING)
         ;
     }
     
