@@ -16,7 +16,7 @@ class Hydrate extends Command
     
     const
         ENV_DEV = 'dev',
-        OVERRIDE_OPTION_ASSIGNMENT = '=';
+        OPTION_ASSIGNMENT = '=';
     
     protected function configure()
     {
@@ -33,6 +33,7 @@ class Hydrate extends Command
             ->addOption('dry-run', null, InputOption::VALUE_NONE, 'Simulation mode')
             ->addOption('backup', 'b', InputOption::VALUE_NONE, 'Backup overwritten files')
             ->addOption('override', 'o', InputOption::VALUE_IS_ARRAY | InputOption::VALUE_REQUIRED, 'Override variable values', array())
+            ->addOption('data', 'd', InputOption::VALUE_IS_ARRAY | InputOption::VALUE_REQUIRED, 'Custom data values', array())
         ;
     }
     
@@ -64,6 +65,7 @@ class Hydrate extends Command
         $this->app['distFiles.suffix'] = $suffix;
         
         $this->overrideValues($input);
+        $this->setCustomData($input);
         
         $hydrator = $this->app['hydrator'];
         
@@ -94,15 +96,15 @@ class Hydrate extends Command
         $overrides = array();
         foreach($overrideStrings as $overrideString)
         {
-            if(stripos($overrideString, self::OVERRIDE_OPTION_ASSIGNMENT) === false)
+            if(stripos($overrideString, self::OPTION_ASSIGNMENT) === false)
             {
                 throw new \InvalidArgumentException(sprintf(
                     'override option must contain %c : --override <variable>=<value>',
-                    self::OVERRIDE_OPTION_ASSIGNMENT                        
+                    self::OPTION_ASSIGNMENT                        
                 ));    
             }
 
-            list($variable, $value) = explode(self::OVERRIDE_OPTION_ASSIGNMENT, $overrideString, 2);
+            list($variable, $value) = explode(self::OPTION_ASSIGNMENT, $overrideString, 2);
             
             if(array_key_exists($variable, $overrides))
             {
@@ -113,6 +115,39 @@ class Hydrate extends Command
         }
         
         $this->processOverridenVariables($overrides);
+    }
+    
+    private function setCustomData(InputInterface $input)
+    {
+        $dataStrings = $input->getOption('data');
+
+        if(! is_array($dataStrings))
+        {
+            $dataStrings = array($dataStrings);
+        }
+        
+        $data = array();
+        foreach($dataStrings as $dataString)
+        {
+            if(stripos($dataString, self::OPTION_ASSIGNMENT) === false)
+            {
+                throw new \InvalidArgumentException(sprintf(
+                    'custom data option must contain %c : --data <variable>=<value>',
+                    self::OPTION_ASSIGNMENT                        
+                ));    
+            }
+
+            list($variable, $value) = explode(self::OPTION_ASSIGNMENT, $dataString, 2);
+            
+            if(array_key_exists($variable, $data))
+            {
+                throw new \InvalidArgumentException('Duplicated override variable ' . $variable);    
+            }
+            
+            $data[$variable] = $value;
+        }
+        
+        $this->processCustomData($data);
     }
     
     private function processOverridenVariables(array $overrides)
@@ -128,6 +163,22 @@ class Hydrate extends Command
             ));
             
             $reader->overrideVariable($variable, $this->filterValue($value));
+        }
+    }
+    
+    private function processCustomData(array $data)
+    {
+        $reader = $this->app['configuration'];
+
+        foreach($data as $variable => $value)
+        {
+            $this->output->writeln(sprintf(
+               'Set custom data <option=bold>%s</option=bold> with value <option=bold>%s</option=bold>',
+               $variable,
+               $value
+            ));
+            
+            $reader->setCustomData($variable, $this->filterValue($value));
         }
     }
 }

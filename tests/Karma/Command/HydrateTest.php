@@ -103,4 +103,37 @@ class HydrateTest extends CommandTestCase
             'sourcePath' => 'src/',
         ));
     }
+    
+    public function testCustomData()
+    {
+        $this->runCommand('hydrate', array(
+            '--data' => array('user=jdoe', 'api.key=azer=ty'),
+            'sourcePath' => 'src/',
+        ));
+        
+        $this->assertDisplay('~Set custom data user with value jdoe~');
+        $this->assertDisplay('~Set custom data api.key with value azer=ty~');
+    }
+    
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testDuplicatedCustomData()
+    {
+        $this->runCommand('hydrate', array(
+            '--data' => array('user=toto', 'other=value', 'user=tata'),
+            'sourcePath' => 'src/',
+        ));
+    }
+    
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testInvalidCustomData()
+    {
+        $this->runCommand('hydrate', array(
+            '--data' => 'db.user:tata',
+            'sourcePath' => 'src/',
+        ));
+    }
 }
