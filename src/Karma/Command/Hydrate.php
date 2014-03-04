@@ -64,8 +64,12 @@ class Hydrate extends Command
         $this->app['sources.path']     = $input->getArgument('sourcePath');
         $this->app['distFiles.suffix'] = $suffix;
         
-        $this->overrideValues($input);
-        $this->setCustomData($input);
+        $this->processOverridenVariables(
+            $this->parseOptionWithAssignments($input, 'override')
+        );
+        $this->processCustomData(
+            $this->parseOptionWithAssignments($input, 'data')
+        );
         
         $hydrator = $this->app['hydrator'];
         
@@ -84,70 +88,40 @@ class Hydrate extends Command
         $hydrator->hydrate($environment);
     }
     
-    private function overrideValues(InputInterface $input)
+    private function parseOptionWithAssignments(InputInterface $input, $optionName)
     {
-        $overrideStrings = $input->getOption('override');
+        $strings = $input->getOption($optionName);
 
-        if(! is_array($overrideStrings))
+        if(! is_array($strings))
         {
-            $overrideStrings = array($overrideStrings);
-        }
-        
-        $overrides = array();
-        foreach($overrideStrings as $overrideString)
-        {
-            if(stripos($overrideString, self::OPTION_ASSIGNMENT) === false)
-            {
-                throw new \InvalidArgumentException(sprintf(
-                    'override option must contain %c : --override <variable>=<value>',
-                    self::OPTION_ASSIGNMENT                        
-                ));    
-            }
-
-            list($variable, $value) = explode(self::OPTION_ASSIGNMENT, $overrideString, 2);
-            
-            if(array_key_exists($variable, $overrides))
-            {
-                throw new \InvalidArgumentException('Duplicated override variable ' . $variable);    
-            }
-            
-            $overrides[$variable] = $value;
-        }
-        
-        $this->processOverridenVariables($overrides);
-    }
-    
-    private function setCustomData(InputInterface $input)
-    {
-        $dataStrings = $input->getOption('data');
-
-        if(! is_array($dataStrings))
-        {
-            $dataStrings = array($dataStrings);
+            $strings = array($strings);
         }
         
         $data = array();
-        foreach($dataStrings as $dataString)
+        
+        foreach($strings as $string)
         {
-            if(stripos($dataString, self::OPTION_ASSIGNMENT) === false)
+            if(stripos($string, self::OPTION_ASSIGNMENT) === false)
             {
                 throw new \InvalidArgumentException(sprintf(
-                    'custom data option must contain %c : --data <variable>=<value>',
-                    self::OPTION_ASSIGNMENT                        
+                    '%s option must contain %c : --%s <variable>=<value>',
+                    $optionName,
+                    self::OPTION_ASSIGNMENT,
+                    $optionName                        
                 ));    
             }
 
-            list($variable, $value) = explode(self::OPTION_ASSIGNMENT, $dataString, 2);
+            list($variable, $value) = explode(self::OPTION_ASSIGNMENT, $string, 2);
             
             if(array_key_exists($variable, $data))
             {
-                throw new \InvalidArgumentException('Duplicated override variable ' . $variable);    
+                throw new \InvalidArgumentException("Duplicated %s option value : $variable");    
             }
             
             $data[$variable] = $value;
         }
-        
-        $this->processCustomData($data);
+
+        return $data;
     }
     
     private function processOverridenVariables(array $overrides)
