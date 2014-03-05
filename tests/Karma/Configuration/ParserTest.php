@@ -54,6 +54,9 @@ class ParserTest extends ParserTestCase
             
             array('my.var.with.subnames', 'default', 21),
                         
+            array('param', 'dev', '${param}'),
+            array('param', 'staging', 'Some${nested}param'),
+                        
             // db.conf
             array('user', 'default', 'root'),    
         );    

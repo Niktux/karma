@@ -2,9 +2,7 @@
 
 namespace Karma\Configuration;
 
-use Karma\Configuration;
-
-class Reader implements Configuration
+class Reader extends AbstractReader
 {
     const
         DEFAULT_ENVIRONMENT = 'default',
@@ -12,17 +10,16 @@ class Reader implements Configuration
         EXTERNAL = '<external>';
     
     private
-        $defaultEnvironment,
         $variables,
-        $externalReader,
-        $overridenVariables;
+        $externalReader;
     
     public function __construct(array $variables, array $externalVariables)
     {
+        parent::__construct();
+        
         $this->defaultEnvironment = self::DEFAULT_VALUE_FOR_ENVIRONMENT_PARAMETER;
         
         $this->variables = $variables;
-        $this->overridenVariables = array();
         
         $this->externalReader = null;
         if(! empty($externalVariables))
@@ -31,23 +28,8 @@ class Reader implements Configuration
         }
     }    
     
-    public function setDefaultEnvironment($environment)
+    protected function readRaw($variable, $environment = null)
     {
-        if(! empty($environment) && is_string($environment))
-        {
-            $this->defaultEnvironment = $environment;
-        }
-        
-        return $this;
-    }
-    
-    public function read($variable, $environment = null)
-    {
-        if(array_key_exists($variable, $this->overridenVariables))
-        {
-            return $this->overridenVariables[$variable];
-        }
-        
         if($environment === null)
         {
             $environment = $this->defaultEnvironment;
@@ -109,29 +91,6 @@ class Reader implements Configuration
         return array_keys($this->variables);
     }
     
-    public function getAllValuesForEnvironment($environment = null)
-    {
-        $result = array();
-        
-        $variables = $this->getAllVariables();
-        
-        foreach($variables as $variable)
-        {
-            try
-            {
-                $value = $this->read($variable, $environment);
-            }
-            catch(\RuntimeException $e)
-            {
-                $value = Configuration::NOT_FOUND;
-            }
-        
-            $result[$variable] = $value;
-        }    
-        
-        return $result;
-    }
-    
     public function compareEnvironments($environment1, $environment2)
     {
         $values1 = $this->getAllValuesForEnvironment($environment1);
@@ -150,12 +109,5 @@ class Reader implements Configuration
         }
         
         return $diff;
-    }
-    
-    public function overrideVariable($variable, $value)
-    {
-        $this->overridenVariables[$variable] = $value;
-
-        return $this;
     }
 }

@@ -15,4 +15,6 @@ interface Configuration
     public function getAllValuesForEnvironment($environment = null);
     
     public function overrideVariable($variable, $value);
+    
+    public function setCustomData($customDataName, $value);
 }

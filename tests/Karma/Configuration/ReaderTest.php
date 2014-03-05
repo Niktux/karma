@@ -63,6 +63,9 @@ class ReaderTest extends ParserTestCase
             array('my.var.with.subnames', 'dev', 21),                
             array('my.var.with.subnames', 'default', 21),                
             
+            array('param', 'dev', '${param}'),
+            array('param', 'staging', 'Some${nested}param'),
+                            
             // db.conf
             array('user', 'default', 'root'),    
         );    
@@ -108,7 +111,7 @@ class ReaderTest extends ParserTestCase
         $variables = $this->reader->getAllVariables();
         sort($variables);
         
-        $expected = array('print_errors', 'debug', 'gourdin', 'server', 'tva', 'apiKey', 'my.var.with.subnames', 'user');
+        $expected = array('print_errors', 'debug', 'gourdin', 'server', 'tva', 'apiKey', 'my.var.with.subnames', 'param', 'user');
         sort($expected);
         
         $this->assertSame($expected, $variables);
@@ -145,6 +148,7 @@ class ReaderTest extends ParserTestCase
                 'tva' => 19.0,
                 'apiKey' => '=2',
                 'my.var.with.subnames' => 21,
+                'param' => '${param}',
                 'user' => 'root'
             )),
             array('prod', array(
@@ -155,6 +159,7 @@ class ReaderTest extends ParserTestCase
                 'tva' => 19.6,
                 'apiKey' => 'qd4qs64d6q6=fgh4f6ùftgg==sdr',
                 'my.var.with.subnames' => 21,
+                'param' => Configuration::NOT_FOUND,
                 'user' => 'root'
             )),                                 
         );
@@ -180,6 +185,7 @@ class ReaderTest extends ParserTestCase
                 'tva' => array(19.0, 19.6),
                 'server' => array(Configuration::NOT_FOUND, 'sql21'),
                 'apiKey' => array('=2', 'qd4qs64d6q6=fgh4f6ùftgg==sdr'),
+                'param' => array('${param}', Configuration::NOT_FOUND),
             )),
             array('preprod', 'prod', array(
                 'gourdin' => array(1, 0),
@@ -394,5 +400,56 @@ CONFFILE;
         
         $this->reader->overrideVariable($variable, $value);
         $this->assertSame($value, $this->reader->read($variable, $environment), 'Read an overriden unknown variable must not raise an exception');
+    }
+    
+    public function testCustomData()
+    {
+        $var = 'param';
+        
+        // No error while setting unused custom data
+        $this->reader->setCustomData('NotExist', 'NoError');
+        
+        $this->assertSame('${param}', $this->reader->read($var, 'dev')); 
+        $this->assertSame('Some${nested}param', $this->reader->read($var, 'staging')); 
+
+        $this->reader->setCustomData('PARAM', 'caseSensitive');
+        
+        $this->assertSame('${param}', $this->reader->read($var, 'dev')); 
+        $this->assertSame('Some${nested}param', $this->reader->read($var, 'staging')); 
+
+        $this->reader->setCustomData('param', 'foobar');
+        
+        $this->assertSame('foobar', $this->reader->read($var, 'dev')); 
+        $this->assertSame('Some${nested}param', $this->reader->read($var, 'staging'));
+         
+        $this->reader->setCustomData('nested', 'Base');
+        
+        $this->assertSame('foobar', $this->reader->read($var, 'dev')); 
+        $this->assertSame('SomeBaseparam', $this->reader->read($var, 'staging'));
+    }
+    
+    public function testCustomDataEdgeCases()
+    {
+        $contentMaster = <<<CONFFILE
+[variables]
+v1:
+    dev = foo
+    staging = foo\${fo}\$foo
+    integration = \${fooz}\${foo}foo
+    prod = \${foo
+CONFFILE;
+        
+        $parser = new Parser(new Filesystem(new InMemory(array(
+            self::MASTERFILE_PATH => $contentMaster,
+        ))));
+        
+        $reader = new Reader($parser->parse(self::MASTERFILE_PATH), array());
+        
+        $reader->setCustomData('foo', 'bar');
+        
+        $this->assertSame('foo', $reader->read('v1', 'dev'));        
+        $this->assertSame('foo${fo}$foo', $reader->read('v1', 'staging'));        
+        $this->assertSame('${fooz}barfoo', $reader->read('v1', 'integration'));        
+        $this->assertSame('${foo', $reader->read('v1', 'prod'));        
     }
 }

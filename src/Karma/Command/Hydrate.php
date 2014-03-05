@@ -16,7 +16,7 @@ class Hydrate extends Command
     
     const
         ENV_DEV = 'dev',
-        OVERRIDE_OPTION_ASSIGNMENT = '=';
+        OPTION_ASSIGNMENT = '=';
     
     protected function configure()
     {
@@ -28,11 +28,12 @@ class Hydrate extends Command
             
             ->addArgument('sourcePath', InputArgument::REQUIRED, 'source path to hydrate')
             
-            ->addOption('env', null, InputOption::VALUE_REQUIRED, 'Target environment', self::ENV_DEV)
+            ->addOption('env', 'e', InputOption::VALUE_REQUIRED, 'Target environment', self::ENV_DEV)
             ->addOption('suffix', null, InputOption::VALUE_REQUIRED, 'File suffix', null)
             ->addOption('dry-run', null, InputOption::VALUE_NONE, 'Simulation mode')
-            ->addOption('backup', null, InputOption::VALUE_NONE, 'Backup overwritten files')
-            ->addOption('override', null, InputOption::VALUE_IS_ARRAY | InputOption::VALUE_REQUIRED, 'Override variable values', array())
+            ->addOption('backup', 'b', InputOption::VALUE_NONE, 'Backup overwritten files')
+            ->addOption('override', 'o', InputOption::VALUE_IS_ARRAY | InputOption::VALUE_REQUIRED, 'Override variable values', array())
+            ->addOption('data', 'd', InputOption::VALUE_IS_ARRAY | InputOption::VALUE_REQUIRED, 'Custom data values', array())
         ;
     }
     
@@ -63,7 +64,12 @@ class Hydrate extends Command
         $this->app['sources.path']     = $input->getArgument('sourcePath');
         $this->app['distFiles.suffix'] = $suffix;
         
-        $this->overrideValues($input);
+        $this->processOverridenVariables(
+            $this->parseOptionWithAssignments($input, 'override')
+        );
+        $this->processCustomData(
+            $this->parseOptionWithAssignments($input, 'data')
+        );
         
         $hydrator = $this->app['hydrator'];
         
@@ -82,37 +88,40 @@ class Hydrate extends Command
         $hydrator->hydrate($environment);
     }
     
-    private function overrideValues(InputInterface $input)
+    private function parseOptionWithAssignments(InputInterface $input, $optionName)
     {
-        $overrideStrings = $input->getOption('override');
+        $strings = $input->getOption($optionName);
 
-        if(! is_array($overrideStrings))
+        if(! is_array($strings))
         {
-            $overrideStrings = array($overrideStrings);
+            $strings = array($strings);
         }
         
-        $overrides = array();
-        foreach($overrideStrings as $overrideString)
+        $data = array();
+        
+        foreach($strings as $string)
         {
-            if(stripos($overrideString, self::OVERRIDE_OPTION_ASSIGNMENT) === false)
+            if(stripos($string, self::OPTION_ASSIGNMENT) === false)
             {
                 throw new \InvalidArgumentException(sprintf(
-                    'override option must contain %c : --override <variable>=<value>',
-                    self::OVERRIDE_OPTION_ASSIGNMENT                        
+                    '%s option must contain %c : --%s <variable>=<value>',
+                    $optionName,
+                    self::OPTION_ASSIGNMENT,
+                    $optionName                        
                 ));    
             }
 
-            list($variable, $value) = explode(self::OVERRIDE_OPTION_ASSIGNMENT, $overrideString, 2);
+            list($variable, $value) = explode(self::OPTION_ASSIGNMENT, $string, 2);
             
-            if(array_key_exists($variable, $overrides))
+            if(array_key_exists($variable, $data))
             {
-                throw new \InvalidArgumentException('Duplicated override variable ' . $variable);    
+                throw new \InvalidArgumentException("Duplicated %s option value : $variable");    
             }
             
-            $overrides[$variable] = $value;
+            $data[$variable] = $value;
         }
-        
-        $this->processOverridenVariables($overrides);
+
+        return $data;
     }
     
     private function processOverridenVariables(array $overrides)
@@ -128,6 +137,22 @@ class Hydrate extends Command
             ));
             
             $reader->overrideVariable($variable, $this->filterValue($value));
+        }
+    }
+    
+    private function processCustomData(array $data)
+    {
+        $reader = $this->app['configuration'];
+
+        foreach($data as $variable => $value)
+        {
+            $this->output->writeln(sprintf(
+               'Set custom data <option=bold>%s</option=bold> with value <option=bold>%s</option=bold>',
+               $variable,
+               $value
+            ));
+            
+            $reader->setCustomData($variable, $this->filterValue($value));
         }
     }
 }
