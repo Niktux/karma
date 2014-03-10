@@ -1,6 +1,6 @@
 {
 	"name" : "niktux/karma",
-	"description" : "hydrate code with environment dependent values",
+	"description" : "CLI tool to manage environment dependent configuration",
 	"type" : "script",
 	"authors" : [{
 			"name" : "Nicolas Le Nardou",
@@ -11,7 +11,7 @@
 		"configuration",
 		"environment"
 	],
-	"homepage" : "https://github.com/Niktux/karma",
+	"homepage" : "http://karma-php.com",
 	"license" : [
 		"MIT"
 	],
@@ -20,6 +20,7 @@
 		"pimple/pimple" : "~1.1",
 		"php" : ">=5.4",
 		"knplabs/gaufrette" : "0.1.6",
+		"cpliakas/git-wrapper" : "1.2.0",
 		"psr/log" : "~1"
 	},
 	"require-dev" : {

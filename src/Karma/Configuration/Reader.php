@@ -2,9 +2,7 @@
 
 namespace Karma\Configuration;
 
-use Karma\Configuration;
-
-class Reader implements Configuration
+class Reader extends AbstractReader
 {
     const
         DEFAULT_ENVIRONMENT = 'default',
@@ -12,12 +10,13 @@ class Reader implements Configuration
         EXTERNAL = '<external>';
     
     private
-        $defaultEnvironment,
         $variables,
         $externalReader;
     
     public function __construct(array $variables, array $externalVariables)
     {
+        parent::__construct();
+        
         $this->defaultEnvironment = self::DEFAULT_VALUE_FOR_ENVIRONMENT_PARAMETER;
         
         $this->variables = $variables;
@@ -29,17 +28,7 @@ class Reader implements Configuration
         }
     }    
     
-    public function setDefaultEnvironment($environment)
-    {
-        if(! empty($environment) && is_string($environment))
-        {
-            $this->defaultEnvironment = $environment;
-        }
-        
-        return $this;
-    }
-    
-    public function read($variable, $environment = null)
+    protected function readRaw($variable, $environment = null)
     {
         if($environment === null)
         {
@@ -100,29 +89,6 @@ class Reader implements Configuration
     public function getAllVariables()
     {
         return array_keys($this->variables);
-    }
-    
-    public function getAllValuesForEnvironment($environment = null)
-    {
-        $result = array();
-        
-        $variables = $this->getAllVariables();
-        
-        foreach($variables as $variable)
-        {
-            try
-            {
-                $value = $this->read($variable, $environment);
-            }
-            catch(\RuntimeException $e)
-            {
-                $value = Configuration::NOT_FOUND;
-            }
-        
-            $result[$variable] = $value;
-        }    
-        
-        return $result;
     }
     
     public function compareEnvironments($environment1, $environment2)

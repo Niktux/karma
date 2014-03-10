@@ -31,7 +31,7 @@ class Check extends Command
     
     private function collectDistFiles()
     {
-        $this->distFiles = $this->app['finder']->findFiles($this->app['distFiles.suffix']);
+        $this->distFiles = $this->app['finder']->findFiles('~' . $this->app['distFiles.suffix'] . '~');
     }
     
     protected function execute(InputInterface $input, OutputInterface $output)

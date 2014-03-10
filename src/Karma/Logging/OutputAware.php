@@ -23,17 +23,17 @@ trait OutputAware
     
     protected function warning($messages, $newline = false, $type = OutputInterface::OUTPUT_NORMAL)
     {
-        return $this->write($messages, $newline, $type, OutputInterface::VERBOSITY_VERBOSE, 'yellow');
+        return $this->write($messages, $newline, $type, OutputInterface::VERBOSITY_NORMAL, 'yellow');
     }
     
     protected function info($messages, $newline = false, $type = OutputInterface::OUTPUT_NORMAL)
     {
-        return $this->write($messages, $newline, $type, OutputInterface::VERBOSITY_VERY_VERBOSE, 'white');
+        return $this->write($messages, $newline, $type, OutputInterface::VERBOSITY_NORMAL, 'white');
     }
     
     protected function debug($messages, $newline = false, $type = OutputInterface::OUTPUT_NORMAL)
     {
-        return $this->write($messages, $newline, $type, OutputInterface::VERBOSITY_DEBUG, 'white');
+        return $this->write($messages, $newline, $type, OutputInterface::VERBOSITY_VERBOSE, 'white');
     }
     
     private function write($messages, $newline, $type, $verbosity, $textColor)

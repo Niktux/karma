@@ -15,8 +15,10 @@ php_errors.log
 report/
 
 # Test data
-conf/
+env/
 data/
+.karma
+src/.solidifier.yml
 
 # Cache
 cache/
