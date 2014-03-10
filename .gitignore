@@ -18,6 +18,7 @@ report/
 env/
 data/
 .karma
+src/.solidifier.yml
 
 # Cache
 cache/
