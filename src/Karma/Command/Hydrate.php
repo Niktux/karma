@@ -29,7 +29,6 @@ class Hydrate extends Command
             ->addArgument('sourcePath', InputArgument::REQUIRED, 'source path to hydrate')
             
             ->addOption('env', 'e', InputOption::VALUE_REQUIRED, 'Target environment', self::ENV_DEV)
-            ->addOption('suffix', null, InputOption::VALUE_REQUIRED, 'File suffix', null)
             ->addOption('dry-run', null, InputOption::VALUE_NONE, 'Simulation mode')
             ->addOption('backup', 'b', InputOption::VALUE_NONE, 'Backup overwritten files')
             ->addOption('override', 'o', InputOption::VALUE_IS_ARRAY | InputOption::VALUE_REQUIRED, 'Override variable values', array())
@@ -41,18 +40,6 @@ class Hydrate extends Command
     {
         parent::execute($input, $output);
         
-        $suffix = $input->getOption('suffix');
-        if($suffix === null)
-        {
-            $suffix = Application::DEFAULT_DISTFILE_SUFFIX;
-            
-            $profile = $this->app['profile'];
-            if($profile->hasTemplatesSuffix())
-            {
-                $suffix = $profile->getTemplatesSuffix();
-            }
-        }
-        
         $environment = $input->getOption('env'); 
         
         $this->output->writeln(sprintf(
@@ -62,7 +49,6 @@ class Hydrate extends Command
         ));
         
         $this->app['sources.path']     = $input->getArgument('sourcePath');
-        $this->app['distFiles.suffix'] = $suffix;
         
         $this->processOverridenVariables(
             $this->parseOptionWithAssignments($input, 'override')

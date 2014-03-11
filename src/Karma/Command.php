@@ -23,11 +23,7 @@ class Command extends \Symfony\Component\Console\Command\Command
     
     protected function configure()
     {
-        $this
-            ->addOption('confDir', null, InputOption::VALUE_REQUIRED, 'Configuration root directory', null)
-            ->addOption('master', null, InputOption::VALUE_REQUIRED, 'Configuration master file', null)
-            ->addOption('cache', null, InputOption::VALUE_NONE, 'Cache the dist files list')
-        ;
+        $this->addOption('cache', null, InputOption::VALUE_NONE, 'Cache the dist files list');
     }
     
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -36,28 +32,28 @@ class Command extends \Symfony\Component\Console\Command\Command
 
         $profile = $this->app['profile'];
         
-        $confDir = $input->getOption('confDir');
-        if($confDir === null)
+        $confDir = Application::DEFAULT_CONF_DIRECTORY;
+        if($profile->hasConfigurationDirectory())
         {
-            $confDir = Application::DEFAULT_CONF_DIRECTORY;
-            if($profile->hasConfigurationDirectory())
-            {
-                $confDir = $profile->getConfigurationDirectory();
-            }
-        } 
+            $confDir = $profile->getConfigurationDirectory();
+        }
         
-        $masterFile = $input->getOption('master');
-        if($masterFile === null)
+        $masterFile = Application::DEFAULT_MASTER_FILE;
+        if($profile->hasMasterFilename())
         {
-            $masterFile = Application::DEFAULT_MASTER_FILE;
-            if($profile->hasMasterFilename())
-            {
-                $masterFile = $profile->getMasterFilename();
-            }
-        } 
+            $masterFile = $profile->getMasterFilename();
+        }
+        
+        $suffix = Application::DEFAULT_DISTFILE_SUFFIX;
+        if($profile->hasTemplatesSuffix())
+        {
+            $suffix = $profile->getTemplatesSuffix();
+        }
         
         $this->app['configuration.path']       = $confDir;
         $this->app['configuration.masterFile'] = $masterFile;
+        $this->app['distFiles.suffix'] = $suffix;
+        
         $this->app['logger'] = new OutputInterfaceAdapter($output);
         
         if($input->getOption('cache'))
