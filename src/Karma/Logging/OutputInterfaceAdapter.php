@@ -50,7 +50,7 @@ class OutputInterfaceAdapter implements LoggerInterface
     private function writeLevel($level)
     {
         $message = str_pad(sprintf(
-    	   '[%s]',
+           '[%s]',
            strtoupper($level)
         ), 10);
 
@@ -60,14 +60,14 @@ class OutputInterfaceAdapter implements LoggerInterface
     private function colorizeMessage($level, $message)
     {
         $colors = array(
-        	LogLevel::ERROR => 'red',
+            LogLevel::ERROR => 'red',
             LogLevel::WARNING => 'yellow',
         );
         
         if(isset($colors[$level]))
         {
             $message = sprintf(
-        	   '<%1$s>%2$s</%1$s>',
+               '<%1$s>%2$s</%1$s>',
                 'fg=' . $colors[$level] . ';options=bold',
                 $message
             );
