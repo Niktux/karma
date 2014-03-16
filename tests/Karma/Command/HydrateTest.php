@@ -78,8 +78,8 @@ class HydrateTest extends CommandTestCase
             'sourcePath' => 'src/',
         ));
         
-        $this->assertDisplay('~Set db.user with value toto~');
-        $this->assertDisplay('~Set api.key with value azer=ty~');
+        $this->assertDisplay('~Override db.user with value toto~');
+        $this->assertDisplay('~Override api.key with value azer=ty~');
     }
     
     /**
