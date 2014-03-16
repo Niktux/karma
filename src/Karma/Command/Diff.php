@@ -31,12 +31,14 @@ class Diff extends Command
         $environment2 = $input->getArgument('env2'); 
         
         $output->writeln(sprintf(
-            '<info>Diff between <comment>%s</comment> and <comment>%s</comment></info>',
+            "<info>Diff between <comment>%s</comment> and <comment>%s</comment></info>\n",
             $environment1,
             $environment2
         ));
         
         $diff = $this->app['configuration']->compareEnvironments($environment1, $environment2);
+        
+        $output->writeln('');
         
         $table = new CliTable($diff);
         
