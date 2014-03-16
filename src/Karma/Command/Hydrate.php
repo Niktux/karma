@@ -18,6 +18,21 @@ class Hydrate extends Command
         ENV_DEV = 'dev',
         OPTION_ASSIGNMENT = '=';
     
+    private
+        $dryRun,
+        $isBackupEnabled,
+        $environment;
+    
+    public function __construct(Application $app)
+    {
+        parent::__construct($app);
+        
+        $this->dryRun = false;
+        $this->isBackupEnabled = false;
+        
+        $this->environment = self::ENV_DEV;
+    }
+    
     protected function configure()
     {
         parent::configure();
@@ -40,15 +55,35 @@ class Hydrate extends Command
     {
         parent::execute($input, $output);
         
-        $environment = $input->getOption('env'); 
+        $this->processInputs($input);
+        $this->launchHydration();
+    }
+    
+    private function processInputs(InputInterface $input)
+    {
+        $this->environment = $input->getOption('env'); 
         
         $this->output->writeln(sprintf(
-            '<info>Hydrate <comment>%s</comment> with <comment>%s</comment> values</info>',
+            "<info>Hydrate <comment>%s</comment> with <comment>%s</comment> values</info>",
             $input->getArgument('sourcePath'),
-            $environment
+            $this->environment
         ));
         
-        $this->app['sources.path']     = $input->getArgument('sourcePath');
+        if($input->getOption('dry-run'))
+        {
+            $this->dryRun = true;
+            $this->output->writeln("<fg=cyan>Run in dry-run mode</fg=cyan>");
+        }
+        
+        if($input->getOption('backup'))
+        {
+            $this->isBackupEnabled = true;
+            $this->output->writeln("<fg=cyan>Backup enabled</fg=cyan>");
+        }
+        
+        $this->output->writeln('');
+        
+        $this->app['sources.path'] = $input->getArgument('sourcePath');
         
         $this->processOverridenVariables(
             $this->parseOptionWithAssignments($input, 'override')
@@ -56,22 +91,23 @@ class Hydrate extends Command
         $this->processCustomData(
             $this->parseOptionWithAssignments($input, 'data')
         );
-        
+    }
+    
+    private function launchHydration()
+    {
         $hydrator = $this->app['hydrator'];
         
-        if($input->getOption('dry-run'))
+        if($this->dryRun === true)
         {
-            $this->output->writeln("<fg=cyan>*** Run in dry-run mode ***</fg=cyan>");
             $hydrator->setDryRun();
         }
         
-        if($input->getOption('backup'))
+        if($this->isBackupEnabled === true)
         {
-            $this->output->writeln("<fg=cyan>Backup enabled</fg=cyan>");
             $hydrator->enableBackup();
         }
             
-        $hydrator->hydrate($environment);
+        $hydrator->hydrate($this->environment);
     }
     
     private function parseOptionWithAssignments(InputInterface $input, $optionName)
@@ -113,11 +149,12 @@ class Hydrate extends Command
     private function processOverridenVariables(array $overrides)
     {
         $reader = $this->app['configuration'];
+        $logger = $this->app['logger'];
 
         foreach($overrides as $variable => $value)
         {
-            $this->output->writeln(sprintf(
-               'Set <option=bold>%s</option=bold> with value <option=bold>%s</option=bold>',
+            $logger->info(sprintf(
+               'Set <important>%s</important> with value <important>%s</important>',
                $variable,
                $value
             ));
@@ -129,11 +166,12 @@ class Hydrate extends Command
     private function processCustomData(array $data)
     {
         $reader = $this->app['configuration'];
+        $logger = $this->app['logger'];
 
         foreach($data as $variable => $value)
         {
-            $this->output->writeln(sprintf(
-               'Set custom data <option=bold>%s</option=bold> with value <option=bold>%s</option=bold>',
+            $logger->info(sprintf(
+               'Set custom data <important>%s</important> with value <important>%s</important>',
                $variable,
                $value
             ));

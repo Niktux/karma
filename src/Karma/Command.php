@@ -6,6 +6,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Karma\Logging\OutputInterfaceAdapter;
+use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 
 class Command extends \Symfony\Component\Console\Command\Command
 {
@@ -28,7 +29,7 @@ class Command extends \Symfony\Component\Console\Command\Command
     
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->setOutput($output);
+        $this->configureOutputInterface($output);
         $this->printHeader();
 
         $profile = $this->app['profile'];
@@ -61,6 +62,14 @@ class Command extends \Symfony\Component\Console\Command\Command
         {
             $this->enableFinderCache();
         }
+    }
+    
+    private function configureOutputInterface(OutputInterface $output)
+    {
+        $style = new OutputFormatterStyle('cyan', null, array('bold'));
+        $output->getFormatter()->setStyle('important', $style);
+        
+        $this->setOutput($output);
     }
     
     private function enableFinderCache()
