@@ -102,7 +102,7 @@ class Command extends \Symfony\Component\Console\Command\Command
     private function printHeader()
     {
         $this->output->writeln(sprintf(
-	       '<comment>%s</comment>',
+           '<comment>%s</comment>',
            $this->getLogo()
         ));
     }
