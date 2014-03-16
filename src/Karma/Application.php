@@ -14,7 +14,7 @@ use Karma\VCS\Git\GitWrapperAdapter;
 class Application extends \Pimple
 {
     const
-        VERSION = '1.5.1',
+        VERSION = '1.5.2',
         DEFAULT_DISTFILE_SUFFIX = '-dist',
         DEFAULT_CONF_DIRECTORY = 'env',
         DEFAULT_MASTER_FILE = 'master.conf',
