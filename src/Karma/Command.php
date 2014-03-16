@@ -29,6 +29,7 @@ class Command extends \Symfony\Component\Console\Command\Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->setOutput($output);
+        $this->printHeader();
 
         $profile = $this->app['profile'];
         
@@ -88,4 +89,33 @@ class Command extends \Symfony\Component\Console\Command\Command
     
         return $value;
     }
+    
+    private function printHeader()
+    {
+        $this->output->writeln(sprintf(
+	       '<comment>%s</comment>',
+           $this->getLogo()
+        ));
+    }
+    
+    private function getLogo()
+    {
+        $logo = <<<ASCIIART
+  _  __                          
+ | |/ /__ _ _ __ _ __ ___   __ _ 
+ | ' // _` | '__| '_ ` _ \ / _` |
+ | . \ (_| | |  | | | | | | (_| |
+ |_|\_\__,_|_|  |_| |_| |_|\__,_|
+
+ASCIIART;
+        
+        return sprintf(
+            "%s\n %s %s -\n",
+            $logo,
+            str_pad('', 30 - strlen(Application::VERSION), '-'),
+            Application::VERSION
+        );
+        
+    }
+    
 }
