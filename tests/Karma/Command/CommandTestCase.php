@@ -26,6 +26,10 @@ CONFFILE;
         $this->app['configuration.fileSystem.adapter'] = new InMemory(array(
             Application::DEFAULT_MASTER_FILE => $masterContent,
         ));
+        
+        $this->app['profile.fileSystem.adapter'] = function($c) {
+            return new InMemory();
+        };
     }
 
     protected function runCommand($commandName, array $commandArguments = array())
