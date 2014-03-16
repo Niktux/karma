@@ -154,7 +154,7 @@ class Hydrate extends Command
         foreach($overrides as $variable => $value)
         {
             $logger->info(sprintf(
-               'Set <important>%s</important> with value <important>%s</important>',
+               'Override <important>%s</important> with value <important>%s</important>',
                $variable,
                $value
             ));
