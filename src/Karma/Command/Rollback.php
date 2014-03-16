@@ -11,6 +11,16 @@ use Karma\Command;
 
 class Rollback extends Command
 {
+    private
+        $dryRun;
+    
+    public function __construct(Application $app)
+    {
+        parent::__construct($app);
+        
+        $this->dryRun = false;
+    }
+    
     protected function configure()
     {
         parent::configure();
@@ -29,18 +39,34 @@ class Rollback extends Command
     {
         parent::execute($input, $output);
         
+        $this->processInputs($input);
+        $this->launchRollback();
+    }
+    
+    private function processInputs(InputInterface $input)
+    {        
         $this->output->writeln(sprintf(
             '<info>Rollback <comment>%s</comment></info>',
             $input->getArgument('sourcePath')
         ));
         
-        $this->app['sources.path']     = $input->getArgument('sourcePath');
-        
-        $hydrator = $this->app['hydrator'];
+        $this->app['sources.path'] = $input->getArgument('sourcePath');
         
         if($input->getOption('dry-run'))
         {
-            $this->output->writeln("<fg=cyan>*** Run in dry-run mode ***</fg=cyan>");
+            $this->output->writeln("<fg=cyan>Run in dry-run mode</fg=cyan>");
+            $this->dryRun = true;
+        }
+        
+        $this->output->writeln('');
+    }
+    
+    private function launchRollback()
+    {
+        $hydrator = $this->app['hydrator'];
+        
+        if($this->dryRun === true)
+        {
             $hydrator->setDryRun();
         }
         
