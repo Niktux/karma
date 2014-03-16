@@ -19,8 +19,8 @@
 		"symfony/console" : "~2.4",
 		"pimple/pimple" : "~1.1",
 		"php" : ">=5.4",
-		"knplabs/gaufrette" : "0.1.6",
-		"cpliakas/git-wrapper" : "1.2.0",
+		"knplabs/gaufrette" : "~0.1",
+		"cpliakas/git-wrapper" : "~1.2",
 		"psr/log" : "~1"
 	},
 	"require-dev" : {
