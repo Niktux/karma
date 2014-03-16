@@ -26,8 +26,6 @@ class VCS extends Command
     {
         parent::execute($input, $output);
         
-        $profile = $this->app['profile'];
-    
         $this->output->writeln("<info>Looking for vcs operations</info>\n");
         
         $this->app['sources.path'] = $input->getArgument('sourcePath');
