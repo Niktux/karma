@@ -19,7 +19,6 @@ class VCS extends Command
             ->setName('vcs')
             ->setDescription('')
             ->addArgument('sourcePath', InputArgument::REQUIRED, 'source path')
-            ->addOption('suffix', null, InputOption::VALUE_REQUIRED, 'File suffix', null)
         ;
     }
     
@@ -27,22 +26,11 @@ class VCS extends Command
     {
         parent::execute($input, $output);
         
-        $suffix = $input->getOption('suffix');
-        if($suffix === null)
-        {
-            $suffix = Application::DEFAULT_DISTFILE_SUFFIX;
-        
-            $profile = $this->app['profile'];
-            if($profile->hasTemplatesSuffix())
-            {
-                $suffix = $profile->getTemplatesSuffix();
-            }
-        }
-        
-        $this->output->writeln('Looking for vcs operations');
+        $profile = $this->app['profile'];
+    
+        $this->output->writeln("<info>Looking for vcs operations</info>\n");
         
         $this->app['sources.path'] = $input->getArgument('sourcePath');
-        $this->app['distFiles.suffix'] = $suffix;
         
         $vcs = $this->app['vcsHandler']($this->app['vcs']);
         $vcs->execute($this->app['sources.path']);

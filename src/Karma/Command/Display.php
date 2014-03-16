@@ -35,7 +35,7 @@ class Display extends Command
         $environment = $input->getOption('env'); 
         
         $this->output->writeln(sprintf(
-            '<info>Display <comment>%s</comment> values</info>',
+            "<info>Display <comment>%s</comment> values</info>\n",
             $environment
         ));
         

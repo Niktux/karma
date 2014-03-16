@@ -30,6 +30,7 @@ class OutputInterfaceAdapter implements LoggerInterface
     {
         if($this->convertLevel($level) <= $this->output->getVerbosity())
         {
+            $this->writeLevel($level);
             $this->output->writeln($message, OutputInterface::OUTPUT_NORMAL);
         }
     }
@@ -44,5 +45,34 @@ class OutputInterfaceAdapter implements LoggerInterface
         }
         
         return $verbosity;
+    }
+    
+    private function writeLevel($level)
+    {
+        $message = str_pad(sprintf(
+    	   '[%s]',
+           strtoupper($level)
+        ), 10);
+
+        $this->output->write($this->colorizeMessage($level, $message));
+    }
+    
+    private function colorizeMessage($level, $message)
+    {
+        $colors = array(
+        	LogLevel::ERROR => 'red',
+            LogLevel::WARNING => 'yellow',
+        );
+        
+        if(isset($colors[$level]))
+        {
+            $message = sprintf(
+        	   '<%1$s>%2$s</%1$s>',
+                'fg=' . $colors[$level] . ';options=bold',
+                $message
+            );
+        }
+        
+        return $message;
     }
 }
