@@ -5,8 +5,6 @@ namespace Karma\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Karma\Command;
-use Karma\Application;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
 
 class VCS extends Command
