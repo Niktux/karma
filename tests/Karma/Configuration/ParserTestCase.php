@@ -22,24 +22,31 @@ class ParserTestCase extends \PHPUnit_Framework_TestCase
 [includes]
 db.conf
 
+# Comments can be everywhere
 [externals]
+# Comments can be everywhere
 externalFileNotFound.conf
                 
 [variables]
 print_errors:
     prod, preprod = false
     default = true
-      
+
+# This is a comment
 debug:
     dev = true
     default = false
 
 gourdin:
+    # 0 for prod
     prod = 0
+    # 1 for non-dev & non-prod envs
     preprod, recette, qualif = 1
             integration = null
     dev = 2
 
+                # comment with bad indentation
+#compressedComment
 tva:
         dev =   19.0
         preprod = 20.50
@@ -52,7 +59,7 @@ server:
 apiKey:
     recette =
     dev==2
-    default = qd4qs64d6q6=fgh4f6ùftgg==sdr
+    default = qd4#qs64d6q6=fgh4f6ùftgg==sdr
     
 my.var.with.subnames:
     default = 21
