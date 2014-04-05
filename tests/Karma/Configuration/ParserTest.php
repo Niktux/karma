@@ -50,7 +50,7 @@ class ParserTest extends ParserTestCase
 
             array('apiKey', 'dev', '=2'),
             array('apiKey', 'recette', ''),
-            array('apiKey', 'default', 'qd4qs64d6q6=fgh4f6ùftgg==sdr'),
+            array('apiKey', 'default', 'qd4#qs64d6q6=fgh4f6ùftgg==sdr'),
             
             array('my.var.with.subnames', 'default', 21),
                         
@@ -202,7 +202,13 @@ CONFFILE
             ),
             'invalid name format for include file' => array(<<<CONFFILE
 [includes]
-notADotConfFile
+notADotConfFile                            
+CONFFILE
+            ),
+            'comments not on its own line' => array(<<<CONFFILE
+[variables]  # illegal comment
+toto:
+    foo = bar
 CONFFILE
             
             ),

@@ -22,6 +22,11 @@ class ExternalParser extends AbstractGroupParser
     
     public function parse($line)
     {
+        if($this->isACommentLine($line))
+        {
+            return true;
+        }
+                
         $file = trim($line);
         
         $found = false;

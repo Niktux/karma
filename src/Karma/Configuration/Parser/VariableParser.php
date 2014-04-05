@@ -25,6 +25,11 @@ class VariableParser extends AbstractGroupParser
     
     public function parse($line)
     {
+        if($this->isACommentLine($line))
+        {
+            return true;
+        }
+        
         $variableName = $this->extractVariableName($line); 
         
         if($variableName !== null)

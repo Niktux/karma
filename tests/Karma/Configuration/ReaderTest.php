@@ -57,8 +57,8 @@ class ReaderTest extends ParserTestCase
 
             array('apiKey', 'dev', '=2'),
             array('apiKey', 'recette', ''),
-            array('apiKey', 'prod', 'qd4qs64d6q6=fgh4f6ùftgg==sdr'),
-            array('apiKey', 'default', 'qd4qs64d6q6=fgh4f6ùftgg==sdr'),
+            array('apiKey', 'prod', 'qd4#qs64d6q6=fgh4f6ùftgg==sdr'),
+            array('apiKey', 'default', 'qd4#qs64d6q6=fgh4f6ùftgg==sdr'),
             
             array('my.var.with.subnames', 'dev', 21),                
             array('my.var.with.subnames', 'default', 21),                
@@ -157,7 +157,7 @@ class ReaderTest extends ParserTestCase
                 'gourdin' => 0,
                 'server' => 'sql21',
                 'tva' => 19.6,
-                'apiKey' => 'qd4qs64d6q6=fgh4f6ùftgg==sdr',
+                'apiKey' => 'qd4#qs64d6q6=fgh4f6ùftgg==sdr',
                 'my.var.with.subnames' => 21,
                 'param' => Configuration::NOT_FOUND,
                 'user' => 'root'
@@ -184,7 +184,7 @@ class ReaderTest extends ParserTestCase
                 'gourdin' => array(2, 0),
                 'tva' => array(19.0, 19.6),
                 'server' => array(Configuration::NOT_FOUND, 'sql21'),
-                'apiKey' => array('=2', 'qd4qs64d6q6=fgh4f6ùftgg==sdr'),
+                'apiKey' => array('=2', 'qd4#qs64d6q6=fgh4f6ùftgg==sdr'),
                 'param' => array('${param}', Configuration::NOT_FOUND),
             )),
             array('preprod', 'prod', array(
