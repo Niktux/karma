@@ -14,6 +14,11 @@ class IncludeParser extends AbstractGroupParser
     
     public function parse($line)
     {
+        if($this->isACommentLine($line))
+        {
+            return true;
+        }
+                
         $this->checkFilenameIsValid($line);
         
         $this->files[] = $line;
