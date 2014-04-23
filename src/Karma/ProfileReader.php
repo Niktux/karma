@@ -5,19 +5,27 @@ namespace Karma;
 use Gaufrette\Filesystem;
 use Symfony\Component\Yaml\Yaml;
 use Symfony\Component\Yaml\Exception\ParseException;
+use Karma\Formatters\Raw;
 
 class ProfileReader
 {
+    const
+        DEFAULT_FORMATTER_INDEX = 'default';
+    
     private
         $templatesSuffix,
         $masterFilename,
-        $configurationDirectory;
+        $configurationDirectory,
+        $formatters;
     
     public function __construct(Filesystem $fs)
     {
         $this->templatesSuffix = null;
         $this->masterFilename = null;
         $this->configurationDirectory = null;
+        $this->formatters = array(
+            self::DEFAULT_FORMATTER_INDEX => new Raw(),
+        );
 
         $this->read($fs);
     }
@@ -90,5 +98,22 @@ class ProfileReader
     public function getConfigurationDirectory()
     {
         return $this->configurationDirectory;
+    }
+    
+    public function hasFormatter($index)
+    {
+        return isset($this->formatters[$index]);
+    }
+    
+    public function getFormatter($index = null)
+    {
+        $formatter = $this->formatters[self::DEFAULT_FORMATTER_INDEX];
+        
+        if($this->hasFormatter($index))
+        {
+            $formatter = $this->formatters[$index];    
+        }    
+        
+        return $formatter;
     }
 }

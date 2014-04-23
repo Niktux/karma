@@ -2,6 +2,9 @@
 
 use Karma\Display\CliTable;
 
+/**
+ * @group Unix
+ */
 class CliTableTest extends PHPUnit_Framework_TestCase
 {
     /**
