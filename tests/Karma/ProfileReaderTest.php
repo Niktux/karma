@@ -124,7 +124,7 @@ YAML;
     public function testFormatter()
     {
         $yaml = <<<YAML
-formatter:
+formatters:
   yaml:
     <true>: true
     <false>: false
