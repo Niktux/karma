@@ -6,6 +6,7 @@ use Gaufrette\Filesystem;
 use Symfony\Component\Yaml\Yaml;
 use Symfony\Component\Yaml\Exception\ParseException;
 use Karma\Formatters\Raw;
+use Karma\Formatters\Rules;
 
 class ProfileReader
 {
@@ -67,6 +68,29 @@ class ProfileReader
         if(isset($values['confDir']))
         {
             $this->configurationDirectory = $values['confDir'];
+        }
+        
+        if(isset($values['formatters']))
+        {
+            $this->parseFormatters($values['formatters']);    
+        }
+    }
+    
+    private function parseFormatters($content)
+    {
+        if(! is_array($content))
+        {
+            throw new \InvalidArgumentException('Syntax error in profile [formatters]');
+        }
+        
+        foreach($content as $name => $rules)
+        {
+            if(! is_array($rules))
+            {
+                throw new \InvalidArgumentException('Syntax error in profile [formatters]');
+            }
+            
+            $this->formatters[$name] = new Rules($rules);
         }
     }
     
