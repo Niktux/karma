@@ -126,9 +126,9 @@ YAML;
         $yaml = <<<YAML
 formatters:
   yaml:
-    <true>: true
-    <false>: false
-    <null> : <0>    
+    <true>: "true"
+    <false>: "false"
+    <null> : 0    
 defaultFormatter: yaml
 YAML;
         $reader = $this->buildReader($yaml);
