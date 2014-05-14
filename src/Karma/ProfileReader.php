@@ -17,13 +17,16 @@ class ProfileReader
         $templatesSuffix,
         $masterFilename,
         $configurationDirectory,
-        $formatters;
+        $formatters,
+        $defaultFormatterName;
     
     public function __construct(Filesystem $fs)
     {
         $this->templatesSuffix = null;
         $this->masterFilename = null;
         $this->configurationDirectory = null;
+
+        $this->defaultFormatterName = self::DEFAULT_FORMATTER_INDEX;
         $this->formatters = array(
             self::DEFAULT_FORMATTER_INDEX => new Raw(),
         );
@@ -73,6 +76,11 @@ class ProfileReader
         if(isset($values['formatters']))
         {
             $this->parseFormatters($values['formatters']);    
+        }
+        
+        if(isset($values['defaultFormatter']) && is_string($values['defaultFormatter']))
+        {
+            $this->defaultFormatterName = $values['defaultFormatter'];
         }
     }
     
@@ -131,7 +139,7 @@ class ProfileReader
     
     public function getFormatter($index = null)
     {
-        $formatter = $this->formatters[self::DEFAULT_FORMATTER_INDEX];
+        $formatter = $this->formatters[$this->getDefaultFormatterName()];
         
         if($this->hasFormatter($index))
         {
@@ -139,5 +147,17 @@ class ProfileReader
         }    
         
         return $formatter;
+    }
+    
+    private function getDefaultFormatterName()
+    {
+        $name = self::DEFAULT_FORMATTER_INDEX;
+        
+        if($this->hasFormatter($this->defaultFormatterName))
+        {
+            $name = $this->defaultFormatterName;
+        }
+        
+        return $name;
     }
 }
