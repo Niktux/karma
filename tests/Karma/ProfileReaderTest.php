@@ -99,6 +99,7 @@ YAML;
 suffix: -tpl
 master: othermaster.conf
 confDir: env2/
+sourcePath: lib/
 YAML;
         
         $reader = $this->buildReader($yaml);
@@ -111,6 +112,9 @@ YAML;
         
         $this->assertTrue($reader->hasConfigurationDirectory());
         $this->assertSame('env2/', $reader->getConfigurationDirectory());
+        
+        $this->assertTrue($reader->hasSourcePath());
+        $this->assertSame('lib/', $reader->getSourcePath());
     }
     
     /**

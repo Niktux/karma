@@ -47,6 +47,26 @@ class HydrateTest extends CommandTestCase
         );
     }
     
+    public function testSourcePathFromProfile()
+    {
+        $this->app['profile.fileSystem.adapter'] = new InMemory(array(
+            Application::PROFILE_FILENAME => 'sourcePath: lib/',
+        ));
+        
+        $this->runCommand('hydrate', array());
+        $this->assertDisplay('~Hydrate lib/~');
+    }
+    
+    /**
+     * @expectedException \RuntimeException
+     */
+    public function testNoSourcePathProvided()
+    {
+        $this->app['profile.fileSystem.adapter'] = new InMemory();
+        
+        $this->runCommand('hydrate', array());
+    }
+    
     public function testCache()
     {
         $cacheAdapter = new InMemory(array());

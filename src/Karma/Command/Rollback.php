@@ -29,7 +29,7 @@ class Rollback extends Command
             ->setName('rollback')
             ->setDescription('Restore files from backup ones')
             
-            ->addArgument('sourcePath', InputArgument::REQUIRED, 'source path to hydrate')
+            ->addArgument('sourcePath', InputArgument::OPTIONAL, 'source path to hydrate')
             
             ->addOption('dry-run', null, InputOption::VALUE_NONE, 'Simulation mode')
         ;
@@ -45,12 +45,24 @@ class Rollback extends Command
     
     private function processInputs(InputInterface $input)
     {        
+        $sourcePath = $input->getArgument('sourcePath');
+        if($sourcePath === null)
+        {
+            $profile = $this->app['profile'];
+            if($profile->hasSourcePath() !== true)
+            {
+                throw new \RuntimeException('Missing argument sourcePath');
+            }
+        
+            $sourcePath = $profile->getSourcePath();
+        }
+        
         $this->output->writeln(sprintf(
             '<info>Rollback <comment>%s</comment></info>',
-            $input->getArgument('sourcePath')
+            $sourcePath
         ));
         
-        $this->app['sources.path'] = $input->getArgument('sourcePath');
+        $this->app['sources.path'] = $sourcePath;
         
         if($input->getOption('dry-run'))
         {

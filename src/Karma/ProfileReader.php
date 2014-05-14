@@ -18,13 +18,15 @@ class ProfileReader implements FormatterProvider
         $masterFilename,
         $configurationDirectory,
         $formatters,
-        $defaultFormatterName;
+        $defaultFormatterName,
+        $sourcePath;
     
     public function __construct(Filesystem $fs)
     {
         $this->templatesSuffix = null;
         $this->masterFilename = null;
         $this->configurationDirectory = null;
+        $this->sourcePath = null;
 
         $this->defaultFormatterName = self::DEFAULT_FORMATTER_INDEX;
         $this->formatters = array(
@@ -71,6 +73,11 @@ class ProfileReader implements FormatterProvider
         if(isset($values['confDir']))
         {
             $this->configurationDirectory = $values['confDir'];
+        }
+        
+        if(isset($values['sourcePath']))
+        {
+            $this->sourcePath = $values['sourcePath'];
         }
         
         if(isset($values['formatters']))
@@ -130,6 +137,16 @@ class ProfileReader implements FormatterProvider
     public function getConfigurationDirectory()
     {
         return $this->configurationDirectory;
+    }
+    
+    public function hasSourcePath()
+    {
+        return $this->sourcePath !== null;
+    }
+    
+    public function getSourcePath()
+    {
+        return $this->sourcePath;
     }
     
     public function hasFormatter($index)

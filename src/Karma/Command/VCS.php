@@ -16,7 +16,7 @@ class VCS extends Command
         $this
             ->setName('vcs')
             ->setDescription('')
-            ->addArgument('sourcePath', InputArgument::REQUIRED, 'source path')
+            ->addArgument('sourcePath', InputArgument::OPTIONAL, 'source path')
         ;
     }
     
@@ -26,7 +26,19 @@ class VCS extends Command
         
         $this->output->writeln("<info>Looking for vcs operations</info>\n");
         
-        $this->app['sources.path'] = $input->getArgument('sourcePath');
+        $sourcePath = $input->getArgument('sourcePath');
+        if($sourcePath === null)
+        {
+            $profile = $this->app['profile'];
+            if($profile->hasSourcePath() !== true)
+            {
+                throw new \RuntimeException('Missing argument sourcePath');
+            }
+        
+            $sourcePath = $profile->getSourcePath();
+        }
+        
+        $this->app['sources.path'] = $sourcePath;
         
         $vcs = $this->app['vcsHandler']($this->app['vcs']);
         $vcs->execute($this->app['sources.path']);

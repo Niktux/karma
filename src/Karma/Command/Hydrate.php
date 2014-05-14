@@ -41,7 +41,7 @@ class Hydrate extends Command
             ->setName('hydrate')
             ->setDescription('Hydrate dist files')
             
-            ->addArgument('sourcePath', InputArgument::REQUIRED, 'source path to hydrate')
+            ->addArgument('sourcePath', InputArgument::OPTIONAL, 'source path to hydrate')
             
             ->addOption('env', 'e', InputOption::VALUE_REQUIRED, 'Target environment', self::ENV_DEV)
             ->addOption('dry-run', null, InputOption::VALUE_NONE, 'Simulation mode')
@@ -63,12 +63,6 @@ class Hydrate extends Command
     {
         $this->environment = $input->getOption('env'); 
         
-        $this->output->writeln(sprintf(
-            "<info>Hydrate <comment>%s</comment> with <comment>%s</comment> values</info>",
-            $input->getArgument('sourcePath'),
-            $this->environment
-        ));
-        
         if($input->getOption('dry-run'))
         {
             $this->dryRun = true;
@@ -81,9 +75,26 @@ class Hydrate extends Command
             $this->output->writeln("<fg=cyan>Backup enabled</fg=cyan>");
         }
         
+        $sourcePath = $input->getArgument('sourcePath');
+        if($sourcePath === null)
+        {
+            $profile = $this->app['profile'];
+            if($profile->hasSourcePath() !== true)
+            {
+                throw new \RuntimeException('Missing argument sourcePath');
+            }
+            
+            $sourcePath = $profile->getSourcePath();
+        }
+        
+        $this->output->writeln(sprintf(
+            "<info>Hydrate <comment>%s</comment> with <comment>%s</comment> values</info>",
+            $sourcePath,
+            $this->environment
+        ));
         $this->output->writeln('');
         
-        $this->app['sources.path'] = $input->getArgument('sourcePath');
+        $this->app['sources.path'] = $sourcePath;
         
         $this->processOverridenVariables(
             $this->parseOptionWithAssignments($input, 'override')
