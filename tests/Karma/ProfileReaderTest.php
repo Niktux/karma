@@ -15,7 +15,7 @@ class ProfileReaderTest extends PHPUnit_Framework_TestCase
         if($profileContent !== null)
         {
             $files = array(
-        	   $filename => $profileContent,
+               $filename => $profileContent,
             );
         }
         
@@ -50,7 +50,7 @@ class ProfileReaderTest extends PHPUnit_Framework_TestCase
     public function providerTestEmpty()
     {
         return array(
-        	'no profile' => array(null, null),
+            'no profile' => array(null, null),
             'invalid key' => array('suffixes: -tpl', null),
             'bad character case' => array('SUFFIX: -tpl', null),
             'bad profile filename' => array('suffix: -tpl', '.stuff'),
@@ -119,5 +119,48 @@ YAML;
     public function testSyntaxError()
     {
         $this->buildReader("\tsuffix:-tpl");
+    }
+    
+    public function testFormatter()
+    {
+        $yaml = <<<YAML
+formatters:
+  yaml:
+    <true>: "true"
+    <false>: "false"
+    <null> : 0    
+defaultFormatter: yaml
+YAML;
+        $reader = $this->buildReader($yaml);
+        
+        $this->assertTrue($reader->hasFormatter('yaml'), 'Yaml formatter must exist');
+        $this->assertFalse($reader->hasFormatter('php'), 'PHP formatter must not exist');
+        $this->assertInstanceOf('Karma\Formatter', $reader->getFormatter()); // default
+        $this->assertInstanceOf('Karma\Formatter', $reader->getFormatter('yaml'));
+        $this->assertSame($reader->getFormatter(), $reader->getFormatter('yaml'));
+    }
+    
+    /**
+     * @dataProvider providerTestFormatterSyntaxError
+     * @expectedException \InvalidArgumentException
+     */
+    public function testFormatterSyntaxError($yaml)
+    {
+        $reader = $this->buildReader($yaml);        
+    }
+    
+    public function providerTestFormatterSyntaxError()
+    {
+        return array(
+            array(<<<YAML
+formatters:
+  yaml: foobar
+YAML
+            ),
+            array(<<<YAML
+formatters: foobar
+YAML
+            ),
+        );
     }
 }

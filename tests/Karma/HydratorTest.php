@@ -5,6 +5,10 @@ use Gaufrette\Adapter\InMemory;
 use Karma\Hydrator;
 use Karma\Configuration\InMemoryReader;
 use Karma\Finder;
+use Karma\ProfileReader;
+use Karma\FormatterProviders\NullProvider;
+use Karma\FormatterProviders\CallbackProvider;
+use Karma\Formatters\Rules;
 
 class HydratorTest extends PHPUnit_Framework_TestCase
 {
@@ -21,9 +25,11 @@ class HydratorTest extends PHPUnit_Framework_TestCase
             'var:prod' => 69,
             'db.user:dev' => 'root',
             'db.user:preprod' => 'someUser',
+            'bool:dev' => true,
+            'bool:prod' => false,
         ));
         
-        $this->hydrator = new Hydrator($this->fs, $reader, new Finder($this->fs));
+        $this->hydrator = new Hydrator($this->fs, $reader, new Finder($this->fs), new NullProvider());
         $this->hydrator->setSuffix('-dist');
     }
     
@@ -133,5 +139,27 @@ class HydratorTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($this->fs->has('c.php~'));
         
         $this->assertSame('42', $this->fs->read('b.php~'));
+    }
+    
+    public function testFormatter()
+    {
+        $formatter = new Rules(array(
+        	'<true>' => 'string_true',
+        	'<false>' => 0,
+        ));
+        
+        $provider = new CallbackProvider(function ($index) use($formatter) {
+        	return $formatter;
+        });
+        
+        $this->hydrator->setFormatterProvider($provider);
+        
+        $this->write('a.php-dist', '<%bool%>');
+        
+        $this->hydrator->hydrate('dev');
+        $this->assertSame('string_true', $this->fs->read('a.php'));
+        
+        $this->hydrator->hydrate('prod');
+        $this->assertSame('0', $this->fs->read('a.php'));
     }
 }

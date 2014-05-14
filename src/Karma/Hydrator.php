@@ -4,6 +4,7 @@ namespace Karma;
 
 use Gaufrette\Filesystem;
 use Psr\Log\NullLogger;
+use Karma\FormatterProviders\NullProvider;
 
 class Hydrator
 {
@@ -15,9 +16,10 @@ class Hydrator
         $reader,
         $dryRun,
         $enableBackup,
-        $finder;
+        $finder,
+        $formatterProvider;
     
-    public function __construct(Filesystem $sources, Configuration $reader, Finder $finder)
+    public function __construct(Filesystem $sources, Configuration $reader, Finder $finder, FormatterProvider $formatterProvider = null)
     {
         $this->logger = new NullLogger();
         
@@ -28,6 +30,12 @@ class Hydrator
         $this->suffix = Application::DEFAULT_DISTFILE_SUFFIX;
         $this->dryRun = false;
         $this->enableBackup = false;
+        
+        $this->formatterProvider = $formatterProvider;
+        if($this->formatterProvider === null)
+        {
+            $this->formatterProvider = new NullProvider();
+        }
     }
 
     public function setSuffix($suffix)
@@ -47,6 +55,13 @@ class Hydrator
     public function enableBackup($value = true)
     {
         $this->enableBackup = (bool) $value;
+        
+        return $this;
+    }
+    
+    public function setFormatterProvider(FormatterProvider $formatterProvider)
+    {
+        $this->formatterProvider = $formatterProvider;
         
         return $this;
     }
@@ -88,8 +103,11 @@ class Hydrator
     
     private function injectValues($sourceFile, $content, $environment)
     {
-        $targetContent = preg_replace_callback('~<%(?P<variableName>[A-Za-z0-9_\.]+)%>~', function(array $matches) use($environment){
-            return $this->reader->read($matches['variableName'], $environment);
+        $formatter = $this->formatterProvider->getFormatter();
+        
+        $targetContent = preg_replace_callback('~<%(?P<variableName>[A-Za-z0-9_\.]+)%>~', function(array $matches) use($environment, $formatter){
+            $value = $this->reader->read($matches['variableName'], $environment);
+            return $formatter->format($value);
         }, $content, -1, $count);
         
         if($count === 0)

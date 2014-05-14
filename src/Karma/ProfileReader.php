@@ -5,19 +5,31 @@ namespace Karma;
 use Gaufrette\Filesystem;
 use Symfony\Component\Yaml\Yaml;
 use Symfony\Component\Yaml\Exception\ParseException;
+use Karma\Formatters\Raw;
+use Karma\Formatters\Rules;
 
-class ProfileReader
+class ProfileReader implements FormatterProvider
 {
+    const
+        DEFAULT_FORMATTER_INDEX = 'default';
+    
     private
         $templatesSuffix,
         $masterFilename,
-        $configurationDirectory;
+        $configurationDirectory,
+        $formatters,
+        $defaultFormatterName;
     
     public function __construct(Filesystem $fs)
     {
         $this->templatesSuffix = null;
         $this->masterFilename = null;
         $this->configurationDirectory = null;
+
+        $this->defaultFormatterName = self::DEFAULT_FORMATTER_INDEX;
+        $this->formatters = array(
+            self::DEFAULT_FORMATTER_INDEX => new Raw(),
+        );
 
         $this->read($fs);
     }
@@ -60,6 +72,34 @@ class ProfileReader
         {
             $this->configurationDirectory = $values['confDir'];
         }
+        
+        if(isset($values['formatters']))
+        {
+            $this->parseFormatters($values['formatters']);    
+        }
+        
+        if(isset($values['defaultFormatter']) && is_string($values['defaultFormatter']))
+        {
+            $this->defaultFormatterName = $values['defaultFormatter'];
+        }
+    }
+    
+    private function parseFormatters($content)
+    {
+        if(! is_array($content))
+        {
+            throw new \InvalidArgumentException('Syntax error in profile [formatters]');
+        }
+        
+        foreach($content as $name => $rules)
+        {
+            if(! is_array($rules))
+            {
+                throw new \InvalidArgumentException('Syntax error in profile [formatters]');
+            }
+            
+            $this->formatters[$name] = new Rules($rules);
+        }
     }
     
     public function hasTemplatesSuffix()
@@ -90,5 +130,34 @@ class ProfileReader
     public function getConfigurationDirectory()
     {
         return $this->configurationDirectory;
+    }
+    
+    public function hasFormatter($index)
+    {
+        return isset($this->formatters[$index]);
+    }
+    
+    public function getFormatter($index = null)
+    {
+        $formatter = $this->formatters[$this->getDefaultFormatterName()];
+        
+        if($this->hasFormatter($index))
+        {
+            $formatter = $this->formatters[$index];    
+        }    
+        
+        return $formatter;
+    }
+    
+    private function getDefaultFormatterName()
+    {
+        $name = self::DEFAULT_FORMATTER_INDEX;
+        
+        if($this->hasFormatter($this->defaultFormatterName))
+        {
+            $name = $this->defaultFormatterName;
+        }
+        
+        return $name;
     }
 }
