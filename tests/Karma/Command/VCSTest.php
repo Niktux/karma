@@ -3,6 +3,7 @@
 require_once __DIR__ . '/CommandTestCase.php';
 
 use Gaufrette\Adapter\InMemory;
+use Karma\Application;
 
 class VCSTest extends CommandTestCase
 {
@@ -23,5 +24,24 @@ class VCSTest extends CommandTestCase
         ));
         
         $this->assertDisplay('~Looking for vcs~');
+    }
+    
+    public function testSourcePathFromProfile()
+    {
+        $this->app['profile.fileSystem.adapter'] = new InMemory(array(
+            Application::PROFILE_FILENAME => 'sourcePath: lib/',
+        ));
+    
+        $this->runCommand('vcs', array());
+    }
+    
+    /**
+     * @expectedException \RuntimeException
+     */
+    public function testNoSourcePathProvided()
+    {
+        $this->app['profile.fileSystem.adapter'] = new InMemory();
+    
+        $this->runCommand('vcs', array());
     }
 }

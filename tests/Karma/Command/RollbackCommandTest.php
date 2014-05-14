@@ -4,6 +4,7 @@ require_once __DIR__ . '/CommandTestCase.php';
 
 use Gaufrette\Adapter\InMemory;
 use Gaufrette\Filesystem;
+use Karma\Application;
 
 class RollbackCommandTest extends CommandTestCase
 {
@@ -66,5 +67,25 @@ class RollbackCommandTest extends CommandTestCase
         ));
     
         $this->assertNotEmpty($cache->keys());
-    }    
+    }   
+
+    public function testSourcePathFromProfile()
+    {
+        $this->app['profile.fileSystem.adapter'] = new InMemory(array(
+            Application::PROFILE_FILENAME => 'sourcePath: lib/',
+        ));
+    
+        $this->runCommand('rollback', array());
+        $this->assertDisplay('~Rollback lib/~');
+    }
+    
+    /**
+     * @expectedException \RuntimeException
+     */
+    public function testNoSourcePathProvided()
+    {
+        $this->app['profile.fileSystem.adapter'] = new InMemory();
+    
+        $this->runCommand('rollback', array());
+    }
 }
