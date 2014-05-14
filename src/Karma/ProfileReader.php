@@ -8,7 +8,7 @@ use Symfony\Component\Yaml\Exception\ParseException;
 use Karma\Formatters\Raw;
 use Karma\Formatters\Rules;
 
-class ProfileReader
+class ProfileReader implements FormatterProvider
 {
     const
         DEFAULT_FORMATTER_INDEX = 'default';
