@@ -65,7 +65,7 @@ class ProfileReader implements FormatterProvider
             ));            
         }
         
-        foreach($this->attributes as $name => $value)
+        foreach(array_keys($this->attributes) as $name)
         {
             if(isset($values[$name]) && is_string($values[$name]))
             {
