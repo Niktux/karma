@@ -6,6 +6,18 @@ trait FilterInputVariable
 {
     private function filterValue($value)
     {
+        if(is_array($value))
+        {
+            return array_map(function ($item) {
+                return $this->filterOneValue($item);
+            }, $value);
+        }
+        
+        return $this->filterOneValue($value);
+    }
+    
+    private function filterOneValue($value)
+    {
         if(! is_string($value))
         {
             return $value;

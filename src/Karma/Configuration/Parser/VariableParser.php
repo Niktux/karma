@@ -109,6 +109,9 @@ class VariableParser extends AbstractGroupParser
         list($envList, $value) = explode(self::ASSIGNMENT, $line, 2);
         $environments = array_map('trim', explode(self::ENV_SEPARATOR, $envList));
         
+        $value = trim($value);
+        $value = $this->parseList($value);
+        
         $value = $this->filterValue($value);
         
         foreach($environments as $environment)
@@ -126,6 +129,16 @@ class VariableParser extends AbstractGroupParser
         }
         
         $this->valueFound = true;
+    }
+    
+    private function parseList($value)
+    {
+        if(preg_match('~^\[(?P<valueList>[^\[\]]*)\]$~', $value, $matches))
+        {
+            $value = array_map('trim', explode(',', $matches['valueList']));
+        }
+
+        return $value;
     }
     
     public function getVariables()
