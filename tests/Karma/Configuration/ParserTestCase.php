@@ -44,6 +44,7 @@ gourdin:
     preprod, recette, qualif = 1
             integration = null
     dev = 2
+    staging = string with blanks
 
                 # comment with bad indentation
 #compressedComment
@@ -67,6 +68,30 @@ my.var.with.subnames:
 param:
     dev = \${param}
     staging = Some\${nested}param
+            
+list.ok:
+    dev = [ one, two, three]
+    staging = [one,two]
+    prod = [alone]
+    preprod = not_a_list
+    default = [ single value with blanks]
+    other = [, 2, third]
+    staging2 = []
+    staging3 = [,,       ,  ,]
+
+list.notlist:
+    dev = string[weird
+    staging = string]weird
+    prod = [string[weird
+    default = [string
+    preprod = string]
+    other = arr[]
+    staging2 = arr[tung]
+    staging3 = [1,2,3]4
+    string1 = []]
+    string2 = [[]
+    string3 = [[]]
+    string4 = [][]
     
 CONFFILE;
 

@@ -34,12 +34,35 @@ class ValueFilterIterator extends \FilterIterator
     {
         $value = $this->getInnerIterator()->current();
         
+        return $this->acceptValue($value);
+    }
+    
+    private function acceptValue($value)
+    {
+        if(is_array($value))
+        {
+            return $this->acceptArray($value);
+        }
+        
         if($this->isRegex === true)
         {
             return preg_match($this->filter, $value);
         }
         
         return $value === $this->filter;
+    }
+    
+    private function acceptArray($value)
+    {
+        foreach($value as $oneValue)
+        {
+            if($this->acceptValue($oneValue))
+            {
+                return true;
+            }
+        }
+        
+        return false;
     }
     
     private function convertToRegex($filter)
@@ -58,15 +81,15 @@ class ValueFilterIterator extends \FilterIterator
     private function escapeRegexSpecialCharacters($filter)
     {
         return strtr($filter, array(
-            '.' => '\.',        	
-            '?' => '\?',        	
-            '+' => '\+',        	
-            '[' => '\[',        	
-            ']' => '\]',        	
-            '(' => '\(',        	
-            ')' => '\)',        	
-            '{' => '\{',        	
-            '}' => '\}',        	
+            '.' => '\.',
+            '?' => '\?',
+            '+' => '\+',
+            '[' => '\[',
+            ']' => '\]',
+            '(' => '\(',
+            ')' => '\)',
+            '{' => '\{',
+            '}' => '\}',
         ));
     }
 }

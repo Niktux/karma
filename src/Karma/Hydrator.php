@@ -9,6 +9,9 @@ use Karma\FormatterProviders\NullProvider;
 class Hydrator
 {
     use \Karma\Logging\LoggerAware;
+
+    const
+        VARIABLE_REGEX = '~<%(?P<variableName>[A-Za-z0-9_\.]+)%>~';
     
     private
         $sources,
@@ -103,19 +106,92 @@ class Hydrator
     
     private function injectValues($sourceFile, $content, $environment)
     {
-        $formatter = $this->formatterProvider->getFormatter();
+        $replacementCounter = 0;
         
-        $targetContent = preg_replace_callback('~<%(?P<variableName>[A-Za-z0-9_\.]+)%>~', function(array $matches) use($environment, $formatter){
-            $value = $this->reader->read($matches['variableName'], $environment);
-            return $formatter->format($value);
-        }, $content, -1, $count);
+        $replacementCounter += $this->injectScalarValues($content, $environment);
+        $replacementCounter += $this->injectListValues($content, $environment);
         
-        if($count === 0)
+        if($replacementCounter === 0)
         {
             $this->warning("No variable found in $sourceFile");
         }
         
-        return $targetContent;
+        return $content;
+    }
+    
+    private function injectScalarValues(& $content, $environment)
+    {
+        $formatter = $this->formatterProvider->getFormatter();
+        
+        $content = preg_replace_callback(self::VARIABLE_REGEX, function(array $matches) use($environment, $formatter)
+        {
+            $value = $this->reader->read($matches['variableName'], $environment);
+        
+            if(is_array($value))
+            {
+                // don't replace lists at this time
+                return $matches[0];
+            }
+        
+            return $formatter->format($value);
+        
+        }, $content, -1, $count);
+
+        return $count;
+    }
+    
+    private function injectListValues(& $content, $environment)
+    {
+        $formatter = $this->formatterProvider->getFormatter();
+        $replacementCounter = 0;
+        
+        $eol = $this->detectEol($content);
+        
+        while(preg_match(self::VARIABLE_REGEX, $content))
+        {
+            $lines = explode($eol, $content);
+            $result = array();
+            
+            foreach($lines as $line)
+            {
+                if(preg_match(self::VARIABLE_REGEX, $line, $matches))
+                {
+                    $values = $this->reader->read($matches['variableName'], $environment);
+                    
+                    if(is_array($values))
+                    {
+                        $replacementCounter++; 
+                        foreach($values as $value)
+                        {
+                            $result[] = preg_replace(self::VARIABLE_REGEX, $value, $line, 1);
+                        }
+
+                        continue;
+                    }
+                }
+
+                $result[] = $line;
+            }
+            
+            $content = implode($eol, $result); 
+        }
+        
+        return $replacementCounter; 
+    }
+    
+    private function detectEol($content)
+    {
+        $types = array("\r\n", "\r", "\n");
+        
+        foreach($types as $type)
+        {
+            if(strpos($content, $type) !== false)
+            {
+                return $type;
+            }
+        }
+        
+        return "\n";
     }
     
     private function backupFile($targetFile)
