@@ -97,8 +97,8 @@ class Command extends \Symfony\Component\Console\Command\Command
         }
         elseif(is_array($value))
         {
-            array_walk($value, function($item) {
-                return $this->formatValue($item);
+            array_walk($value, function(& $item) {
+                $item = $this->formatValue($item);
             });
             
             $value = sprintf('[%s]', implode(', ', $value));
