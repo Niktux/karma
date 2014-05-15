@@ -27,6 +27,7 @@ class HydratorTest extends PHPUnit_Framework_TestCase
             'db.user:preprod' => 'someUser',
             'bool:dev' => true,
             'bool:prod' => false,
+            'list:dev' => array('str', 2, true, null),
         ));
         
         $this->hydrator = new Hydrator($this->fs, $reader, new Finder($this->fs), new NullProvider());
@@ -155,9 +156,11 @@ class HydratorTest extends PHPUnit_Framework_TestCase
         $this->hydrator->setFormatterProvider($provider);
         
         $this->write('a.php-dist', '<%bool%>');
+        $this->write('list.txt-dist', '<%list%>');
         
         $this->hydrator->hydrate('dev');
         $this->assertSame('string_true', $this->fs->read('a.php'));
+        $this->assertSame(implode("\n", array("str", 2, "string_true", null)), $this->fs->read('list.txt'));
         
         $this->hydrator->hydrate('prod');
         $this->assertSame('0', $this->fs->read('a.php'));
