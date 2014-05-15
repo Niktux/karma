@@ -11,26 +11,31 @@ use Karma\Formatters\Rules;
 class ProfileReader implements FormatterProvider
 {
     const
-        DEFAULT_FORMATTER_INDEX = 'default';
+        DEFAULT_FORMATTER_NAME = 'default',
+    
+        TEMPLATE_SUFFIX_INDEX = 'suffix',
+        MASTER_FILENAME_INDEX = 'master',
+        CONFIGURATION_DIRECTORY_INDEX = 'confDir',
+        SOURCE_PATH_INDEX = 'sourcePath',
+        FORMATTERS_INDEX = 'formatters',
+        DEFAULT_FORMATTER_INDEX = 'defaultFormatter';
     
     private
-        $templatesSuffix,
-        $masterFilename,
-        $configurationDirectory,
-        $formatters,
-        $defaultFormatterName,
-        $sourcePath;
+        $attributes,
+        $formatters;
     
     public function __construct(Filesystem $fs)
     {
-        $this->templatesSuffix = null;
-        $this->masterFilename = null;
-        $this->configurationDirectory = null;
-        $this->sourcePath = null;
-
-        $this->defaultFormatterName = self::DEFAULT_FORMATTER_INDEX;
+        $this->attributes = array(
+            self::TEMPLATE_SUFFIX_INDEX => null,
+            self::MASTER_FILENAME_INDEX => null,
+            self::CONFIGURATION_DIRECTORY_INDEX => null,
+            self::SOURCE_PATH_INDEX => null,
+            self::DEFAULT_FORMATTER_INDEX => self::DEFAULT_FORMATTER_NAME    
+        );
+        
         $this->formatters = array(
-            self::DEFAULT_FORMATTER_INDEX => new Raw(),
+            self::DEFAULT_FORMATTER_NAME => new Raw(),
         );
 
         $this->read($fs);
@@ -60,34 +65,17 @@ class ProfileReader implements FormatterProvider
             ));            
         }
         
-        if(isset($values['suffix']))
+        foreach($this->attributes as $name => $value)
         {
-            $this->templatesSuffix = $values['suffix'];
+            if(isset($values[$name]) && is_string($values[$name]))
+            {
+                $this->attributes[$name] = $values[$name];
+            }
         }
         
-        if(isset($values['master']))
+        if(isset($values[self::FORMATTERS_INDEX]))
         {
-            $this->masterFilename = $values['master'];
-        }
-        
-        if(isset($values['confDir']))
-        {
-            $this->configurationDirectory = $values['confDir'];
-        }
-        
-        if(isset($values['sourcePath']))
-        {
-            $this->sourcePath = $values['sourcePath'];
-        }
-        
-        if(isset($values['formatters']))
-        {
-            $this->parseFormatters($values['formatters']);    
-        }
-        
-        if(isset($values['defaultFormatter']) && is_string($values['defaultFormatter']))
-        {
-            $this->defaultFormatterName = $values['defaultFormatter'];
+            $this->parseFormatters($values[self::FORMATTERS_INDEX]);    
         }
     }
     
@@ -111,42 +99,59 @@ class ProfileReader implements FormatterProvider
     
     public function hasTemplatesSuffix()
     {
-        return $this->templatesSuffix !== null;
+        return $this->has(self::TEMPLATE_SUFFIX_INDEX);
     }
     
     public function getTemplatesSuffix()
     {
-        return $this->templatesSuffix;
+        return $this->get(self::TEMPLATE_SUFFIX_INDEX);
     }
     
     public function hasMasterFilename()
     {
-        return $this->masterFilename !== null;
+        return $this->has(self::MASTER_FILENAME_INDEX);
     }
     
     public function getMasterFilename()
     {
-        return $this->masterFilename;
+        return $this->get(self::MASTER_FILENAME_INDEX);
     }
     
     public function hasConfigurationDirectory()
     {
-        return $this->configurationDirectory !== null;
+        return $this->has(self::CONFIGURATION_DIRECTORY_INDEX);
     }
     
     public function getConfigurationDirectory()
     {
-        return $this->configurationDirectory;
+        return $this->get(self::CONFIGURATION_DIRECTORY_INDEX);
     }
     
     public function hasSourcePath()
     {
-        return $this->sourcePath !== null;
+        return $this->has(self::SOURCE_PATH_INDEX);
     }
     
     public function getSourcePath()
     {
-        return $this->sourcePath;
+        return $this->get(self::SOURCE_PATH_INDEX);
+    }
+    
+    private function has($attributeName)
+    {
+        return isset($this->attributes[$attributeName]);
+    }
+    
+    private function get($attributeName)
+    {
+        $value = null;
+
+        if($this->has($attributeName))
+        {
+            $value = $this->attributes[$attributeName];
+        }
+        
+        return $value;
     }
     
     public function hasFormatter($index)
@@ -168,11 +173,13 @@ class ProfileReader implements FormatterProvider
     
     private function getDefaultFormatterName()
     {
-        $name = self::DEFAULT_FORMATTER_INDEX;
+        $name = self::DEFAULT_FORMATTER_NAME;
         
-        if($this->hasFormatter($this->defaultFormatterName))
+        $defaultFormatterName = $this->get(self::DEFAULT_FORMATTER_INDEX);
+        
+        if($this->hasFormatter($defaultFormatterName))
         {
-            $name = $this->defaultFormatterName;
+            $name = $defaultFormatterName;
         }
         
         return $name;
