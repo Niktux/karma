@@ -38,6 +38,7 @@ class ParserTest extends ParserTestCase
             array('gourdin', 'qualif', 1),    
             array('gourdin', 'integration', null),    
             array('gourdin', 'dev', 2),
+            array('gourdin', 'staging', 'string with blanks'),
                 
             array('server', 'prod', 'sql21'),    
             array('server', 'preprod', 'prod21'),    
@@ -59,6 +60,24 @@ class ParserTest extends ParserTestCase
                         
             // db.conf
             array('user', 'default', 'root'),    
+            
+            // lists
+            array('list.ok', 'dev', array('one', 'two', 'three')),
+            array('list.ok', 'staging', array('one', 'two')),
+            array('list.ok', 'prod', array('alone')),
+            array('list.ok', 'preprod', 'not_a_list'),
+            array('list.ok', 'default', array('single value with blanks')),
+            array('list.ok', 'other', array('', 2, 'third')),
+            array('list.ok', 'staging2', array('')),
+            array('list.ok', 'staging3', array('', '', '', '', '')),
+            
+            array('list.notlist', 'dev', 'string[weird'),
+            array('list.notlist', 'staging', 'string]weird'),
+            array('list.notlist', 'prod', '[string[weird'),
+            array('list.notlist', 'default', '[string'),
+            array('list.notlist', 'preprod', 'string]'),
+            array('list.notlist', 'other', 'arr[]'),
+            array('list.notlist', 'staging2', 'arr[tung]'),
         );    
     }
     
@@ -210,7 +229,31 @@ CONFFILE
 toto:
     foo = bar
 CONFFILE
+            ),
             
+            'list nested square brackets #1' => array(<<<CONFFILE
+[variables]
+toto:
+    foo = []]
+CONFFILE
+            ),
+            'list nested square brackets #2' => array(<<<CONFFILE
+[variables]
+toto:
+    foo = [[]
+CONFFILE
+            ),
+            'list nested square brackets #3' => array(<<<CONFFILE
+[variables]
+toto:
+    foo = [[]]
+CONFFILE
+            ),
+            'list nested square brackets #4' => array(<<<CONFFILE
+[variables]
+toto:
+    foo = [][]
+CONFFILE
             ),
         );
     }
