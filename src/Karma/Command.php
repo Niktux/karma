@@ -95,6 +95,14 @@ class Command extends \Symfony\Component\Console\Command\Command
         {
             $value = '<error>NOT FOUND</error>';
         }
+        elseif(is_array($value))
+        {
+            array_walk($value, function($item) {
+            	return $this->formatValue($item);
+            });
+            
+            $value = sprintf('[%s]', implode(', ', $value));
+        }
     
         return $value;
     }
