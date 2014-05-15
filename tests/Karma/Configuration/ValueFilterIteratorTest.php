@@ -1,9 +1,8 @@
 <?php
 
 use Karma\Configuration\ValueFilterIterator;
-use Gaufrette\Adapter\iterator_to_array;
 
-class ValueFilterTest extends PHPUnit_Framework_TestCase
+class ValueFilterIteratorTest extends PHPUnit_Framework_TestCase
 {
     private
         $values;
