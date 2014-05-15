@@ -23,6 +23,7 @@ class ValueFilterIteratorTest extends PHPUnit_Framework_TestCase
             'numberAsString' => '10',
             'stringWithStar' => 'b*te',
             'nullValue' => null,
+            'list' => array(100, 'arootb', true, 'goo'),
         ));
     }
     
@@ -52,6 +53,7 @@ class ValueFilterIteratorTest extends PHPUnit_Framework_TestCase
                 'db.pass' => 'rootroot',
                 'email' => 'root@db.org',
                 'someString' => 'Connecting as root is evil ! Mike12',
+                'list' => array(100, 'arootb', true, 'goo'),
             )),
             array('*root', array(
                 'db.user' => 'root',
@@ -72,6 +74,7 @@ class ValueFilterIteratorTest extends PHPUnit_Framework_TestCase
             array('10*', array(
                 'tenNumber' => 10,
                 'numberAsString' => '10',
+                'list' => array(100, 'arootb', true, 'goo'),
             )),
             array('0', array(
                 'number' => 0,
@@ -81,9 +84,11 @@ class ValueFilterIteratorTest extends PHPUnit_Framework_TestCase
                 'number' => 0,
                 'tenNumber' => 10,
                 'numberAsString' => '10',
+                'list' => array(100, 'arootb', true, 'goo'),                        
             )),
             array('true', array(
                 'display_errors' => true,
+                'list' => array(100, 'arootb', true, 'goo'),                      
             )),
             array('true*', array(
                 'trueString' => 'true',
@@ -96,6 +101,7 @@ class ValueFilterIteratorTest extends PHPUnit_Framework_TestCase
                 'db.pass' => 'rootroot',
                 'email' => 'root@db.org',
                 'someString' => 'Connecting as root is evil ! Mike12',
+                'list' => array(100, 'arootb', true, 'goo'), // once
             )),
             array('192.160.13.12', array(
                 'db.host' => '192.160.13.12',
