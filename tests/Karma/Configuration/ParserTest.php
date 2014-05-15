@@ -78,6 +78,12 @@ class ParserTest extends ParserTestCase
             array('list.notlist', 'preprod', 'string]'),
             array('list.notlist', 'other', 'arr[]'),
             array('list.notlist', 'staging2', 'arr[tung]'),
+            array('list.notlist', 'staging3', '[1,2,3]4'),
+            
+            array('list.notlist', 'string1', '[]]'),
+            array('list.notlist', 'string2', '[[]'),
+            array('list.notlist', 'string3', '[[]]'),
+            array('list.notlist', 'string4', '[][]'),
         );    
     }
     
@@ -228,31 +234,6 @@ CONFFILE
 [variables]  # illegal comment
 toto:
     foo = bar
-CONFFILE
-            ),
-            
-            'list nested square brackets #1' => array(<<<CONFFILE
-[variables]
-toto:
-    foo = []]
-CONFFILE
-            ),
-            'list nested square brackets #2' => array(<<<CONFFILE
-[variables]
-toto:
-    foo = [[]
-CONFFILE
-            ),
-            'list nested square brackets #3' => array(<<<CONFFILE
-[variables]
-toto:
-    foo = [[]]
-CONFFILE
-            ),
-            'list nested square brackets #4' => array(<<<CONFFILE
-[variables]
-toto:
-    foo = [][]
 CONFFILE
             ),
         );

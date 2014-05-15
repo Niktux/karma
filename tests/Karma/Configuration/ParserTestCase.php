@@ -87,6 +87,11 @@ list.notlist:
     preprod = string]
     other = arr[]
     staging2 = arr[tung]
+    staging3 = [1,2,3]4
+    string1 = []]
+    string2 = [[]
+    string3 = [[]]
+    string4 = [][]
     
 CONFFILE;
 

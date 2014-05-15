@@ -87,8 +87,14 @@ class ReaderTest extends ParserTestCase
             array('list.notlist', 'preprod', 'string]'),
             array('list.notlist', 'other', 'arr[]'),
             array('list.notlist', 'staging2', 'arr[tung]'),
+            array('list.notlist', 'staging3', '[1,2,3]4'),
             array('list.notlist', 'staging_default', '[string'),
             array('list.notlist', 'prod_default', '[string'),
+            
+            array('list.notlist', 'string1', '[]]'),
+            array('list.notlist', 'string2', '[[]'),
+            array('list.notlist', 'string3', '[[]]'),
+            array('list.notlist', 'string4', '[][]'),
         );    
     }
     
@@ -132,7 +138,7 @@ class ReaderTest extends ParserTestCase
         $variables = $this->reader->getAllVariables();
         sort($variables);
         
-        $expected = array('print_errors', 'debug', 'gourdin', 'server', 'tva', 'apiKey', 'my.var.with.subnames', 'param', 'user');
+        $expected = array('print_errors', 'debug', 'gourdin', 'server', 'tva', 'apiKey', 'my.var.with.subnames', 'param', 'user', 'list.ok', 'list.notlist');
         sort($expected);
         
         $this->assertSame($expected, $variables);
@@ -170,7 +176,9 @@ class ReaderTest extends ParserTestCase
                 'apiKey' => '=2',
                 'my.var.with.subnames' => 21,
                 'param' => '${param}',
-                'user' => 'root'
+                'user' => 'root',
+                'list.ok' => array('one', 'two', 'three'),
+                'list.notlist' => 'string[weird',
             )),
             array('prod', array(
                 'print_errors' => false,
@@ -181,7 +189,9 @@ class ReaderTest extends ParserTestCase
                 'apiKey' => 'qd4#qs64d6q6=fgh4f6ùftgg==sdr',
                 'my.var.with.subnames' => 21,
                 'param' => Configuration::NOT_FOUND,
-                'user' => 'root'
+                'user' => 'root',
+                'list.ok' => array('alone'),
+                'list.notlist' => '[string[weird',
             )),                                 
         );
     }
@@ -207,11 +217,15 @@ class ReaderTest extends ParserTestCase
                 'server' => array(Configuration::NOT_FOUND, 'sql21'),
                 'apiKey' => array('=2', 'qd4#qs64d6q6=fgh4f6ùftgg==sdr'),
                 'param' => array('${param}', Configuration::NOT_FOUND),
+                'list.ok' => array(array('one', 'two', 'three'), array('alone')),
+                'list.notlist' => array('string[weird', '[string[weird'),
             )),
             array('preprod', 'prod', array(
                 'gourdin' => array(1, 0),
                 'tva' => array(20.5, 19.6),
                 'server' => array('prod21', 'sql21'),
+                'list.ok' => array('not_a_list', array('alone')),
+                'list.notlist' => array('string]', '[string[weird'),
             )),                        
         );
     }
