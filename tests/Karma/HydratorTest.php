@@ -162,4 +162,93 @@ class HydratorTest extends PHPUnit_Framework_TestCase
         $this->hydrator->hydrate('prod');
         $this->assertSame('0', $this->fs->read('a.php'));
     }
+    
+    /**
+     * @dataProvider providerTestList
+     */
+    public function testList($env, $expected)
+    {
+        $this->fs = new Filesystem(new InMemory());
+        $reader = new InMemoryReader(array(
+            'var:dev' => array(42, 51, 69, 'some string'),
+            'var:staging' => array(33),
+            'var:prod' => 1337,
+        ));
+        
+        $this->hydrator = new Hydrator($this->fs, $reader, new Finder($this->fs));
+        
+        $this->write('a.yml-dist', <<< YAML
+array:
+  - <%var%>
+YAML
+        );
+        
+        $this->hydrator->hydrate($env);
+        $this->assertSame($expected, $this->fs->read('a.yml'));
+    }
+    
+    public function providerTestList()
+    {
+        return array(
+            array('dev', <<< YAML
+array:
+  - 42
+  - 51
+  - 69
+  - some string
+YAML
+          ),            
+            array('staging', <<< YAML
+array:
+  - 33
+YAML
+          ),            
+            array('prod', <<< YAML
+array:
+  - 1337
+YAML
+          ),            
+        );
+    }
+    
+    public function testListMultiFormat()
+    {
+        $this->fs = new Filesystem(new InMemory());
+        $reader = new InMemoryReader(array(
+            'var:dev' => array(42, 51, 69),
+        ));
+    
+        $this->hydrator = new Hydrator($this->fs, $reader, new Finder($this->fs));
+    
+        $this->write('a.php-dist', <<< PHP
+\$var = array(
+    <%var%>,
+);
+PHP
+        );
+        $expectedPhp = <<< PHP
+\$var = array(
+    42,
+    51,
+    69,
+);
+PHP;
+        
+        $this->write('b.ini-dist', <<< INI
+[group]
+list[]=<%var%>
+INI
+        );
+    
+        $expectedIni = <<< INI
+[group]
+list[]=42
+list[]=51
+list[]=69
+INI;
+    
+        $this->hydrator->hydrate('dev');
+        $this->assertSame($expectedPhp, $this->fs->read('a.php'));
+        $this->assertSame($expectedIni, $this->fs->read('b.ini'));
+    }
 }
