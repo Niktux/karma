@@ -251,4 +251,70 @@ INI;
         $this->assertSame($expectedPhp, $this->fs->read('a.php'));
         $this->assertSame($expectedIni, $this->fs->read('b.ini'));
     }
+    
+    public function testListEdgeCases()
+    {
+        $this->fs = new Filesystem(new InMemory());
+        $reader = new InMemoryReader(array(
+            'var:dev' => array(42, 51),
+            'foo:dev' => 33,
+            'bar:dev' => array(1337, 1001),
+        ));
+        
+        $this->hydrator = new Hydrator($this->fs, $reader, new Finder($this->fs));
+        
+        $this->write('a.txt-dist', <<< TXT
+foo = <%var%> <%foo%>
+bar[<%bar%>] = <%var%>
+baz = <%bar%> <%bar%> <%bar%>
+TXT
+        );
+        
+        $expected = <<< TXT
+foo = 42 33
+foo = 51 33
+bar[1337] = 42
+bar[1337] = 51
+bar[1001] = 42
+bar[1001] = 51
+baz = 1337 1337 1337
+baz = 1337 1337 1001
+baz = 1337 1001 1337
+baz = 1337 1001 1001
+baz = 1001 1337 1337
+baz = 1001 1337 1001
+baz = 1001 1001 1337
+baz = 1001 1001 1001
+TXT;
+        
+        $this->hydrator->hydrate('dev');
+        $this->assertSame($expected, $this->fs->read('a.txt'));        
+    }
+    
+    /**
+     * @dataProvider providerTestListEndOfLine
+     */
+    public function testListEndOfLine($content, $expected)
+    {
+        $this->fs = new Filesystem(new InMemory());
+        $reader = new InMemoryReader(array(
+            'var:dev' => array(42, 51),
+        ));
+        
+        $this->hydrator = new Hydrator($this->fs, $reader, new Finder($this->fs));
+        
+        $this->write('a.txt-dist', $content);
+        
+        $this->hydrator->hydrate('dev');
+        $this->assertSame($expected, $this->fs->read('a.txt'));        
+    }
+    
+    public function providerTestListEndOfLine()
+    {
+        return array(
+            "unix"    => array("line:\n - var=<%var%>\nend", "line:\n - var=42\n - var=51\nend"),    
+            "windows" => array("line:\r\n - var=<%var%>\r\nend", "line:\r\n - var=42\r\n - var=51\r\nend"),    
+            "mac" => array("line:\r - var=<%var%>\rend", "line:\r - var=42\r - var=51\rend"),
+        );    
+    }
 }
