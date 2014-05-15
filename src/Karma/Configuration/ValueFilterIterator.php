@@ -58,15 +58,15 @@ class ValueFilterIterator extends \FilterIterator
     private function escapeRegexSpecialCharacters($filter)
     {
         return strtr($filter, array(
-            '.' => '\.',        	
-            '?' => '\?',        	
-            '+' => '\+',        	
-            '[' => '\[',        	
-            ']' => '\]',        	
-            '(' => '\(',        	
-            ')' => '\)',        	
-            '{' => '\{',        	
-            '}' => '\}',        	
+            '.' => '\.',
+            '?' => '\?',
+            '+' => '\+',
+            '[' => '\[',
+            ']' => '\]',
+            '(' => '\(',
+            ')' => '\)',
+            '{' => '\{',
+            '}' => '\}',
         ));
     }
 }
