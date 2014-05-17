@@ -86,6 +86,8 @@ class Parser
             $variables = $this->getVariables();
             $this->printExternalFilesStatus();
             
+            $this->postParse();
+            
             return $variables;
         }
         catch(\RuntimeException $e)
@@ -268,5 +270,13 @@ class Parser
         }
         
         return $groups;
+    }
+    
+    private function postParse()
+    {
+        foreach($this->parsers as $parser)
+        {
+            $parser->postParse();
+        }
     }
 }

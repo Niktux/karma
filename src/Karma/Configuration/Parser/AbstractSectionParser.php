@@ -24,4 +24,8 @@ abstract class AbstractSectionParser implements SectionParser
     {
         return strpos(trim($line), self::COMMENT_CHARACTER) === 0;
     }
+    
+    public function postParse()
+    {
+    }
 }
