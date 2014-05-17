@@ -117,6 +117,7 @@ CONFFILE;
         $this->parser
             ->enableIncludeSupport()
             ->enableExternalSupport()
+            ->enableGroupSupport()
             ->setLogger(new OutputInterfaceAdapter(new ConsoleOutput(OutputInterface::VERBOSITY_QUIET)));
     }
 }
