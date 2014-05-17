@@ -292,7 +292,7 @@ CONFFILE
 name = [dev,,staging]
 CONFFILE
             ),
-            'groups syntax error : duplicate group name' => array(<<<CONFFILE
+            'groups syntax error : duplicated group name' => array(<<<CONFFILE
 [groups]
 prod = [dev,staging]
 prod = [preprod]
