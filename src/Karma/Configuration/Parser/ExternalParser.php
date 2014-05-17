@@ -4,7 +4,7 @@ namespace Karma\Configuration\Parser;
 
 use Karma\Configuration\Parser;
 
-class ExternalParser extends AbstractGroupParser
+class ExternalParser extends AbstractSectionParser
 {
     private
         $parser,

@@ -2,7 +2,7 @@
 
 namespace Karma\Configuration\Parser;
 
-class NullParser extends AbstractGroupParser
+class NullParser extends AbstractSectionParser
 {
     public function parse($line)
     {

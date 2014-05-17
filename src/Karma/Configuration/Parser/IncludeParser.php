@@ -2,7 +2,7 @@
 
 namespace Karma\Configuration\Parser;
 
-class IncludeParser extends AbstractGroupParser
+class IncludeParser extends AbstractSectionParser
 {
     private
         $files;

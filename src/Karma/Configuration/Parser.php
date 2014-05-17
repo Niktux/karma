@@ -118,10 +118,10 @@ class Parser
         $this->currentParser = new NullParser();
         foreach($lines as $line)
         {
-            $groupName = $this->extractGroupName($line);
-            if($groupName !== null)
+            $sectionName = $this->extractSectionName($line);
+            if($sectionName !== null)
             {
-                $this->switchGroupParser($groupName);
+                $this->switchSectionParser($sectionName);
                 continue;
             }
 
@@ -169,27 +169,27 @@ class Parser
         }
     }
     
-    private function extractGroupName($line)
+    private function extractSectionName($line)
     {
-        $groupName = null;
+        $sectionName = null;
         
         // [.*]
         if(preg_match('~^\[(?P<groupName>[^\]]+)\]$~', $line, $matches))
         {
-            $groupName = trim(strtolower($matches['groupName']));
+            $sectionName = trim(strtolower($matches['groupName']));
         }
         
-        return $groupName;
+        return $sectionName;
     }
     
-    private function switchGroupParser($groupName)
+    private function switchSectionParser($sectionName)
     {
-        if(! isset($this->parsers[$groupName]))
+        if(! isset($this->parsers[$sectionName]))
         {
-            throw new \RuntimeException('Unknown group name ' . $groupName);
+            throw new \RuntimeException('Unknown section name ' . $sectionName);
         }
         
-        $this->currentParser = $this->parsers[$groupName];
+        $this->currentParser = $this->parsers[$sectionName];
     }
     
     private function getVariables()

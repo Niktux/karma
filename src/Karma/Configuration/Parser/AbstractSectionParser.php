@@ -2,7 +2,7 @@
 
 namespace Karma\Configuration\Parser;
 
-abstract class AbstractGroupParser implements GroupParser
+abstract class AbstractSectionParser implements SectionParser
 {
     const
         COMMENT_CHARACTER = '#';

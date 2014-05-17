@@ -2,7 +2,7 @@
 
 namespace Karma\Configuration\Parser;
 
-class VariableParser extends AbstractGroupParser
+class VariableParser extends AbstractSectionParser
 {
     use \Karma\Configuration\FilterInputVariable;
     
