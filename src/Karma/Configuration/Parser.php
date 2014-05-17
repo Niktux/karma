@@ -8,6 +8,7 @@ use Karma\Configuration\Parser\IncludeParser;
 use Karma\Configuration\Parser\VariableParser;
 use Karma\Configuration\Parser\ExternalParser;
 use Psr\Log\NullLogger;
+use Karma\Configuration\Parser\GroupParser;
 
 class Parser
 {
@@ -16,7 +17,8 @@ class Parser
     const
         INCLUDES = 'includes',
         VARIABLES = 'variables',
-        EXTERNALS = 'externals';
+        EXTERNALS = 'externals',
+        GROUPS = 'groups';
     
     private
         $parsers,
@@ -60,6 +62,16 @@ class Parser
         if(! isset($this->parsers[self::EXTERNALS]))
         {
             $this->parsers[self::EXTERNALS] = new ExternalParser(new Parser($this->fs));
+        }
+        
+        return $this;
+    }
+    
+    public function enableGroupSupport()
+    {
+        if(! isset($this->parsers[self::GROUPS]))
+        {
+            $this->parsers[self::GROUPS] = new GroupParser();
         }
         
         return $this;
@@ -240,5 +252,17 @@ class Parser
         }
         
         return $files;
+    }
+    
+    public function getGroups()
+    {
+        $groups = array();
+        
+        if(isset($this->parsers[self::GROUPS]))
+        {
+            $groups = $this->parsers[self::GROUPS]->getCollectedGroups();
+        }
+        
+        return $groups;
     }
 }
