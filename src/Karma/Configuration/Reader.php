@@ -11,9 +11,11 @@ class Reader extends AbstractReader
     
     private
         $variables,
-        $externalReader;
+        $externalReader,
+        $groupNames,
+        $environmentGroups;
     
-    public function __construct(array $variables, array $externalVariables)
+    public function __construct(array $variables, array $externalVariables, array $groups = array())
     {
         parent::__construct();
         
@@ -26,13 +28,38 @@ class Reader extends AbstractReader
         {
             $this->externalReader = new Reader($externalVariables, array());
         }
+        
+        $this->loadGroups($groups);
     }    
+    
+    private function loadGroups(array $groups)
+    {
+        $this->environmentGroups = array();
+        
+        foreach($groups as $group => $environments)
+        {
+            foreach($environments as $environment)
+            {
+                $this->environmentGroups[$environment] = $group;
+            }    
+        }  
+
+        $this->groupNames = array_keys($groups);
+    }
     
     protected function readRaw($variable, $environment = null)
     {
         if($environment === null)
         {
             $environment = $this->defaultEnvironment;
+        }
+        
+        if(in_array($environment, $this->groupNames))
+        {
+            throw new \RuntimeException(sprintf(
+               'Group can not be used as environment (try with group %s detected)',
+                $environment
+            ));
         }
         
         return $this->readVariable($variable, $environment);
@@ -50,11 +77,11 @@ class Reader extends AbstractReader
         
         $envs = $this->variables[$variable]['env'];
 
-        foreach(array($environment, self::DEFAULT_ENVIRONMENT) as $searchedEnvironment)
+        foreach($this->getEnvironmentEntries($environment) as $entry)
         {
-            if(array_key_exists($searchedEnvironment, $envs))
+            if(array_key_exists($entry, $envs))
             {
-                $value = $envs[$searchedEnvironment];
+                $value = $envs[$entry];
                 
                 if($value === self::EXTERNAL)
                 {
@@ -70,6 +97,20 @@ class Reader extends AbstractReader
             $variable,
             $environment
         ));
+    }
+    
+    private function getEnvironmentEntries($environment)
+    {
+        $entries = array($environment);
+        
+        if(isset($this->environmentGroups[$environment]))
+        {
+            $entries[] = $this->environmentGroups[$environment];          
+        }
+        
+        $entries[] = self::DEFAULT_ENVIRONMENT;
+        
+        return $entries;
     }
     
     private function processExternal($variable, $environment)
