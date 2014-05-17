@@ -128,8 +128,12 @@ class Parser
         }
         
         $this->currentParser = new NullParser();
+        $currentLineNumber = 0;
+        
         foreach($lines as $line)
         {
+            $currentLineNumber++;
+            
             $sectionName = $this->extractSectionName($line);
             if($sectionName !== null)
             {
@@ -137,7 +141,7 @@ class Parser
                 continue;
             }
 
-            $this->currentParser->parse($line);
+            $this->currentParser->parse($line, $currentLineNumber);
         }
         
         $this->parsers[self::VARIABLES]->endOfFileCheck();

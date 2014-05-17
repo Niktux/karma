@@ -20,7 +20,7 @@ class ExternalParser extends AbstractSectionParser
         $this->filesStatus = array();
     }
     
-    public function parse($line)
+    public function parse($line, $lineNumber)
     {
         if($this->isACommentLine($line))
         {

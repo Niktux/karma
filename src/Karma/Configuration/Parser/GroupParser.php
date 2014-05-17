@@ -12,7 +12,7 @@ class GroupParser extends AbstractSectionParser
         $this->groups = array();
     }
     
-    public function parse($line)
+    public function parse($line, $lineNumber)
     {
         if($this->isACommentLine($line))
         {
@@ -27,9 +27,9 @@ class GroupParser extends AbstractSectionParser
         }
         
         throw new \RuntimeException(sprintf(
-        	'Syntax error on line %d in %s : %s',
-            -1, // FIXME
+        	'Syntax error in %s line %d : %s',
             $this->currentFilePath,
+            $lineNumber,
             $line
         ));
     }
