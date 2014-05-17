@@ -298,6 +298,11 @@ prod = [dev,staging]
 prod = [preprod]
 CONFFILE
             ),
+            'groups syntax error : duplicated environment in same group' => array(<<<CONFFILE
+[groups]
+prod = [dev,staging, dev]
+CONFFILE
+            ),
             'groups syntax error : circular reference' => array(<<<CONFFILE
 [groups]
 foo = [bar]
