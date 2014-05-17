@@ -348,7 +348,7 @@ db.user:
 CONFFILE;
         
         $files = array(
-            'master.conf' => $masterContent,
+            self::MASTERFILE_PATH => $masterContent,
             'external1.conf' => $externalContent1,
             'external2.conf' => $externalContent2,
         );
@@ -358,7 +358,7 @@ CONFFILE;
         $parser->enableIncludeSupport()
             ->enableExternalSupport();
 
-        $variables = $parser->parse('master.conf');
+        $variables = $parser->parse(self::MASTERFILE_PATH);
         
         $expected = array(
             'db.pass' => array(
@@ -407,13 +407,13 @@ db.cache:
     default = false
 CONFFILE;
         
-        $parser = new Parser(new Filesystem(new InMemory(array('master.conf' => $masterContent))));
+        $parser = new Parser(new Filesystem(new InMemory(array(self::MASTERFILE_PATH => $masterContent))));
         
         $parser->enableIncludeSupport()
             ->enableExternalSupport()
             ->enableGroupSupport();
 
-        $variables = $parser->parse('master.conf');
+        $variables = $parser->parse(self::MASTERFILE_PATH);
         
         $expected = array(
             'db.pass' => array(
