@@ -4,7 +4,7 @@ namespace Karma\Configuration\Parser;
 
 use Karma\Configuration\Parser;
 
-class ExternalParser extends AbstractGroupParser
+class ExternalParser extends AbstractSectionParser
 {
     private
         $parser,
@@ -20,7 +20,7 @@ class ExternalParser extends AbstractGroupParser
         $this->filesStatus = array();
     }
     
-    public function parse($line)
+    public function parse($line, $lineNumber)
     {
         if($this->isACommentLine($line))
         {

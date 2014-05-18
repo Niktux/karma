@@ -113,6 +113,7 @@ CONFFILE
         $this->parser
             ->enableIncludeSupport()
             ->enableExternalSupport()
+            ->enableGroupSupport()
             ->parse(self::MASTERFILE_PATH);
     }
     
@@ -236,6 +237,84 @@ toto:
     foo = bar
 CONFFILE
             ),
+            'groups syntax error : missing [] #1' => array(<<<CONFFILE
+[groups]
+name = foobar
+CONFFILE
+            ),
+            'groups syntax error : missing [] #2' => array(<<<CONFFILE
+[groups]
+name = [foobar
+CONFFILE
+            ),
+            'groups syntax error : missing [] #3' => array(<<<CONFFILE
+[groups]
+name = foobar]
+CONFFILE
+            ),
+            'groups syntax error : missing [] #4' => array(<<<CONFFILE
+[groups]
+name = [foob]ar
+CONFFILE
+            ),
+            'groups syntax error : missing [] #5' => array(<<<CONFFILE
+[groups]
+name = fo[obar]
+CONFFILE
+            ),
+            'groups syntax error : missing [] #6' => array(<<<CONFFILE
+[groups]
+name = fo[ob]ar
+CONFFILE
+            ),
+            'groups syntax error : not a single list' => array(<<<CONFFILE
+[groups]
+name = [a,b,c][d,e,f]
+CONFFILE
+            ),
+            'groups syntax error : empty env #1' => array(<<<CONFFILE
+[groups]
+name = []
+CONFFILE
+            ),
+            'groups syntax error : empty env #2' => array(<<<CONFFILE
+[groups]
+name = [dev,staging,]
+CONFFILE
+            ),
+            'groups syntax error : empty env #3' => array(<<<CONFFILE
+[groups]
+name = [,dev,staging]
+CONFFILE
+            ),
+            'groups syntax error : empty env #4' => array(<<<CONFFILE
+[groups]
+name = [dev,,staging]
+CONFFILE
+            ),
+            'groups syntax error : duplicated group name' => array(<<<CONFFILE
+[groups]
+prod = [dev,staging]
+prod = [preprod]
+CONFFILE
+            ),
+            'groups syntax error : duplicated environment in same group' => array(<<<CONFFILE
+[groups]
+prod = [dev,staging, dev]
+CONFFILE
+            ),
+            'groups syntax error : circular reference' => array(<<<CONFFILE
+[groups]
+foo = [bar]
+bar = [baz]
+CONFFILE
+            ),
+            'groups syntax error : env in many groups' => array(<<<CONFFILE
+[groups]
+foo = [baz]
+bar = [baz]
+CONFFILE
+            ),
         );
     }
     
@@ -269,7 +348,7 @@ db.user:
 CONFFILE;
         
         $files = array(
-            'master.conf' => $masterContent,
+            self::MASTERFILE_PATH => $masterContent,
             'external1.conf' => $externalContent1,
             'external2.conf' => $externalContent2,
         );
@@ -279,7 +358,7 @@ CONFFILE;
         $parser->enableIncludeSupport()
             ->enableExternalSupport();
 
-        $variables = $parser->parse('master.conf');
+        $variables = $parser->parse(self::MASTERFILE_PATH);
         
         $expected = array(
             'db.pass' => array(
@@ -303,5 +382,79 @@ CONFFILE;
                 $this->assertSame($expectedValue, $variables[$variable]['env'][$environment]);
             }
         }
+    }
+    
+    public function testGroups()
+    {
+        $masterContent = <<<CONFFILE
+[groups]
+qa = [ staging, preprod ]
+dev = [ dev1, dev2,dev3]
+production=[prod]
+
+[variables]
+db.pass:
+    dev = 1234
+    qa = password
+    prod = <external>
+db.user:
+    dev1 = devuser1
+    dev2 = devuser2
+    dev3 = devuser3
+    qa = qauser
+db.cache:
+    preprod = true
+    default = false
+CONFFILE;
+        
+        $parser = new Parser(new Filesystem(new InMemory(array(self::MASTERFILE_PATH => $masterContent))));
+        
+        $parser->enableIncludeSupport()
+            ->enableExternalSupport()
+            ->enableGroupSupport();
+
+        $variables = $parser->parse(self::MASTERFILE_PATH);
+        
+        $expected = array(
+            'db.pass' => array(
+                'dev' => 1234,
+                'qa' => 'password',
+                'prod' => '<external>',
+            ),
+            'db.user' => array(
+                'dev1' => 'devuser1',
+                'dev2' => 'devuser2',
+                'dev3' => 'devuser3',
+                'qa' => 'qauser',
+            ),
+            'db.cache' => array(
+                'preprod' => true,
+                'default' => false,
+            ),
+        );
+        
+        foreach($expected as $variable => $info)
+        {
+            foreach($info as $environment => $expectedValue)
+            {
+                $this->assertArrayHasKey($variable, $variables);
+                $this->assertArrayHasKey('env', $variables[$variable]);
+                $this->assertArrayHasKey($environment, $variables[$variable]['env']);
+                $this->assertSame($expectedValue, $variables[$variable]['env'][$environment]);
+            }
+        }
+        
+        $groups = $parser->getGroups();
+        
+        $expected = array(
+        	'dev' => array('dev1', 'dev2', 'dev3'),
+        	'qa' => array('staging', 'preprod'),
+            'production' => array('prod'),
+        );
+        
+        ksort($groups);
+        ksort($expected);
+        
+        $this->assertSame($expected, $groups);
     }
 }

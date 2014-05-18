@@ -2,7 +2,7 @@
 
 namespace Karma\Configuration\Parser;
 
-abstract class AbstractGroupParser implements GroupParser
+abstract class AbstractSectionParser implements SectionParser
 {
     const
         COMMENT_CHARACTER = '#';
@@ -23,5 +23,9 @@ abstract class AbstractGroupParser implements GroupParser
     protected function isACommentLine($line)
     {
         return strpos(trim($line), self::COMMENT_CHARACTER) === 0;
+    }
+    
+    public function postParse()
+    {
     }
 }

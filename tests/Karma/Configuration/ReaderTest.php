@@ -487,4 +487,103 @@ CONFFILE;
         $this->assertSame('${fooz}barfoo', $reader->read('v1', 'integration'));        
         $this->assertSame('${foo', $reader->read('v1', 'prod'));        
     }
+    
+    public function testGroups()
+    {
+        $masterContent = <<<CONFFILE
+[groups]
+qa = [ staging, preprod ]
+dev = [ dev1, dev2,dev3]
+production=[prod]
+    
+[variables]
+db.pass:
+    dev = 1234
+    qa = password
+    prod = root
+db.user:
+    dev1 = devuser1
+    dev2 = devuser2
+    dev3 = devuser3
+    qa = qauser
+    production = root
+    default = nobody
+db.cache:
+    dev2 = maybe
+    qa = sometimes
+    preprod = true
+    default = false
+CONFFILE;
+    
+        $parser = new Parser(new Filesystem(new InMemory(array(self::MASTERFILE_PATH => $masterContent))));
+    
+        $parser->enableIncludeSupport()
+            ->enableExternalSupport()
+            ->enableGroupSupport();
+    
+        $variables = $parser->parse(self::MASTERFILE_PATH);
+        $reader = new Reader($variables, $parser->getExternalVariables(), $parser->getGroups());
+    
+        $expected = array(
+            'db.pass' => array(
+                'staging' => 'password',
+                'preprod' => 'password',
+                'dev1' => 1234,
+                'dev2' => 1234,
+                'dev3' => 1234,
+                'prod' => 'root',
+            ),
+            'db.user' => array(
+                'staging' => 'qauser',
+                'preprod' => 'qauser',
+                'dev1' => 'devuser1',
+                'dev2' => 'devuser2',
+                'dev3' => 'devuser3',
+                'prod' => 'root',
+            ),
+            'db.cache' => array(
+                'staging' => 'sometimes',
+                'preprod' => true,
+                'dev1' => false,
+                'dev2' => 'maybe',
+                'dev3' => false,
+                'prod' => false,
+            ),
+        );
+    
+        foreach($expected as $variable => $info)
+        {
+            foreach($info as $environment => $expectedValue)
+            {
+                $this->assertSame($expectedValue, $reader->read($variable, $environment));
+            }
+        }
+    }  
+
+    /**
+     * @expectedException \RuntimeException
+     */
+    public function testGroupsAreNotReadable()
+    {
+        $masterContent = <<<CONFFILE
+[groups]
+qa = [ staging, preprod ]
+        
+[variables]
+db.pass:
+    dev = 1234
+    qa = password
+    prod = root
+CONFFILE;
+        
+        $parser = new Parser(new Filesystem(new InMemory(array(self::MASTERFILE_PATH => $masterContent))));
+        
+        $parser->enableIncludeSupport()
+            ->enableExternalSupport()
+            ->enableGroupSupport();
+        
+        $variables = $parser->parse(self::MASTERFILE_PATH);
+        $reader = new Reader($variables, $parser->getExternalVariables(), $parser->getGroups());
+        $reader->read('db.pass', 'qa');
+    }
 }

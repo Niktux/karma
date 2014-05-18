@@ -8,6 +8,7 @@ use Karma\Configuration\Parser\IncludeParser;
 use Karma\Configuration\Parser\VariableParser;
 use Karma\Configuration\Parser\ExternalParser;
 use Psr\Log\NullLogger;
+use Karma\Configuration\Parser\GroupParser;
 
 class Parser
 {
@@ -16,7 +17,8 @@ class Parser
     const
         INCLUDES = 'includes',
         VARIABLES = 'variables',
-        EXTERNALS = 'externals';
+        EXTERNALS = 'externals',
+        GROUPS = 'groups';
     
     private
         $parsers,
@@ -65,6 +67,16 @@ class Parser
         return $this;
     }
     
+    public function enableGroupSupport()
+    {
+        if(! isset($this->parsers[self::GROUPS]))
+        {
+            $this->parsers[self::GROUPS] = new GroupParser();
+        }
+        
+        return $this;
+    }
+    
     public function parse($masterFilePath)
     {
         try
@@ -73,6 +85,8 @@ class Parser
             
             $variables = $this->getVariables();
             $this->printExternalFilesStatus();
+            
+            $this->postParse();
             
             return $variables;
         }
@@ -110,22 +124,21 @@ class Parser
         $lines = $this->extractLines($filePath);
         $this->changeCurrentFile($filePath);
         
-        if(empty($lines))
-        {
-            $this->warning("Empty file ($filePath)");
-        }
-        
         $this->currentParser = new NullParser();
+        $currentLineNumber = 0;
+        
         foreach($lines as $line)
         {
-            $groupName = $this->extractGroupName($line);
-            if($groupName !== null)
+            $currentLineNumber++;
+            
+            $sectionName = $this->extractSectionName($line);
+            if($sectionName !== null)
             {
-                $this->switchGroupParser($groupName);
+                $this->switchSectionParser($sectionName);
                 continue;
             }
 
-            $this->currentParser->parse($line);
+            $this->currentParser->parse($line, $currentLineNumber);
         }
         
         $this->parsers[self::VARIABLES]->endOfFileCheck();
@@ -145,6 +158,11 @@ class Parser
         $lines = $this->removeEmptyLines($lines);
 
         $this->parsedFiles[] = $filePath;
+        
+        if(empty($lines))
+        {
+            $this->warning("Empty file ($filePath)");
+        }
         
         return $lines;
     }
@@ -169,27 +187,27 @@ class Parser
         }
     }
     
-    private function extractGroupName($line)
+    private function extractSectionName($line)
     {
-        $groupName = null;
+        $sectionName = null;
         
         // [.*]
         if(preg_match('~^\[(?P<groupName>[^\]]+)\]$~', $line, $matches))
         {
-            $groupName = trim(strtolower($matches['groupName']));
+            $sectionName = trim(strtolower($matches['groupName']));
         }
         
-        return $groupName;
+        return $sectionName;
     }
     
-    private function switchGroupParser($groupName)
+    private function switchSectionParser($sectionName)
     {
-        if(! isset($this->parsers[$groupName]))
+        if(! isset($this->parsers[$sectionName]))
         {
-            throw new \RuntimeException('Unknown group name ' . $groupName);
+            throw new \RuntimeException('Unknown section name ' . $sectionName);
         }
         
-        $this->currentParser = $this->parsers[$groupName];
+        $this->currentParser = $this->parsers[$sectionName];
     }
     
     private function getVariables()
@@ -240,5 +258,25 @@ class Parser
         }
         
         return $files;
+    }
+    
+    public function getGroups()
+    {
+        $groups = array();
+        
+        if(isset($this->parsers[self::GROUPS]))
+        {
+            $groups = $this->parsers[self::GROUPS]->getCollectedGroups();
+        }
+        
+        return $groups;
+    }
+    
+    private function postParse()
+    {
+        foreach($this->parsers as $parser)
+        {
+            $parser->postParse();
+        }
     }
 }
