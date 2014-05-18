@@ -388,8 +388,10 @@ CONFFILE;
     {
         $masterContent = <<<CONFFILE
 [groups]
+# comment
 qa = [ staging, preprod ]
 dev = [ dev1, dev2,dev3]
+ # comment
 production=[prod]
 
 [variables]
