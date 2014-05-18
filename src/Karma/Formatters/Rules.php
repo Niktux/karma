@@ -22,12 +22,24 @@ class Rules implements Formatter
             '<true>' => true,
             '<false>' => false,
             '<null>' => null,
+            '<string>' => function($value) {
+                return is_string($value);
+            }
         );
         
         foreach($rules as $value => $result)
         {
+            $value = trim($value);
+            
             if(is_string($value) && array_key_exists($value, $mapping))
             {
+                if($value === '<string>')
+                {
+                    $result = function ($value) use ($result) {
+                        return str_replace('<string>', $value, $result);    
+                    };
+                }
+                
                 $value = $mapping[$value];
             }
             
@@ -39,12 +51,22 @@ class Rules implements Formatter
     {
         foreach($this->rules as $rule)
         {
-            list($expected, $result) = $rule;
+            list($ruleTrigger, $result) = $rule;
             
-            if($expected === $value)
+            $expected = ($ruleTrigger === $value);
+            if($ruleTrigger instanceof \Closure)
             {
-                $value = $result;
-                break;
+                $expected = $ruleTrigger($value);
+            }
+            
+            if($expected === true)
+            {
+                if($result instanceof \Closure)
+                {
+                    return $result($value);    
+                }
+                
+                return $result;
             }
         }
         
