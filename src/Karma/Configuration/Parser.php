@@ -124,11 +124,6 @@ class Parser
         $lines = $this->extractLines($filePath);
         $this->changeCurrentFile($filePath);
         
-        if(empty($lines))
-        {
-            $this->warning("Empty file ($filePath)");
-        }
-        
         $this->currentParser = new NullParser();
         $currentLineNumber = 0;
         
@@ -163,6 +158,11 @@ class Parser
         $lines = $this->removeEmptyLines($lines);
 
         $this->parsedFiles[] = $filePath;
+        
+        if(empty($lines))
+        {
+            $this->warning("Empty file ($filePath)");
+        }
         
         return $lines;
     }
