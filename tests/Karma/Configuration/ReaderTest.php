@@ -586,4 +586,72 @@ CONFFILE;
         $reader = new Reader($variables, $parser->getExternalVariables(), $parser->getGroups());
         $reader->read('db.pass', 'qa');
     }
+    
+    public function testGroupsInDifferentFiles()
+    {
+        $masterContent = <<<CONFFILE
+[includes]
+group.conf
+                
+[variables]
+db.pass:
+    qa = password
+    default = fail
+CONFFILE;
+        
+        $groupContent = <<<CONFFILE
+[groups]
+qa = [staging]
+CONFFILE;
+    
+        $parser = new Parser(new Filesystem(new InMemory(array(
+            self::MASTERFILE_PATH => $masterContent,
+            'group.conf' => $groupContent,
+        ))));
+    
+        $parser->enableIncludeSupport()
+            ->enableExternalSupport()
+            ->enableGroupSupport();
+    
+        $variables = $parser->parse(self::MASTERFILE_PATH);
+        $reader = new Reader($variables, $parser->getExternalVariables(), $parser->getGroups());
+    
+        $this->assertSame('password', $reader->read('db.pass', 'staging'));
+    }
+    
+    public function testGroupsUsageInExternalFile()
+    {
+        $masterContent = <<<CONFFILE
+[externals]
+secured.conf
+
+[groups]
+qa = [staging]                
+                
+[variables]
+db.pass:
+    staging = <external>
+    default = fail
+CONFFILE;
+        
+        $securedContent = <<<CONFFILE
+[variables]
+db.pass:
+    qa = success
+CONFFILE;
+    
+        $parser = new Parser(new Filesystem(new InMemory(array(
+            self::MASTERFILE_PATH => $masterContent,
+            'secured.conf' => $securedContent,
+        ))));
+    
+        $parser->enableIncludeSupport()
+            ->enableExternalSupport()
+            ->enableGroupSupport();
+    
+        $variables = $parser->parse(self::MASTERFILE_PATH);
+        $reader = new Reader($variables, $parser->getExternalVariables(), $parser->getGroups());
+    
+        $this->assertSame('success', $reader->read('db.pass', 'staging'));
+    }
 }

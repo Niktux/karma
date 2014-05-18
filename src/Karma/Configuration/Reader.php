@@ -26,7 +26,7 @@ class Reader extends AbstractReader
         $this->externalReader = null;
         if(! empty($externalVariables))
         {
-            $this->externalReader = new Reader($externalVariables, array());
+            $this->externalReader = new Reader($externalVariables, array(), $groups);
         }
         
         $this->loadGroups($groups);
