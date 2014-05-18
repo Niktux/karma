@@ -175,6 +175,20 @@ class HydratorTest extends PHPUnit_Framework_TestCase
     }
     
     /**
+     * @expectedException \RuntimeException
+     */
+    public function testFormatterError()
+    {
+        $this->write('a-dist', <<< FILE
+<% karma:formatter = a %>
+<% karma:formatter = b %>
+FILE
+        );
+        
+        $this->hydrator->hydrate('dev');
+    }
+    
+    /**
      * @dataProvider providerTestList
      */
     public function testList($env, $expected)

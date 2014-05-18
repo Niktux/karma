@@ -95,7 +95,7 @@ class Hydrator
     private function hydrateFile($file, $environment)
     {
         $content = $this->sources->read($file);
-        $content = $this->parseFileDirectives($content);
+        $content = $this->parseFileDirectives($file, $content);
         
         $targetContent = $this->injectValues($file, $content, $environment);
         
@@ -109,13 +109,22 @@ class Hydrator
         }
     }
     
-    private function parseFileDirectives($fileContent)
+    private function parseFileDirectives($file, $fileContent)
     {
         $this->currentFormatterName = null;
         
-        if(preg_match('~(<%\s*karma:formatter\s*=\s*(?P<formatterName>[^%]+)%>)~', $fileContent, $matches))
+        if($count = preg_match_all('~(<%\s*karma:formatter\s*=\s*(?P<formatterName>[^%]+)%>)~', $fileContent, $matches))
         {
-            $this->currentFormatterName = strtolower(trim($matches['formatterName']));
+            if($count !== 1)
+            {
+                throw new \RuntimeException(sprintf(
+                    'Syntax error in %s : only one formatter directive is allowed (%d found)',
+                    $file,
+                    $count
+                ));
+            }
+            
+            $this->currentFormatterName = strtolower(trim($matches['formatterName'][0]));
         }   
 
         return $this->removeFileDirectives($fileContent);
@@ -123,7 +132,7 @@ class Hydrator
     
     private function removeFileDirectives($fileContent)
     {
-        return preg_replace('~(<%\s*karma:[^%]*%>\s*\r?\n?)~', '', $fileContent);
+        return preg_replace('~(<%\s*karma:[^%]*%>\s*)~', '', $fileContent);
     }
     
     private function injectValues($sourceFile, $content, $environment)
