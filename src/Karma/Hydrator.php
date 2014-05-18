@@ -20,7 +20,8 @@ class Hydrator
         $dryRun,
         $enableBackup,
         $finder,
-        $formatterProvider;
+        $formatterProvider,
+        $currentFormatterName;
     
     public function __construct(Filesystem $sources, Configuration $reader, Finder $finder, FormatterProvider $formatterProvider = null)
     {
@@ -39,6 +40,8 @@ class Hydrator
         {
             $this->formatterProvider = new NullProvider();
         }
+        
+        $this->currentFormatterName = null;
     }
 
     public function setSuffix($suffix)
@@ -92,6 +95,8 @@ class Hydrator
     private function hydrateFile($file, $environment)
     {
         $content = $this->sources->read($file);
+        $content = $this->parseFileDirectives($content);
+        
         $targetContent = $this->injectValues($file, $content, $environment);
         
         $targetFile = substr($file, 0, strlen($this->suffix) * -1);
@@ -102,6 +107,23 @@ class Hydrator
             $this->backupFile($targetFile);
             $this->sources->write($targetFile, $targetContent, true);
         }
+    }
+    
+    private function parseFileDirectives($fileContent)
+    {
+        $this->currentFormatterName = null;
+        
+        if(preg_match('~(<%\s*karma:formatter\s*=\s*(?P<formatterName>[^%]+)%>)~', $fileContent, $matches))
+        {
+            $this->currentFormatterName = strtolower(trim($matches['formatterName']));
+        }   
+
+        return $this->removeFileDirectives($fileContent);
+    }
+    
+    private function removeFileDirectives($fileContent)
+    {
+        return preg_replace('~(<%\s*karma:[^%]*%>\s*\r?\n?)~', '', $fileContent);
     }
     
     private function injectValues($sourceFile, $content, $environment)
@@ -121,7 +143,7 @@ class Hydrator
     
     private function injectScalarValues(& $content, $environment)
     {
-        $formatter = $this->formatterProvider->getFormatter();
+        $formatter = $this->formatterProvider->getFormatter($this->currentFormatterName);
         
         $content = preg_replace_callback(self::VARIABLE_REGEX, function(array $matches) use($environment, $formatter)
         {
@@ -142,7 +164,7 @@ class Hydrator
     
     private function injectListValues(& $content, $environment)
     {
-        $formatter = $this->formatterProvider->getFormatter();
+        $formatter = $this->formatterProvider->getFormatter($this->currentFormatterName);
         $replacementCounter = 0;
         
         $eol = $this->detectEol($content);
