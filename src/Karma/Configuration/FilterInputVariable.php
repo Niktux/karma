@@ -47,5 +47,17 @@ trait FilterInputVariable
         }
     
         return $value;
-    }    
+    }
+
+    public function parseList($value)
+    {
+        $value = trim($value);
+    
+        if(preg_match('~^\[(?P<valueList>[^\[\]]*)\]$~', $value, $matches))
+        {
+            $value = array_map('trim', explode(',', $matches['valueList']));
+        }
+    
+        return $value;
+    }
 }
