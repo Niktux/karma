@@ -170,8 +170,22 @@ class Hydrate extends Command
                $value
             ));
             
+            $value = $this->parseList($value);
+            
             $reader->overrideVariable($variable, $this->filterValue($value));
         }
+    }
+    
+    private function parseList($value)
+    {
+        $value = trim($value);
+        
+        if(preg_match('~^\[(?P<valueList>[^\[\]]*)\]$~', $value, $matches))
+        {
+            $value = array_map('trim', explode(',', $matches['valueList']));
+        }
+    
+        return $value;
     }
     
     private function processCustomData(array $data)

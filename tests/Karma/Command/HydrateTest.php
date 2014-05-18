@@ -102,6 +102,21 @@ class HydrateTest extends CommandTestCase
         $this->assertDisplay('~Override api.key with value azer=ty~');
     }
     
+    public function testOverrideWithList()
+    {
+        $this->app['sources.fileSystem.adapter'] = $adapter = new InMemory(array(
+            'src/file-dist' => '<%foo%>',
+        ));
+        
+        $this->runCommand('hydrate', array(
+            '--override' => array('foo=[1,2,3]'),
+            'sourcePath' => 'src/',
+        ));
+        
+        $expected = "1\n2\n3";
+        $this->assertSame($expected, $adapter->read(('src/file')));
+    }
+    
     /**
      * @expectedException \InvalidArgumentException
      */
