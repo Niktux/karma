@@ -14,11 +14,9 @@ class Rules implements Formatter
         $this->convertRules($rules);
     }
     
-    private function convertRules(array $rules)
+    private function getSpecialValuesMappingTable()
     {
-        $this->rules = array();
-        
-        $mapping = array(
+        return array(
             '<true>' => true,
             '<false>' => false,
             '<null>' => null,
@@ -26,6 +24,12 @@ class Rules implements Formatter
                 return is_string($value);
             }
         );
+    }
+    
+    private function convertRules(array $rules)
+    {
+        $this->rules = array();
+        $mapping = $this->getSpecialValuesMappingTable();
         
         foreach($rules as $value => $result)
         {
@@ -33,13 +37,7 @@ class Rules implements Formatter
             
             if(is_string($value) && array_key_exists($value, $mapping))
             {
-                if($value === '<string>')
-                {
-                    $result = function ($value) use ($result) {
-                        return str_replace('<string>', $value, $result);    
-                    };
-                }
-                
+                $result = $this->handleStringFormatting($value, $result);
                 $value = $mapping[$value];
             }
             
@@ -47,29 +45,52 @@ class Rules implements Formatter
         }    
     }
     
+    private function handleStringFormatting($value, $result)
+    {
+        if($value === '<string>')
+        {
+            $result = function ($value) use ($result) {
+                return str_replace('<string>', $value, $result);
+            };
+        }
+        
+        return $result;
+    }
+    
     public function format($value)
     {
         foreach($this->rules as $rule)
         {
-            list($ruleTrigger, $result) = $rule;
+            list($condition, $result) = $rule;
             
-            $expected = ($ruleTrigger === $value);
-            if($ruleTrigger instanceof \Closure)
+            if($this->isRuleMatches($condition, $value))
             {
-                $expected = $ruleTrigger($value);
-            }
-            
-            if($expected === true)
-            {
-                if($result instanceof \Closure)
-                {
-                    return $result($value);    
-                }
-                
-                return $result;
+                return $this->applyFormattingRule($result, $value);
             }
         }
         
         return $value;
+    }
+    
+    private function isRuleMatches($condition, $value)
+    {
+        $hasMatched = ($condition === $value);
+        
+        if($condition instanceof \Closure)
+        {
+            $hasMatched = $condition($value);
+        }    
+        
+        return $hasMatched;
+    }
+    
+    private function applyFormattingRule($ruleResult, $value)
+    {
+        if($ruleResult instanceof \Closure)
+        {
+            return $ruleResult($value);
+        }
+        
+        return $ruleResult;
     }
 }
