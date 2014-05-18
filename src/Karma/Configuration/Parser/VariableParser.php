@@ -13,26 +13,23 @@ class VariableParser extends AbstractSectionParser
     
     private
         $currentVariable,
-        $currentLineNumber,
         $variables,
         $valueFound;
     
     public function __construct()
     {
         $this->currentVariable = null;
-        $this->currentLineNumber = -1;
         $this->variables = array();
         $this->valueFound = false;
     }
     
-    public function parse($line, $lineNumber)
+    protected function parseLine($line)
     {
         if($this->isACommentLine($line))
         {
             return true;
         }
         
-        $this->currentLineNumber = $lineNumber;
         $variableName = $this->extractVariableName($line); 
         
         if($variableName !== null)
@@ -59,11 +56,11 @@ class VariableParser extends AbstractSectionParser
     {
         if($this->currentVariable !== null && $this->valueFound === false)
         {
-            throw new \RuntimeException(sprintf(
+            $this->triggerError(sprintf(
                 'Variable %s has no value (declared in file %s line %d)',
                 $this->currentVariable,
                 $this->variables[$this->currentVariable]['file'],
-                $this->currentLineNumber
+                $this->variables[$this->currentVariable]['line']
             ));
         }
     }
@@ -75,8 +72,8 @@ class VariableParser extends AbstractSectionParser
 
         if(isset($this->variables[$this->currentVariable]))
         {
-            throw new \RuntimeException(sprintf(
-                'Variable %s is already declared in %s (raised from %s)',
+            $this->triggerError(sprintf(
+                'Variable %s is already declared (in %s line %d)',
                 $this->currentVariable,
                 $this->variables[$this->currentVariable]['file'],
                 $this->variables[$this->currentVariable]['line']
@@ -96,21 +93,12 @@ class VariableParser extends AbstractSectionParser
     {
         if($this->currentVariable === null)
         {
-            throw new \RuntimeException(sprintf(
-                'Missing variable name in file %s line %d',
-                $this->currentFilePath,
-                $this->currentLineNumber
-            ));
+            $this->triggerError('Missing variable name');
         }
         
         if(substr_count($line, self::ASSIGNMENT) < 1)
         {
-            throw new \RuntimeException(sprintf(
-                'Syntax error in %s line %d : line must contains = (%s)',
-                $this->currentFilePath,
-                $this->currentLineNumber,
-                $line
-            ));
+            $this->triggerError("line must contains = ($line)");
         }
         
         list($envList, $value) = explode(self::ASSIGNMENT, $line, 2);
@@ -125,13 +113,7 @@ class VariableParser extends AbstractSectionParser
         {
             if(array_key_exists($environment, $this->variables[$this->currentVariable]['env']))
             {
-                throw new \RuntimeException(sprintf(
-                    'Duplicated value for environment %s and variable %s (in %s line %d)',
-                    $environment,
-                    $this->currentVariable,
-                    $this->currentFilePath,
-                    $this->currentLineNumber
-                ));
+                $this->triggerError("Duplicated value for environment $environment and variable $this->currentVariable");
             } 
             
             $this->variables[$this->currentVariable]['env'][$environment] = $value;

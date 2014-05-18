@@ -12,28 +12,23 @@ class IncludeParser extends AbstractSectionParser
         $this->files = array();
     }
     
-    public function parse($line, $lineNumber)
+    protected function parseLine($line)
     {
         if($this->isACommentLine($line))
         {
             return true;
         }
                 
-        $this->checkFilenameIsValid($line, $lineNumber);
+        $this->checkFilenameIsValid($line);
         
         $this->files[] = $line;
     }
     
-    private function checkFilenameIsValid($filename, $lineNumber)
+    private function checkFilenameIsValid($filename)
     {
         if(! preg_match('~.*\.conf$~', $filename))
         {
-            throw new \RuntimeException(sprintf(
-                'Invalid dependency in %s line %d : %s is not a valid file name',
-                $this->currentFilePath,
-                $lineNumber,
-                $filename
-            ));    
+            $this->triggerError("$filename is not a valid file name", 'Invalid dependency');   
         }
     }
     

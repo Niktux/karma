@@ -5,23 +5,20 @@ namespace Karma\Configuration\Parser;
 class GroupParser extends AbstractSectionParser
 {
     private
-        $groups,
-        $currentLineNumber;
+        $groups;
     
     public function __construct()
     {
         $this->groups = array();
-        $this->currentLineNumber = -1;
     }
     
-    public function parse($line, $lineNumber)
+    protected function parseLine($line)
     {
         if($this->isACommentLine($line))
         {
             return true;
         }
 
-        $this->currentLineNumber = $lineNumber;
         $line = trim($line);
         
         if(preg_match('~(?P<groupName>[^=]+)\s*=\s*\[(?P<envList>[^\[\]]+)\]$~', $line, $matches))
@@ -29,12 +26,7 @@ class GroupParser extends AbstractSectionParser
             return $this->processGroupDefinition($matches['groupName'], $matches['envList']);
         }
         
-        throw new \RuntimeException(sprintf(
-            'Syntax error in %s line %d : %s',
-            $this->currentFilePath,
-            $lineNumber,
-            $line
-        ));
+        $this->triggerError($line);
     }
     
     private function processGroupDefinition($groupName, $envList)
@@ -52,12 +44,7 @@ class GroupParser extends AbstractSectionParser
         {
             if(empty($env))
             {
-                throw new \RuntimeException(sprintf(
-                   'Syntax error in %s line %d : empty environment in declaration of group %s',
-                    $this->currentFilePath,
-                    $this->currentLineNumber,
-                    $groupName
-                ));
+                $this->triggerError("empty environment in declaration of group $groupName");
             }
             
             $this->groups[$groupName][] = $env;
@@ -68,12 +55,7 @@ class GroupParser extends AbstractSectionParser
     {
         if(isset($this->groups[$groupName]))
         {
-            throw new \RuntimeException(sprintf(
-                'Syntax error in %s line %d : group %s has already been declared',
-                $this->currentFilePath,
-                $this->currentLineNumber,
-                $groupName
-            ));
+            $this->triggerError("group $groupName has already been declared");
         }
     }
     
@@ -81,12 +63,7 @@ class GroupParser extends AbstractSectionParser
     {
         if($this->hasDuplicatedValues($environments))
         {
-            throw new \RuntimeException(sprintf(
-               'Syntax error in %s line %d : duplicated environment in group %s',
-                $this->currentFilePath,
-                $this->currentLineNumber,
-                $groupName
-            ));
+            $this->triggerError("duplicated environment in group $groupName");
         }
     }
     
