@@ -56,8 +56,16 @@ trait FilterInputVariable
         if(preg_match('~^\[(?P<valueList>[^\[\]]*)\]$~', $value, $matches))
         {
             $value = array_map('trim', explode(',', $matches['valueList']));
+            $value = $this->removeEmptyEntries($value);
         }
     
         return $value;
+    }
+    
+    private function removeEmptyEntries(array $list)
+    {
+        return array_merge(array_filter($list, function($item) {
+            return empty($item) === false;
+        }));
     }
 }
