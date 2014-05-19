@@ -144,26 +144,48 @@ class HydratorTest extends PHPUnit_Framework_TestCase
     
     public function testFormatter()
     {
-        $formatter = new Rules(array(
+        $yellFormatter = new Rules(array(
+        	'<true>' => 'TRUE',
+        	'<false>' => 'FALSE',
+        ));
+        
+        $otherFormatter = new Rules(array(
         	'<true>' => 'string_true',
         	'<false>' => 0,
         ));
         
-        $provider = new CallbackProvider(function ($index) use($formatter) {
-        	return $formatter;
+        $provider = new CallbackProvider(function ($index) use($yellFormatter, $otherFormatter) {
+        	return strtolower($index) === 'yell' ? $yellFormatter : $otherFormatter;
         });
         
         $this->hydrator->setFormatterProvider($provider);
         
-        $this->write('a.php-dist', '<%bool%>');
-        $this->write('list.txt-dist', '<%list%>');
+        $this->write('a-dist', '<%bool%>');
+        $this->write('b-dist', "<% karma:formatter = yell %>\n<%bool%>");
+        $this->write('list-dist', "<%list%>\n<%karma:formatter=YeLl     %>   \n");
         
         $this->hydrator->hydrate('dev');
-        $this->assertSame('string_true', $this->fs->read('a.php'));
-        $this->assertSame(implode("\n", array("str", 2, "string_true", null)), $this->fs->read('list.txt'));
+        $this->assertSame('string_true', $this->fs->read('a'));
+        $this->assertSame('TRUE', $this->fs->read('b'));
+        $this->assertSame(implode("\n", array("str", 2, "TRUE", null)). "\n", $this->fs->read('list'));
         
         $this->hydrator->hydrate('prod');
-        $this->assertSame('0', $this->fs->read('a.php'));
+        $this->assertSame('0', $this->fs->read('a'));
+        $this->assertSame('FALSE', $this->fs->read('b'));
+    }
+    
+    /**
+     * @expectedException \RuntimeException
+     */
+    public function testFormatterError()
+    {
+        $this->write('a-dist', <<< FILE
+<% karma:formatter = a %>
+<% karma:formatter = b %>
+FILE
+        );
+        
+        $this->hydrator->hydrate('dev');
     }
     
     /**
