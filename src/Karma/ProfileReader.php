@@ -18,9 +18,7 @@ class ProfileReader implements FormattersDefinition
         FILE_EXTENSION_FORMATTERS_INDEX = 'fileExtensionFormatters';
     
     private
-        $attributes,
-        $formatters,
-        $fileExtensionFormatters;
+        $attributes;
     
     public function __construct(Filesystem $fs)
     {
