@@ -72,47 +72,47 @@ class ProfileReader implements FormattersDefinition
     
     public function hasTemplatesSuffix()
     {
-        return $this->has(self::TEMPLATE_SUFFIX_INDEX);
+        return $this->hasString(self::TEMPLATE_SUFFIX_INDEX);
     }
     
     public function getTemplatesSuffix()
     {
-        return $this->get(self::TEMPLATE_SUFFIX_INDEX);
+        return $this->getString(self::TEMPLATE_SUFFIX_INDEX);
     }
     
     public function hasMasterFilename()
     {
-        return $this->has(self::MASTER_FILENAME_INDEX);
+        return $this->hasString(self::MASTER_FILENAME_INDEX);
     }
     
     public function getMasterFilename()
     {
-        return $this->get(self::MASTER_FILENAME_INDEX);
+        return $this->getString(self::MASTER_FILENAME_INDEX);
     }
     
     public function hasConfigurationDirectory()
     {
-        return $this->has(self::CONFIGURATION_DIRECTORY_INDEX);
+        return $this->hasString(self::CONFIGURATION_DIRECTORY_INDEX);
     }
     
     public function getConfigurationDirectory()
     {
-        return $this->get(self::CONFIGURATION_DIRECTORY_INDEX);
+        return $this->getString(self::CONFIGURATION_DIRECTORY_INDEX);
     }
     
     public function hasSourcePath()
     {
-        return $this->has(self::SOURCE_PATH_INDEX);
+        return $this->hasString(self::SOURCE_PATH_INDEX);
     }
     
     public function getSourcePath()
     {
-        return $this->get(self::SOURCE_PATH_INDEX);
+        return $this->getString(self::SOURCE_PATH_INDEX);
     }
     
     public function getDefaultFormatterName()
     {
-        return $this->get(self::DEFAULT_FORMATTER_INDEX);
+        return $this->getString(self::DEFAULT_FORMATTER_INDEX);
     }
     
     public function getFormatters()
@@ -130,11 +130,28 @@ class ProfileReader implements FormattersDefinition
         return isset($this->attributes[$attributeName]);
     }
     
+    private function hasString($attributeName)
+    {
+        return isset($this->attributes[$attributeName]) && is_string($this->attributes[$attributeName]);
+    }
+    
     private function get($attributeName)
     {
         $value = null;
 
         if($this->has($attributeName))
+        {
+            $value = $this->attributes[$attributeName];
+        }
+        
+        return $value;
+    }
+    
+    private function getString($attributeName)
+    {
+        $value = null;
+
+        if($this->hasString($attributeName))
         {
             $value = $this->attributes[$attributeName];
         }

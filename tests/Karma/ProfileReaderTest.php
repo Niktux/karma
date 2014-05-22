@@ -124,4 +124,38 @@ YAML;
     {
         $this->buildReader("\tsuffix:-tpl");
     }
+    
+    public function testInvalidFormat()
+    {
+        $reader = $this->buildReader( <<< YAML
+suffix:
+  - tpl
+  - dist
+master:
+  - othermaster.conf
+  - othermaster2.conf
+confDir:
+  - env2/
+  - env3/
+sourcePath:
+  - lib/                
+  - src/                
+defaultFormatter:
+  - 1                
+  - 2                
+fileExtensionFormatters:
+  1 : foo                
+  2 : bar                
+YAML
+        );
+        
+        $this->assertFalse($reader->hasTemplatesSuffix(), 'Tempalte suffix must only allow strings');
+        $this->assertFalse($reader->hasMasterFilename(), 'Master file name must only allow strings');
+        $this->assertFalse($reader->hasConfigurationDirectory(), 'confDir must only allow strings');
+        $this->assertFalse($reader->hasSourcePath(), 'sourcePath must only allow strings');
+        
+        $this->assertFalse(is_array($reader->getDefaultFormatterName()), 'Default formatter must only allow strings');
+        
+        $this->assertTrue(is_array($reader->getFileExtensionFormatters()));
+    }
 }

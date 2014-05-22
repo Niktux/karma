@@ -77,7 +77,7 @@ YAML
 formatters:
   f1:
     <true>: "true"
-  f2:
+  f2   :
     <false>: "false"
   f3:
     <null> : 0
