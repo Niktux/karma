@@ -18,11 +18,13 @@ class ProfileReader implements FormatterProvider
         CONFIGURATION_DIRECTORY_INDEX = 'confDir',
         SOURCE_PATH_INDEX = 'sourcePath',
         FORMATTERS_INDEX = 'formatters',
+        FILE_EXTENSION_FORMATTERS_INDEX = 'fileExtensionFormatters',
         DEFAULT_FORMATTER_INDEX = 'defaultFormatter';
     
     private
         $attributes,
-        $formatters;
+        $formatters,
+        $fileExtensionFormatters;
     
     public function __construct(Filesystem $fs)
     {
@@ -37,6 +39,8 @@ class ProfileReader implements FormatterProvider
         $this->formatters = array(
             self::DEFAULT_FORMATTER_NAME => new Raw(),
         );
+        
+        $this->fileExtensionFormatters = array();
 
         $this->read($fs);
     }
@@ -76,6 +80,11 @@ class ProfileReader implements FormatterProvider
         if(isset($values[self::FORMATTERS_INDEX]))
         {
             $this->parseFormatters($values[self::FORMATTERS_INDEX]);    
+        }
+        
+        if(isset($values[self::FILE_EXTENSION_FORMATTERS_INDEX]))
+        {
+            $this->fileExtensionFormatters = array_map('trim', $values[self::FILE_EXTENSION_FORMATTERS_INDEX]);    
         }
     }
     
