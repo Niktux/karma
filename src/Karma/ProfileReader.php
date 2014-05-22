@@ -172,10 +172,18 @@ class ProfileReader implements FormatterProvider
     {
         $formatter = $this->formatters[$this->getDefaultFormatterName()];
         
+        if($index === null)
+        {
+            if(isset($this->fileExtensionFormatters[$fileExtension]))
+            {
+                $index = $this->fileExtensionFormatters[$fileExtension];
+            }
+        }
+        
         if($this->hasFormatter($index))
         {
             $formatter = $this->formatters[$index];    
-        }    
+        }
         
         return $formatter;
     }
