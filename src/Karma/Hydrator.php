@@ -21,7 +21,8 @@ class Hydrator
         $enableBackup,
         $finder,
         $formatterProvider,
-        $currentFormatterName;
+        $currentFormatterName,
+        $currentTargetFile;
     
     public function __construct(Filesystem $sources, Configuration $reader, Finder $finder, FormatterProvider $formatterProvider = null)
     {
@@ -42,6 +43,7 @@ class Hydrator
         }
         
         $this->currentFormatterName = null;
+        $this->currentTargetFile = null;
     }
 
     public function setSuffix($suffix)
@@ -94,18 +96,19 @@ class Hydrator
     
     private function hydrateFile($file, $environment)
     {
+        $this->currentTargetFile = substr($file, 0, strlen($this->suffix) * -1);
+        
         $content = $this->sources->read($file);
         $content = $this->parseFileDirectives($file, $content);
         
         $targetContent = $this->injectValues($file, $content, $environment);
         
-        $targetFile = substr($file, 0, strlen($this->suffix) * -1);
-        $this->debug("Write $targetFile");
+        $this->debug("Write $this->currentTargetFile");
 
         if($this->dryRun === false)
         {
-            $this->backupFile($targetFile);
-            $this->sources->write($targetFile, $targetContent, true);
+            $this->backupFile($this->currentTargetFile);
+            $this->sources->write($this->currentTargetFile, $targetContent, true);
         }
     }
     
@@ -152,7 +155,7 @@ class Hydrator
     
     private function injectScalarValues(& $content, $environment)
     {
-        $fileExtension = null; // FIXME
+        $fileExtension = pathinfo($this->currentTargetFile, PATHINFO_EXTENSION);
         $formatter = $this->formatterProvider->getFormatter($fileExtension, $this->currentFormatterName);
         
         $content = preg_replace_callback(self::VARIABLE_REGEX, function(array $matches) use($environment, $formatter)
@@ -174,7 +177,7 @@ class Hydrator
     
     private function injectListValues(& $content, $environment)
     {
-        $fileExtension = null; // FIXME
+        $fileExtension = pathinfo($this->currentTargetFile, PATHINFO_EXTENSION);
         $formatter = $this->formatterProvider->getFormatter($fileExtension, $this->currentFormatterName);
         $replacementCounter = 0;
         
