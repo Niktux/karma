@@ -168,4 +168,30 @@ YAML
             ),
         );
     }
+    
+    public function testFormatterByFileExtension()
+    {
+        $yaml = <<<YAML
+formatters:
+  f1:
+    <true>: "true"
+  f2:
+    <false>: "false"
+  f3:
+    <null> : 0
+defaultFormatter: f2
+fileExtensionFormatters:
+  ini : f1
+  yml : f2
+  cfg : f3
+
+YAML;
+        $reader = $this->buildReader($yaml);
+    
+        $this->assertSame($reader->getFormatter(null, 'f1'), $reader->getFormatter('ini', null));
+        $this->assertSame($reader->getFormatter(null, 'f2'), $reader->getFormatter('yml', null));
+        $this->assertSame($reader->getFormatter(null, 'f3'), $reader->getFormatter('cfg', null));
+        $this->assertSame($reader->getFormatter(null, 'f2'), $reader->getFormatter('txt', null)); // default
+        $this->assertSame($reader->getFormatter(null, 'f3'), $reader->getFormatter('ini', 'f3'));
+    }
 }
