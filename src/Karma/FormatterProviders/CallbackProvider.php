@@ -19,10 +19,10 @@ class CallbackProvider implements FormatterProvider
         return true;
     }
 
-    public function getFormatter($index = null)
+    public function getFormatter($fileExtension, $index = null)
     {
         $closure = $this->closure;
         
-        return $closure($index);
+        return $closure($fileExtension, $index);
     }
 }

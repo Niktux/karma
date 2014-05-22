@@ -5,24 +5,22 @@ namespace Karma;
 use Gaufrette\Filesystem;
 use Symfony\Component\Yaml\Yaml;
 use Symfony\Component\Yaml\Exception\ParseException;
-use Karma\Formatters\Raw;
-use Karma\Formatters\Rules;
 
-class ProfileReader implements FormatterProvider
+class ProfileReader implements FormattersDefinition
 {
     const
-        DEFAULT_FORMATTER_NAME = 'default',
-    
         TEMPLATE_SUFFIX_INDEX = 'suffix',
         MASTER_FILENAME_INDEX = 'master',
         CONFIGURATION_DIRECTORY_INDEX = 'confDir',
         SOURCE_PATH_INDEX = 'sourcePath',
+        DEFAULT_FORMATTER_INDEX = 'defaultFormatter',
         FORMATTERS_INDEX = 'formatters',
-        DEFAULT_FORMATTER_INDEX = 'defaultFormatter';
+        FILE_EXTENSION_FORMATTERS_INDEX = 'fileExtensionFormatters';
     
     private
         $attributes,
-        $formatters;
+        $formatters,
+        $fileExtensionFormatters;
     
     public function __construct(Filesystem $fs)
     {
@@ -31,11 +29,9 @@ class ProfileReader implements FormatterProvider
             self::MASTER_FILENAME_INDEX => null,
             self::CONFIGURATION_DIRECTORY_INDEX => null,
             self::SOURCE_PATH_INDEX => null,
-            self::DEFAULT_FORMATTER_INDEX => self::DEFAULT_FORMATTER_NAME    
-        );
-        
-        $this->formatters = array(
-            self::DEFAULT_FORMATTER_NAME => new Raw(),
+            self::DEFAULT_FORMATTER_INDEX => self::DEFAULT_FORMATTER_NAME,
+            self::FORMATTERS_INDEX => array(),
+            self::FILE_EXTENSION_FORMATTERS_INDEX => array()
         );
 
         $this->read($fs);
@@ -67,79 +63,76 @@ class ProfileReader implements FormatterProvider
         
         foreach(array_keys($this->attributes) as $name)
         {
-            if(isset($values[$name]) && is_string($values[$name]))
+            if(isset($values[$name]))
             {
                 $this->attributes[$name] = $values[$name];
             }
-        }
-        
-        if(isset($values[self::FORMATTERS_INDEX]))
-        {
-            $this->parseFormatters($values[self::FORMATTERS_INDEX]);    
-        }
-    }
-    
-    private function parseFormatters($content)
-    {
-        if(! is_array($content))
-        {
-            throw new \InvalidArgumentException('Syntax error in profile [formatters]');
-        }
-        
-        foreach($content as $name => $rules)
-        {
-            if(! is_array($rules))
-            {
-                throw new \InvalidArgumentException('Syntax error in profile [formatters]');
-            }
-            
-            $this->formatters[$name] = new Rules($rules);
         }
     }
     
     public function hasTemplatesSuffix()
     {
-        return $this->has(self::TEMPLATE_SUFFIX_INDEX);
+        return $this->hasString(self::TEMPLATE_SUFFIX_INDEX);
     }
     
     public function getTemplatesSuffix()
     {
-        return $this->get(self::TEMPLATE_SUFFIX_INDEX);
+        return $this->getString(self::TEMPLATE_SUFFIX_INDEX);
     }
     
     public function hasMasterFilename()
     {
-        return $this->has(self::MASTER_FILENAME_INDEX);
+        return $this->hasString(self::MASTER_FILENAME_INDEX);
     }
     
     public function getMasterFilename()
     {
-        return $this->get(self::MASTER_FILENAME_INDEX);
+        return $this->getString(self::MASTER_FILENAME_INDEX);
     }
     
     public function hasConfigurationDirectory()
     {
-        return $this->has(self::CONFIGURATION_DIRECTORY_INDEX);
+        return $this->hasString(self::CONFIGURATION_DIRECTORY_INDEX);
     }
     
     public function getConfigurationDirectory()
     {
-        return $this->get(self::CONFIGURATION_DIRECTORY_INDEX);
+        return $this->getString(self::CONFIGURATION_DIRECTORY_INDEX);
     }
     
     public function hasSourcePath()
     {
-        return $this->has(self::SOURCE_PATH_INDEX);
+        return $this->hasString(self::SOURCE_PATH_INDEX);
     }
     
     public function getSourcePath()
     {
-        return $this->get(self::SOURCE_PATH_INDEX);
+        return $this->getString(self::SOURCE_PATH_INDEX);
+    }
+    
+    public function getDefaultFormatterName()
+    {
+        return $this->getString(self::DEFAULT_FORMATTER_INDEX);
+    }
+    
+    public function getFormatters()
+    {
+        return $this->get(self::FORMATTERS_INDEX);
+    }
+    
+    public function getFileExtensionFormatters()
+    {
+        return $this->get(self::FILE_EXTENSION_FORMATTERS_INDEX);
     }
     
     private function has($attributeName)
     {
         return isset($this->attributes[$attributeName]);
+    }
+    
+    private function hasString($attributeName)
+    {
+        return isset($this->attributes[$attributeName]) && is_string($this->attributes[$attributeName]);
     }
     
     private function get($attributeName)
@@ -154,34 +147,15 @@ class ProfileReader implements FormatterProvider
         return $value;
     }
     
-    public function hasFormatter($index)
+    private function getString($attributeName)
     {
-        return isset($this->formatters[$index]);
-    }
-    
-    public function getFormatter($index = null)
-    {
-        $formatter = $this->formatters[$this->getDefaultFormatterName()];
-        
-        if($this->hasFormatter($index))
+        $value = null;
+
+        if($this->hasString($attributeName))
         {
-            $formatter = $this->formatters[$index];    
-        }    
-        
-        return $formatter;
-    }
-    
-    private function getDefaultFormatterName()
-    {
-        $name = self::DEFAULT_FORMATTER_NAME;
-        
-        $defaultFormatterName = $this->get(self::DEFAULT_FORMATTER_INDEX);
-        
-        if($this->hasFormatter($defaultFormatterName))
-        {
-            $name = $defaultFormatterName;
+            $value = $this->attributes[$attributeName];
         }
         
-        return $name;
+        return $value;
     }
 }

@@ -154,7 +154,7 @@ class HydratorTest extends PHPUnit_Framework_TestCase
         	'<false>' => 0,
         ));
         
-        $provider = new CallbackProvider(function ($index) use($yellFormatter, $otherFormatter) {
+        $provider = new CallbackProvider(function ($fileExtension, $index) use($yellFormatter, $otherFormatter) {
         	return strtolower($index) === 'yell' ? $yellFormatter : $otherFormatter;
         });
         
@@ -172,6 +172,52 @@ class HydratorTest extends PHPUnit_Framework_TestCase
         $this->hydrator->hydrate('prod');
         $this->assertSame('0', $this->fs->read('a'));
         $this->assertSame('FALSE', $this->fs->read('b'));
+    }
+    
+    public function testFormatterByFileExtension()
+    {
+        $yellFormatter = new Rules(array(
+        	'<true>' => 'TRUE',
+        ));
+        
+        $stringFormatter = new Rules(array(
+        	'<true>' => 'string_true',
+        ));
+        
+        $intFormatter = new Rules(array(
+        	'<true>' => 1,
+        ));
+        
+        $provider = new CallbackProvider(function ($fileExtension, $index) use($yellFormatter, $stringFormatter, $intFormatter) {
+            
+            if($index === 'int')
+            {
+                return $intFormatter;
+            }
+            
+        	$formatters = array(
+        	    'ini' => $intFormatter,
+        	    'yml' => $yellFormatter,
+        	    'txt' => $stringFormatter
+            );
+
+        	return isset($formatters[$fileExtension]) ? $formatters[$fileExtension] : /* default */ $yellFormatter;
+        });
+        
+        $this->hydrator->setFormatterProvider($provider);
+        
+        $this->write('a.ini-dist', '<%bool%>');
+        $this->write('b.yml-dist', '<%bool%>');
+        $this->write('c.txt-dist', '<%bool%>');
+        $this->write('d.cfg-dist', '<%bool%>');
+        $this->write('e.yml-dist', "<% karma:formatter = int %>\n<%bool%>");
+        
+        $this->hydrator->hydrate('dev');
+        $this->assertSame('1', $this->fs->read('a.ini'));
+        $this->assertSame('TRUE', $this->fs->read('b.yml'));
+        $this->assertSame('string_true', $this->fs->read('c.txt'));
+        $this->assertSame('TRUE', $this->fs->read('d.cfg')); // default
+        $this->assertSame('1', $this->fs->read('e.yml'));
     }
     
     /**

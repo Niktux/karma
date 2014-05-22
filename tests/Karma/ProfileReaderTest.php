@@ -125,46 +125,37 @@ YAML;
         $this->buildReader("\tsuffix:-tpl");
     }
     
-    public function testFormatter()
+    public function testInvalidFormat()
     {
-        $yaml = <<<YAML
-formatters:
-  yaml:
-    <true>: "true"
-    <false>: "false"
-    <null> : 0    
-defaultFormatter: yaml
-YAML;
-        $reader = $this->buildReader($yaml);
-        
-        $this->assertTrue($reader->hasFormatter('yaml'), 'Yaml formatter must exist');
-        $this->assertFalse($reader->hasFormatter('php'), 'PHP formatter must not exist');
-        $this->assertInstanceOf('Karma\Formatter', $reader->getFormatter()); // default
-        $this->assertInstanceOf('Karma\Formatter', $reader->getFormatter('yaml'));
-        $this->assertSame($reader->getFormatter(), $reader->getFormatter('yaml'));
-    }
-    
-    /**
-     * @dataProvider providerTestFormatterSyntaxError
-     * @expectedException \InvalidArgumentException
-     */
-    public function testFormatterSyntaxError($yaml)
-    {
-        $reader = $this->buildReader($yaml);        
-    }
-    
-    public function providerTestFormatterSyntaxError()
-    {
-        return array(
-            array(<<<YAML
-formatters:
-  yaml: foobar
+        $reader = $this->buildReader( <<< YAML
+suffix:
+  - tpl
+  - dist
+master:
+  - othermaster.conf
+  - othermaster2.conf
+confDir:
+  - env2/
+  - env3/
+sourcePath:
+  - lib/                
+  - src/                
+defaultFormatter:
+  - 1                
+  - 2                
+fileExtensionFormatters:
+  1 : foo                
+  2 : bar                
 YAML
-            ),
-            array(<<<YAML
-formatters: foobar
-YAML
-            ),
         );
+        
+        $this->assertFalse($reader->hasTemplatesSuffix(), 'Tempalte suffix must only allow strings');
+        $this->assertFalse($reader->hasMasterFilename(), 'Master file name must only allow strings');
+        $this->assertFalse($reader->hasConfigurationDirectory(), 'confDir must only allow strings');
+        $this->assertFalse($reader->hasSourcePath(), 'sourcePath must only allow strings');
+        
+        $this->assertFalse(is_array($reader->getDefaultFormatterName()), 'Default formatter must only allow strings');
+        
+        $this->assertTrue(is_array($reader->getFileExtensionFormatters()));
     }
 }
