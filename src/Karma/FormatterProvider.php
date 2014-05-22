@@ -6,5 +6,5 @@ interface FormatterProvider
 {
     public function hasFormatter($index);
     
-    public function getFormatter($index = null);
+    public function getFormatter($fileExtension, $index = null);
 }

@@ -20,7 +20,7 @@ class NullProvider implements FormatterProvider
         return false;
     }
 
-    public function getFormatter($index = null)
+    public function getFormatter($fileExtension, $index = null)
     {
         return $this->raw;
     }

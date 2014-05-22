@@ -136,12 +136,13 @@ formatters:
 defaultFormatter: yaml
 YAML;
         $reader = $this->buildReader($yaml);
+        $fileExtension = 'yaml';
         
         $this->assertTrue($reader->hasFormatter('yaml'), 'Yaml formatter must exist');
         $this->assertFalse($reader->hasFormatter('php'), 'PHP formatter must not exist');
-        $this->assertInstanceOf('Karma\Formatter', $reader->getFormatter()); // default
-        $this->assertInstanceOf('Karma\Formatter', $reader->getFormatter('yaml'));
-        $this->assertSame($reader->getFormatter(), $reader->getFormatter('yaml'));
+        $this->assertInstanceOf('Karma\Formatter', $reader->getFormatter($fileExtension)); // default
+        $this->assertInstanceOf('Karma\Formatter', $reader->getFormatter($fileExtension, 'yaml'));
+        $this->assertSame($reader->getFormatter($fileExtension), $reader->getFormatter($fileExtension, 'yaml'));
     }
     
     /**

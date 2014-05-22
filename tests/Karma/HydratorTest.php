@@ -154,7 +154,7 @@ class HydratorTest extends PHPUnit_Framework_TestCase
         	'<false>' => 0,
         ));
         
-        $provider = new CallbackProvider(function ($index) use($yellFormatter, $otherFormatter) {
+        $provider = new CallbackProvider(function ($fileExtension, $index) use($yellFormatter, $otherFormatter) {
         	return strtolower($index) === 'yell' ? $yellFormatter : $otherFormatter;
         });
         

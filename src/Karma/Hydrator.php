@@ -152,7 +152,8 @@ class Hydrator
     
     private function injectScalarValues(& $content, $environment)
     {
-        $formatter = $this->formatterProvider->getFormatter($this->currentFormatterName);
+        $fileExtension = null; // FIXME
+        $formatter = $this->formatterProvider->getFormatter($fileExtension, $this->currentFormatterName);
         
         $content = preg_replace_callback(self::VARIABLE_REGEX, function(array $matches) use($environment, $formatter)
         {
@@ -173,7 +174,8 @@ class Hydrator
     
     private function injectListValues(& $content, $environment)
     {
-        $formatter = $this->formatterProvider->getFormatter($this->currentFormatterName);
+        $fileExtension = null; // FIXME
+        $formatter = $this->formatterProvider->getFormatter($fileExtension, $this->currentFormatterName);
         $replacementCounter = 0;
         
         $eol = $this->detectEol($content);
