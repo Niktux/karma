@@ -10,6 +10,7 @@ use Gaufrette\Adapter\Cache;
 use Karma\VCS\Vcs;
 use Karma\VCS\Git;
 use Karma\VCS\Git\GitWrapperAdapter;
+use Karma\FormatterProviders\ProfileProvider;
 
 class Application extends \Pimple
 {
@@ -171,8 +172,12 @@ class Application extends \Pimple
             return new \Psr\Log\NullLogger();    
         });
         
+        $this['formatter.provider'] = $this->share(function ($c) {
+            return new ProfileProvider($c['profile']);
+        });
+        
         $this['hydrator'] = function($c) {
-            $hydrator = new Hydrator($c['sources.fileSystem'], $c['configuration'], $c['finder'], $c['profile']);
+            $hydrator = new Hydrator($c['sources.fileSystem'], $c['configuration'], $c['finder'], $c['formatter.provider']);
 
             $hydrator->setLogger($c['logger'])
                 ->setSuffix($c['distFiles.suffix']);
