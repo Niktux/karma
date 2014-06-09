@@ -25,12 +25,13 @@ class Command extends \Symfony\Component\Console\Command\Command
     protected function configure()
     {
         $this->addOption('cache', null, InputOption::VALUE_NONE, 'Cache the dist files list');
+        $this->addOption('no-title', null, InputOption::VALUE_NONE, 'Do not display logo title');
     }
     
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->configureOutputInterface($output);
-        $this->printHeader();
+        $this->printHeader($input->getOption('no-title'));
 
         $profile = $this->app['profile'];
         
@@ -107,8 +108,13 @@ class Command extends \Symfony\Component\Console\Command\Command
         return $value;
     }
     
-    private function printHeader()
+    private function printHeader($noTitle = true)
     {
+        if($noTitle === true)
+        {
+            return $this->output->writeln('Karma ' . Application::VERSION);
+        }
+        
         $this->output->writeln(
            $this->getLogo($this->output->isDecorated())
         );
