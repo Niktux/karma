@@ -109,30 +109,43 @@ class Command extends \Symfony\Component\Console\Command\Command
     
     private function printHeader()
     {
-        $this->output->writeln(sprintf(
-           '<comment>%s</comment>',
-           $this->getLogo()
-        ));
+        $this->output->writeln(
+           $this->getLogo($this->output->isDecorated())
+        );
     }
     
-    private function getLogo()
+    private function getLogo($outputDecorated = true)
     {
         $logo = <<<ASCIIART
-  _  __                          
- | |/ /__ _ _ __ _ __ ___   __ _ 
- | ' // _` | '__| '_ ` _ \ / _` |
- | . \ (_| | |  | | | | | | (_| |
- |_|\_\__,_|_|  |_| |_| |_|\__,_|
+.@@@@...@@..
+...@@..@....
+...@@.@@....    %K A R M A*
+...@@.@@@...               %VERSION*
+...@@...@@..
+...@@....@@.
 
 ASCIIART;
         
-        return sprintf(
-            "%s\n %s %s -\n",
-            $logo,
-            str_pad('', 30 - strlen(Application::VERSION), '-'),
-            Application::VERSION
-        );
+        $background = 'fg=magenta;options=bold';
+        $text = 'fg=white;options=bold';
         
+        $toBackground = "</$text><$background>";
+        $toText = "</$background><$text>";
+        
+        // insert style tags
+        if($outputDecorated === true)
+        {
+            $logo = str_replace('@', "$toText@$toBackground", $logo);
+            $logo = str_replace('.', '@', $logo);
+        }
+        
+        $logo = str_replace(array('%', '*'), array($toText, $toBackground), $logo);
+        
+        return sprintf(
+            '<%s>%s</%s>',
+            $background,
+            str_replace('VERSION', Application::VERSION, $logo),
+            $background 
+        );
     }
-    
 }
