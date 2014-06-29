@@ -241,7 +241,7 @@ class Parser
             $message = sprintf(
                'External file %s was %s',
                $file,
-               $status['found'] ? 'found' : '<options=bold>not found</options=bold>'
+               $status['found'] ? 'found' : 'not found'
             );
             
             $this->warning($message);

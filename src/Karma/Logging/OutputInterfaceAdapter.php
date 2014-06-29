@@ -68,7 +68,7 @@ class OutputInterfaceAdapter implements LoggerInterface
         {
             $message = sprintf(
                '<%1$s>%2$s</%1$s>',
-                'fg=' . $colors[$level] . ';options=bold',
+                'fg=' . $colors[$level],
                 $message
             );
         }

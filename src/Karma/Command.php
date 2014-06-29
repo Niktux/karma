@@ -132,8 +132,8 @@ class Command extends \Symfony\Component\Console\Command\Command
 
 ASCIIART;
         
-        $background = 'fg=magenta;options=bold';
-        $text = 'fg=white;options=bold';
+        $background = 'fg=magenta';
+        $text = 'fg=white';
         
         $toBackground = "</$text><$background>";
         $toText = "</$background><$text>";
