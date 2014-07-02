@@ -141,7 +141,7 @@ class Hydrator
     
     private function parseListDirective($file, $fileContent, $environment)
     {
-        if(preg_match('~<%\s*karma:list\s*var=(?P<variableName>[\S]+)\s*(delimiter="(?P<delimiterName>[^"]*)")?\s*%>~i', $fileContent, $matches))
+        while(preg_match('~<%\s*karma:list\s*var=(?P<variableName>[\S]+)\s*(delimiter="(?P<delimiterName>[^"]*)")?\s*%>~i', $fileContent, $matches))
         {
             $delimiter = '';
             if(isset($matches['delimiterName']))
@@ -152,10 +152,8 @@ class Hydrator
             $generatedList = $this->generateContentForListDirective($matches['variableName'], $environment, $delimiter);
             $fileContent = str_replace($matches[0], $generatedList, $fileContent);
         }
-        else
-        {
-            $this->lookingForSyntaxErrorInListDirective($file, $fileContent);            
-        }
+
+        $this->lookingForSyntaxErrorInListDirective($file, $fileContent);            
         
         return $fileContent;
     }

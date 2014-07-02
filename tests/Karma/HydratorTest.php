@@ -516,4 +516,28 @@ TXT;
         	'delimiter without quotes' => array('<% karma:list var=db.user delimiter=- %>'),
         );
     }
+    
+    public function testMultipleListDirective()
+    {
+        $this->fs = new Filesystem(new InMemory());
+        $reader = new InMemoryReader(array(
+            'items:dev' => array(42, 51, 69, 'someString'),
+            'servers:dev' => array('a', 'b', 'c'),
+        ));
+        
+        $this->hydrator = new Hydrator($this->fs, $reader, new Finder($this->fs));
+        
+        $this->write('a-dist', <<<FILE
+<% karma:list var=items delimiter="@" %>
+<% karma:list var=servers delimiter="_" %>
+FILE
+        );
+        
+        $this->hydrator->hydrate('dev');
+        $this->assertSame( <<< FILE
+42@51@69@someString
+a_b_c
+FILE
+        , $this->fs->read('a'));
+    }
 }
