@@ -42,8 +42,15 @@ class InMemoryReaderTest extends PHPUnit_Framework_TestCase
             array('bar', 'dev', 'bardev'),
             array('foo', 'prod', 'fooprod'),
             array('foo', 'dev', 'foodev'),
-            array('donotexist', 'dev', null),
         );
+    }
+    
+    /**
+     * @expectedException \RuntimeException
+     */
+    public function testVariableDoesNotExist()
+    {
+        $this->reader->read('doesnotexist', 'dev');
     }
     
     public function testGetAllVariables()
@@ -83,17 +90,17 @@ class InMemoryReaderTest extends PHPUnit_Framework_TestCase
             array('dev', array(
                 'foo' => 'foodev',
                 'bar' => 'bardev',
-                'baz' => null,
+                'baz' => Configuration::NOT_FOUND,
             )),
             array('recette', array(
-                'foo' => null,
-                'bar' => null,
+                'foo' => Configuration::NOT_FOUND,
+                'bar' => Configuration::NOT_FOUND,
                 'baz' => 'bazrecette',
             )),
             array('prod', array(
                 'foo' => 'fooprod',
-                'bar' => null,
-                'baz' => null,
+                'bar' => Configuration::NOT_FOUND,
+                'baz' => Configuration::NOT_FOUND,
             )),
         );
     }
