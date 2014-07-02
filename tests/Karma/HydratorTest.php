@@ -526,6 +526,9 @@ TXT;
         ));
         
         $this->hydrator = new Hydrator($this->fs, $reader, new Finder($this->fs));
+        $this->hydrator->setFormatterProvider(new CallbackProvider(function() {
+        	return new Rules(array('<string>' => '"<string>"'));
+        }));
         
         $this->write('a-dist', <<<FILE
 <% karma:list var=items delimiter="@" %>
@@ -535,8 +538,8 @@ FILE
         
         $this->hydrator->hydrate('dev');
         $this->assertSame( <<< FILE
-42@51@69@someString
-a_b_c
+42@51@69@"someString"
+"a"_"b"_"c"
 FILE
         , $this->fs->read('a'));
     }
