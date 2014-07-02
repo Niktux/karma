@@ -99,9 +99,9 @@ class Hydrator
         $this->currentTargetFile = substr($file, 0, strlen($this->suffix) * -1);
         
         $content = $this->sources->read($file);
-        $content = $this->parseFileDirectives($file, $content, $environment);
+        $replacementCounter = $this->parseFileDirectives($file, $content, $environment);
         
-        $targetContent = $this->injectValues($file, $content, $environment);
+        $targetContent = $this->injectValues($file, $content, $environment, $replacementCounter);
         
         $this->debug("Write $this->currentTargetFile");
 
@@ -112,14 +112,16 @@ class Hydrator
         }
     }
     
-    private function parseFileDirectives($file, $fileContent, $environment)
+    private function parseFileDirectives($file, & $fileContent, $environment)
     {
         $this->currentFormatterName = null;
 
         $this->parseFormatterDirective($file, $fileContent);
-        $fileContent = $this->parseListDirective($file, $fileContent, $environment);
+        $replacementCounter = $this->parseListDirective($file, $fileContent, $environment);
 
-        return $this->removeFileDirectives($fileContent);
+        $fileContent = $this->removeFileDirectives($fileContent);
+        
+        return $replacementCounter;
     }
     
     private function parseFormatterDirective($file, $fileContent)
@@ -139,8 +141,10 @@ class Hydrator
         }   
     }
     
-    private function parseListDirective($file, $fileContent, $environment)
+    private function parseListDirective($file, & $fileContent, $environment)
     {
+        $replacementCounter = 0;
+        
         while(preg_match('~<%\s*karma:list\s*var=(?P<variableName>[\S]+)\s*(delimiter="(?P<delimiterName>[^"]*)")?\s*%>~i', $fileContent, $matches))
         {
             $delimiter = '';
@@ -151,11 +155,13 @@ class Hydrator
             
             $generatedList = $this->generateContentForListDirective($matches['variableName'], $environment, $delimiter);
             $fileContent = str_replace($matches[0], $generatedList, $fileContent);
+            
+            $replacementCounter++;
         }
 
         $this->lookingForSyntaxErrorInListDirective($file, $fileContent);            
         
-        return $fileContent;
+        return $replacementCounter;
     }
     
     private function lookingForSyntaxErrorInListDirective($file, $fileContent)
@@ -189,10 +195,8 @@ class Hydrator
         return preg_replace('~(<%\s*karma:[^%]*%>\s*)~i', '', $fileContent);
     }
     
-    private function injectValues($sourceFile, $content, $environment)
+    private function injectValues($sourceFile, $content, $environment, $replacementCounter = 0)
     {
-        $replacementCounter = 0;
-        
         $replacementCounter += $this->injectScalarValues($content, $environment);
         $replacementCounter += $this->injectListValues($content, $environment);
         
