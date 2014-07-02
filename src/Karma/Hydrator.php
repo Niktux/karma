@@ -166,7 +166,7 @@ class Hydrator
     
     private function lookingForSyntaxErrorInListDirective($file, $fileContent)
     {
-        if(preg_match('~<%.*karma\s*:\s*list\s*~i', $fileContent, $matches))
+        if(preg_match('~<%.*karma\s*:\s*list\s*~i', $fileContent))
         {
             // karma:list detected but has not matches full regexp
             throw new \RuntimeException("Invalid karma:list directive in file $file");
