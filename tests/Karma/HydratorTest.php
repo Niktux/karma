@@ -28,6 +28,7 @@ class HydratorTest extends PHPUnit_Framework_TestCase
             'bool:dev' => true,
             'bool:prod' => false,
             'list:dev' => array('str', 2, true, null),
+            'list:prod' => array(42),
         ));
         
         $this->hydrator = new Hydrator($this->fs, $reader, new Finder($this->fs), new NullProvider());
@@ -387,5 +388,132 @@ TXT;
             "windows" => array("line:\r\n - var=<%var%>\r\nend", "line:\r\n - var=42\r\n - var=51\r\nend"),    
             "mac" => array("line:\r - var=<%var%>\rend", "line:\r - var=42\r - var=51\rend"),
         );    
+    }
+    
+    /**
+     * @dataProvider providerTestListDirective
+     */
+    public function testListDirective($content, $env, $expected)
+    {
+        $this->fs = new Filesystem(new InMemory());
+        $reader = new InMemoryReader(array(
+            'items:dev' => array(42, 51, 69, 'someString'),
+            'items:staging' => array(33),
+            'items:prod' => 1337,
+            'servers:prod' => array('a', 'b', 'c'),
+        ));
+        
+        $this->hydrator = new Hydrator($this->fs, $reader, new Finder($this->fs));
+        
+        $this->write('a-dist', $content);
+        
+        $this->hydrator->hydrate($env);
+        $this->assertSame($expected, $this->fs->read('a'));        
+    }
+    
+    public function providerTestListDirective()
+    {
+        // nominal case
+        $contentA = 'items = array( <% karma:list var=items delimiter=", " %> );';
+        // alternative delimiter, some useless spaces 
+        $contentB = 'items: <% karma:list    var=items   delimiter="-" %>';
+        // directive case, no space around tags 
+        $contentC = 'items: <%KaRmA:LiST var=items%>';
+        // directive parameter case, another variable
+        $contentD = 'servers[<% karma:list VAR=servers     delimiter="," %>]';
+        // empty delimiter
+        $contentE = 'servers[<% karma:list var=servers delimiter="" %>]';
+        
+        return array(
+        	array(
+                $contentA,
+                'dev',
+                "items = array( 42, 51, 69, someString );"
+            ),
+        	array(
+                $contentA,
+                'staging',
+                "items = array( 33 );"
+            ),
+        	array(
+                $contentA,
+                'prod',
+                "items = array( 1337 );"
+            ),
+                        
+        	array(
+                $contentB,
+                'dev',
+                "items: 42-51-69-someString"
+            ),
+        	array(
+                $contentB,
+                'staging',
+                "items: 33"
+            ),
+        	array(
+                $contentB,
+                'prod',
+                "items: 1337"
+            ),
+                        
+        	array(
+                $contentC,
+                'dev',
+                "items: 425169someString"
+            ),
+        	array(
+                $contentC,
+                'staging',
+                "items: 33"
+            ),
+        	array(
+                $contentC,
+                'prod',
+                "items: 1337"
+            ),
+                        
+        	array(
+                $contentD,
+                'prod',
+                "servers[a,b,c]"
+            ),
+                        
+        	array(
+                $contentE,
+                'prod',
+                "servers[abc]"
+            ),
+        );
+    }
+    
+    /**
+     * @dataProvider providerTestListDirectiveSyntaxError
+     * @expectedException \RuntimeException
+     */
+    public function testListDirectiveSyntaxError($content)
+    {
+        $this->write('a-dist', $content);
+        $this->hydrator->hydrate('dev');        
+    }
+    
+    public function providerTestListDirectiveSyntaxError()
+    {
+        return array(
+        	'missing var' => array('<% karma:list %>'),
+        	'empty var' => array('<% karma:list var= %>'),
+        	'empty delimiter' => array('<% karma:list var=db.user delimiter= %>'),
+        	'space around equal #1' => array('<% karma:list var= db.user %>'),
+        	'space around equal #2' => array('<% karma:list var =db.user %>'),
+        	'space around equal #3' => array('<% karma:list var = db.user %>'),
+        	'not existing variable' => array('<% karma:list var=doesnotexist %>'),
+        	'disallowed spaces' => array('<% karma : list var=db.user%>'),
+        	'unknown parameter' => array('<% karma:list var=db.user foobar=3 %>'),
+        	'mispelled parameter' => array('<% karma:list var=db.user delimiterssss="," %>'),
+        	'wrong order #1' => array('<% var=db.user karma:list %>'),
+        	'wrong order #2' => array('<% karma:list delimiter=", " var=db.user %>'),
+        	'wrong directive' => array('<% karma:listing var=db.user %>'),
+        	'delimiter without quotes' => array('<% karma:list var=db.user delimiter=- %>'),
+        );
     }
 }

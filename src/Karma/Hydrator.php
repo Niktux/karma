@@ -99,7 +99,7 @@ class Hydrator
         $this->currentTargetFile = substr($file, 0, strlen($this->suffix) * -1);
         
         $content = $this->sources->read($file);
-        $content = $this->parseFileDirectives($file, $content);
+        $content = $this->parseFileDirectives($file, $content, $environment);
         
         $targetContent = $this->injectValues($file, $content, $environment);
         
@@ -112,11 +112,19 @@ class Hydrator
         }
     }
     
-    private function parseFileDirectives($file, $fileContent)
+    private function parseFileDirectives($file, $fileContent, $environment)
     {
         $this->currentFormatterName = null;
-        
-        if($count = preg_match_all('~(<%\s*karma:formatter\s*=\s*(?P<formatterName>[^%]+)%>)~', $fileContent, $matches))
+
+        $this->parseFormatterDirective($file, $fileContent);
+        $fileContent = $this->parseListDirective($file, $fileContent, $environment);
+
+        return $this->removeFileDirectives($fileContent);
+    }
+    
+    private function parseFormatterDirective($file, $fileContent)
+    {
+        if($count = preg_match_all('~<%\s*karma:formatter\s*=\s*(?P<formatterName>[^%]+)%>~', $fileContent, $matches))
         {
             if($count !== 1)
             {
@@ -129,13 +137,58 @@ class Hydrator
             
             $this->currentFormatterName = strtolower(trim($matches['formatterName'][0]));
         }   
+    }
+    
+    private function parseListDirective($file, $fileContent, $environment)
+    {
+        if(preg_match('~<%\s*karma:list\s*var=(?P<variableName>[\S]+)\s*(delimiter="(?P<delimiterName>[^"]*)")?\s*%>~i', $fileContent, $matches))
+        {
+            $delimiter = '';
+            if(isset($matches['delimiterName']))
+            {
+                $delimiter = $matches['delimiterName'];
+            }
+            
+            $generatedList = $this->generateContentForListDirective($matches['variableName'], $environment, $delimiter);
+            $fileContent = str_replace($matches[0], $generatedList, $fileContent);
+        }
+        else
+        {
+            $this->lookingForSyntaxErrorInListDirective($file, $fileContent);            
+        }
+        
+        return $fileContent;
+    }
+    
+    private function lookingForSyntaxErrorInListDirective($file, $fileContent)
+    {
+        if(preg_match('~<%.*karma\s*:\s*list\s*~i', $fileContent, $matches))
+        {
+            // karma:list detected but has not matches full regexp
+            throw new \RuntimeException("Invalid karma:list directive in file $file");
+        }
+    }
+    
+    private function generateContentForListDirective($variable, $environment, $delimiter = '')
+    {
+        $values = $this->reader->read($variable, $environment);
+        $formatter = $this->getFormatterForCurrentTargetFile();
+        
+        if(! is_array($values))
+        {
+            $values = array($values);
+        }
+        
+        array_walk($values, function (& $value) use ($formatter) {
+            $value = $formatter->format($value);
+        });
 
-        return $this->removeFileDirectives($fileContent);
+        return implode($delimiter, $values);
     }
     
     private function removeFileDirectives($fileContent)
     {
-        return preg_replace('~(<%\s*karma:[^%]*%>\s*)~', '', $fileContent);
+        return preg_replace('~(<%\s*karma:[^%]*%>\s*)~i', '', $fileContent);
     }
     
     private function injectValues($sourceFile, $content, $environment)
@@ -153,10 +206,16 @@ class Hydrator
         return $content;
     }
     
-    private function injectScalarValues(& $content, $environment)
+    private function getFormatterForCurrentTargetFile()
     {
         $fileExtension = pathinfo($this->currentTargetFile, PATHINFO_EXTENSION);
-        $formatter = $this->formatterProvider->getFormatter($fileExtension, $this->currentFormatterName);
+        
+        return $this->formatterProvider->getFormatter($fileExtension, $this->currentFormatterName);
+    }
+    
+    private function injectScalarValues(& $content, $environment)
+    {
+        $formatter = $this->getFormatterForCurrentTargetFile();
         
         $content = preg_replace_callback(self::VARIABLE_REGEX, function(array $matches) use($environment, $formatter)
         {
@@ -177,8 +236,7 @@ class Hydrator
     
     private function injectListValues(& $content, $environment)
     {
-        $fileExtension = pathinfo($this->currentTargetFile, PATHINFO_EXTENSION);
-        $formatter = $this->formatterProvider->getFormatter($fileExtension, $this->currentFormatterName);
+        $formatter = $this->getFormatterForCurrentTargetFile();
         $replacementCounter = 0;
         
         $eol = $this->detectEol($content);

@@ -28,7 +28,7 @@ class InMemoryReader extends AbstractReader
             return $this->values[$key];
         }
         
-        return null;
+        throw new \RuntimeException("Variable $variable does not exist");
     }
     
     public function getAllVariables()
