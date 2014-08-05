@@ -13,7 +13,6 @@ class Git implements Vcs
     private
         $command,
         $fs,
-        $rootDirectory,
         $ignoredFiles,
         $trackedFiles;
     
@@ -23,7 +22,6 @@ class Git implements Vcs
         $this->command->initialize($rootDirectory);
         
         $this->fs = $fs;
-        $this->rootDirectory = $rootDirectory;
         
         $this->ignoredFiles = null;
         $this->trackedFiles = null;
