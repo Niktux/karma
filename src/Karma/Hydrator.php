@@ -11,7 +11,7 @@ class Hydrator
     use \Karma\Logging\LoggerAware;
 
     const
-        VARIABLE_REGEX = '~<%(?P<variableName>[A-Za-z0-9_\.]+)%>~';
+        VARIABLE_REGEX = '~<%(?P<variableName>[A-Za-z0-9_\.\-]+)%>~';
     
     private
         $sources,

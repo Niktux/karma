@@ -84,6 +84,8 @@ class ParserTest extends ParserTestCase
             array('list.notlist', 'string2', '[[]'),
             array('list.notlist', 'string3', '[[]]'),
             array('list.notlist', 'string4', '[][]'),
+            
+            array('variable-name-with-dashes', 'default', 'poney'),
         );    
     }
     

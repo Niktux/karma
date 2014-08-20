@@ -93,6 +93,9 @@ list.notlist:
     string3 = [[]]
     string4 = [][]
     
+variable-name-with-dashes:
+    default = poney
+    
 CONFFILE;
 
         $contentDb = <<< CONFFILE

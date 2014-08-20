@@ -543,4 +543,20 @@ FILE
 FILE
         , $this->fs->read('a'));
     }
+
+    public function testDashesInVariableNameAreAllowed()
+    {
+        $this->fs = new Filesystem(new InMemory());
+        $reader = new InMemoryReader(array(
+            'var-with-dashes:dev' => 'poney',
+            'dash-dash-dash:dev' => 'licorne',
+        ));
+        
+        $this->hydrator = new Hydrator($this->fs, $reader, new Finder($this->fs));
+        
+        $this->write('a-dist', '<%var-with-dashes%> = <%dash-dash-dash%>');
+        
+        $this->hydrator->hydrate('dev');
+        $this->assertSame('poney = licorne', $this->fs->read('a'));
+    }
 }
