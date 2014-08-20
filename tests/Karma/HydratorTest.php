@@ -146,17 +146,17 @@ class HydratorTest extends PHPUnit_Framework_TestCase
     public function testFormatter()
     {
         $yellFormatter = new Rules(array(
-        	'<true>' => 'TRUE',
-        	'<false>' => 'FALSE',
+            '<true>' => 'TRUE',
+            '<false>' => 'FALSE',
         ));
         
         $otherFormatter = new Rules(array(
-        	'<true>' => 'string_true',
-        	'<false>' => 0,
+            '<true>' => 'string_true',
+            '<false>' => 0,
         ));
         
         $provider = new CallbackProvider(function ($fileExtension, $index) use($yellFormatter, $otherFormatter) {
-        	return strtolower($index) === 'yell' ? $yellFormatter : $otherFormatter;
+            return strtolower($index) === 'yell' ? $yellFormatter : $otherFormatter;
         });
         
         $this->hydrator->setFormatterProvider($provider);
@@ -178,15 +178,15 @@ class HydratorTest extends PHPUnit_Framework_TestCase
     public function testFormatterByFileExtension()
     {
         $yellFormatter = new Rules(array(
-        	'<true>' => 'TRUE',
+            '<true>' => 'TRUE',
         ));
         
         $stringFormatter = new Rules(array(
-        	'<true>' => 'string_true',
+            '<true>' => 'string_true',
         ));
         
         $intFormatter = new Rules(array(
-        	'<true>' => 1,
+            '<true>' => 1,
         ));
         
         $provider = new CallbackProvider(function ($fileExtension, $index) use($yellFormatter, $stringFormatter, $intFormatter) {
@@ -196,13 +196,13 @@ class HydratorTest extends PHPUnit_Framework_TestCase
                 return $intFormatter;
             }
             
-        	$formatters = array(
-        	    'ini' => $intFormatter,
-        	    'yml' => $yellFormatter,
-        	    'txt' => $stringFormatter
+            $formatters = array(
+                'ini' => $intFormatter,
+                'yml' => $yellFormatter,
+                'txt' => $stringFormatter
             );
 
-        	return isset($formatters[$fileExtension]) ? $formatters[$fileExtension] : /* default */ $yellFormatter;
+            return isset($formatters[$fileExtension]) ? $formatters[$fileExtension] : /* default */ $yellFormatter;
         });
         
         $this->hydrator->setFormatterProvider($provider);
@@ -425,61 +425,61 @@ TXT;
         $contentE = 'servers[<% karma:list var=servers delimiter="" %>]';
         
         return array(
-        	array(
+            array(
                 $contentA,
                 'dev',
                 "items = array( 42, 51, 69, someString );"
             ),
-        	array(
+            array(
                 $contentA,
                 'staging',
                 "items = array( 33 );"
             ),
-        	array(
+            array(
                 $contentA,
                 'prod',
                 "items = array( 1337 );"
             ),
                         
-        	array(
+            array(
                 $contentB,
                 'dev',
                 "items: 42-51-69-someString"
             ),
-        	array(
+            array(
                 $contentB,
                 'staging',
                 "items: 33"
             ),
-        	array(
+            array(
                 $contentB,
                 'prod',
                 "items: 1337"
             ),
                         
-        	array(
+            array(
                 $contentC,
                 'dev',
                 "items: 425169someString"
             ),
-        	array(
+            array(
                 $contentC,
                 'staging',
                 "items: 33"
             ),
-        	array(
+            array(
                 $contentC,
                 'prod',
                 "items: 1337"
             ),
                         
-        	array(
+            array(
                 $contentD,
                 'prod',
                 "servers[a,b,c]"
             ),
                         
-        	array(
+            array(
                 $contentE,
                 'prod',
                 "servers[abc]"
@@ -500,20 +500,20 @@ TXT;
     public function providerTestListDirectiveSyntaxError()
     {
         return array(
-        	'missing var' => array('<% karma:list %>'),
-        	'empty var' => array('<% karma:list var= %>'),
-        	'empty delimiter' => array('<% karma:list var=db.user delimiter= %>'),
-        	'space around equal #1' => array('<% karma:list var= db.user %>'),
-        	'space around equal #2' => array('<% karma:list var =db.user %>'),
-        	'space around equal #3' => array('<% karma:list var = db.user %>'),
-        	'not existing variable' => array('<% karma:list var=doesnotexist %>'),
-        	'disallowed spaces' => array('<% karma : list var=db.user%>'),
-        	'unknown parameter' => array('<% karma:list var=db.user foobar=3 %>'),
-        	'mispelled parameter' => array('<% karma:list var=db.user delimiterssss="," %>'),
-        	'wrong order #1' => array('<% var=db.user karma:list %>'),
-        	'wrong order #2' => array('<% karma:list delimiter=", " var=db.user %>'),
-        	'wrong directive' => array('<% karma:listing var=db.user %>'),
-        	'delimiter without quotes' => array('<% karma:list var=db.user delimiter=- %>'),
+            'missing var' => array('<% karma:list %>'),
+            'empty var' => array('<% karma:list var= %>'),
+            'empty delimiter' => array('<% karma:list var=db.user delimiter= %>'),
+            'space around equal #1' => array('<% karma:list var= db.user %>'),
+            'space around equal #2' => array('<% karma:list var =db.user %>'),
+            'space around equal #3' => array('<% karma:list var = db.user %>'),
+            'not existing variable' => array('<% karma:list var=doesnotexist %>'),
+            'disallowed spaces' => array('<% karma : list var=db.user%>'),
+            'unknown parameter' => array('<% karma:list var=db.user foobar=3 %>'),
+            'mispelled parameter' => array('<% karma:list var=db.user delimiterssss="," %>'),
+            'wrong order #1' => array('<% var=db.user karma:list %>'),
+            'wrong order #2' => array('<% karma:list delimiter=", " var=db.user %>'),
+            'wrong directive' => array('<% karma:listing var=db.user %>'),
+            'delimiter without quotes' => array('<% karma:list var=db.user delimiter=- %>'),
         );
     }
     
@@ -527,7 +527,7 @@ TXT;
         
         $this->hydrator = new Hydrator($this->fs, $reader, new Finder($this->fs));
         $this->hydrator->setFormatterProvider(new CallbackProvider(function() {
-        	return new Rules(array('<string>' => '"<string>"'));
+            return new Rules(array('<string>' => '"<string>"'));
         }));
         
         $this->write('a-dist', <<<FILE
