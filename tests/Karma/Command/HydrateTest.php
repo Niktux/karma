@@ -171,4 +171,14 @@ class HydrateTest extends CommandTestCase
             'sourcePath' => 'src/',
         ));
     }
+
+    public function testSystemEnvironment()
+    {
+        $this->runCommand('hydrate', array(
+            '--system' => 'dev',
+            'sourcePath' => 'src/',
+        ));
+    
+        $this->assertDisplay('~Hydrate system variables with dev values~');
+    }
 }

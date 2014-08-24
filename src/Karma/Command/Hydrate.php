@@ -21,7 +21,8 @@ class Hydrate extends Command
     private
         $dryRun,
         $isBackupEnabled,
-        $environment;
+        $environment,
+        $systemEnvironment;
     
     public function __construct(Application $app)
     {
@@ -31,6 +32,7 @@ class Hydrate extends Command
         $this->isBackupEnabled = false;
         
         $this->environment = self::ENV_DEV;
+        $this->systemEnvironment = null;
     }
     
     protected function configure()
@@ -44,6 +46,7 @@ class Hydrate extends Command
             ->addArgument('sourcePath', InputArgument::OPTIONAL, 'source path to hydrate')
             
             ->addOption('env', 'e', InputOption::VALUE_REQUIRED, 'Target environment', self::ENV_DEV)
+            ->addOption('system', 's', InputOption::VALUE_REQUIRED, 'Target environment for system variables', null)
             ->addOption('dry-run', null, InputOption::VALUE_NONE, 'Simulation mode')
             ->addOption('backup', 'b', InputOption::VALUE_NONE, 'Backup overwritten files')
             ->addOption('override', 'o', InputOption::VALUE_IS_ARRAY | InputOption::VALUE_REQUIRED, 'Override variable values', array())
@@ -62,6 +65,7 @@ class Hydrate extends Command
     private function processInputs(InputInterface $input)
     {
         $this->environment = $input->getOption('env'); 
+        $this->systemEnvironment = $input->getOption('system'); 
         
         if($input->getOption('dry-run'))
         {
@@ -116,6 +120,16 @@ class Hydrate extends Command
         if($this->isBackupEnabled === true)
         {
             $hydrator->enableBackup();
+        }
+        
+        if($this->systemEnvironment !== null)
+        {
+            $hydrator->setSystemEnvironment($this->systemEnvironment);
+            
+             $this->app['logger']->info(sprintf(
+                'Hydrate <important>system</important> variables with <important>%s</important> values',
+                $this->systemEnvironment
+            ));
         }
             
         $hydrator->hydrate($this->environment);
