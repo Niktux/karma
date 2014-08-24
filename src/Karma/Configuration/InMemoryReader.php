@@ -17,7 +17,7 @@ class InMemoryReader extends AbstractReader
         foreach($values as $key => $value)
         {
             $this->values[$this->removeSystemFlag($key)] = array(
-            	'value' => $value,
+                'value' => $value,
                 'system' => substr($key, 0, 1) === Configuration::SYSTEM_VARIABLE_FLAG,
             );
         }
