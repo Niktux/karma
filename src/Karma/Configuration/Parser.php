@@ -279,4 +279,17 @@ class Parser
             $parser->postParse();
         }
     }
+    
+    public function isSystem($variableName)
+    {
+        $system = false;
+
+        $variables = $this->getVariables();
+        if(isset($variables[$variableName]))
+        {
+            $system = $variables[$variableName]['system'];    
+        }
+        
+        return $system;
+    }
 }

@@ -22,7 +22,8 @@ class Hydrator
         $finder,
         $formatterProvider,
         $currentFormatterName,
-        $currentTargetFile;
+        $currentTargetFile,
+        $systemEnvironment;
     
     public function __construct(Filesystem $sources, Configuration $reader, Finder $finder, FormatterProvider $formatterProvider = null)
     {
@@ -44,6 +45,7 @@ class Hydrator
         
         $this->currentFormatterName = null;
         $this->currentTargetFile = null;
+        $this->systemEnvironment = null;
     }
 
     public function setSuffix($suffix)
@@ -70,6 +72,13 @@ class Hydrator
     public function setFormatterProvider(FormatterProvider $formatterProvider)
     {
         $this->formatterProvider = $formatterProvider;
+        
+        return $this;
+    }
+    
+    public function setSystemEnvironment($environment)
+    {
+        $this->systemEnvironment = $environment;
         
         return $this;
     }
@@ -175,7 +184,7 @@ class Hydrator
     
     private function generateContentForListDirective($variable, $environment, $delimiter = '')
     {
-        $values = $this->reader->read($variable, $environment);
+        $values = $this->readValueToInject($variable, $environment);
         $formatter = $this->getFormatterForCurrentTargetFile();
         
         if(! is_array($values))
@@ -208,6 +217,16 @@ class Hydrator
         return $content;
     }
     
+    private function readValueToInject($variableName, $environment)
+    {
+        if($this->systemEnvironment !== null && $this->reader->isSystem($variableName) === true)
+        {
+            $environment = $this->systemEnvironment;            
+        }
+        
+        return $this->reader->read($variableName, $environment);
+    }
+    
     private function getFormatterForCurrentTargetFile()
     {
         $fileExtension = pathinfo($this->currentTargetFile, PATHINFO_EXTENSION);
@@ -221,7 +240,7 @@ class Hydrator
         
         $content = preg_replace_callback(self::VARIABLE_REGEX, function(array $matches) use($environment, $formatter)
         {
-            $value = $this->reader->read($matches['variableName'], $environment);
+            $value = $this->readValueToInject($matches['variableName'], $environment);
         
             if(is_array($value))
             {
@@ -252,7 +271,7 @@ class Hydrator
             {
                 if(preg_match(self::VARIABLE_REGEX, $line, $matches))
                 {
-                    $values = $this->reader->read($matches['variableName'], $environment);
+                    $values = $this->readValueToInject($matches['variableName'], $environment);
                     
                     $replacementCounter++; 
                     foreach($values as $value)

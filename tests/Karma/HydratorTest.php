@@ -546,17 +546,61 @@ FILE
 
     public function testDashesInVariableNameAreAllowed()
     {
-        $this->fs = new Filesystem(new InMemory());
+        $fs = new Filesystem(new InMemory());
         $reader = new InMemoryReader(array(
             'var-with-dashes:dev' => 'poney',
             'dash-dash-dash:dev' => 'licorne',
         ));
         
-        $this->hydrator = new Hydrator($this->fs, $reader, new Finder($this->fs));
+        $this->hydrator = new Hydrator($fs, $reader, new Finder($fs));
         
-        $this->write('a-dist', '<%var-with-dashes%> = <%dash-dash-dash%>');
+        $fs->write('a-dist', '<%var-with-dashes%> = <%dash-dash-dash%>');
         
         $this->hydrator->hydrate('dev');
-        $this->assertSame('poney = licorne', $this->fs->read('a'));
+        $this->assertSame('poney = licorne', $fs->read('a'));
+    }
+    
+    /**
+     * @dataProvider providerTestHydrateWithADifferentSystemEnvironment
+     */
+    public function testHydrateWithADifferentSystemEnvironment($env, $systemEnv, $expectedA, $expectedList, $expectedDirective)
+    {
+        $fs = new Filesystem(new InMemory());
+        $reader = new InMemoryReader(array(
+            'poney:dev' => 'poney_d',
+            'poney:staging' => 'poney_s',
+            '@licorne:dev' => 'licorne_d',
+            '@licorne:staging' => 'licorne_s',
+            'env:dev' => array('d', 'e', 'v'),
+            'env:staging' => array('s', 't', 'a'),
+            '@dsn:dev' => array('d', 'e', 'v'),
+            '@dsn:staging' => array('s', 't', 'a'),
+        ));
+        
+        $this->hydrator = new Hydrator($fs, $reader, new Finder($fs));
+        $fs->write('a-dist', '<%poney%> = <%licorne%>');
+        $fs->write('list-dist', "<%dsn%>\n<%env%>");
+        $fs->write('directive-dist', '<% karma:list var=dsn delimiter="" %> = <% karma:list var=env delimiter="" %>');
+        
+        $this->hydrator
+            ->setSystemEnvironment($systemEnv)
+            ->hydrate($env);
+        
+        $this->assertSame($expectedA, $fs->read('a'));
+        $this->assertSame($expectedList, $fs->read('list'));
+        $this->assertSame($expectedDirective, $fs->read('directive'));
+    }
+    
+    public function providerTestHydrateWithADifferentSystemEnvironment()
+    {
+        $dev = "d\ne\nv";
+        $sta = "s\nt\na";
+        
+        return array(
+            array('dev', 'dev', 'poney_d = licorne_d', "$dev\n$dev", 'dev = dev'),
+            array('dev', 'staging', 'poney_d = licorne_s', "$sta\n$dev", 'sta = dev'),
+            array('staging', 'dev', 'poney_s = licorne_d', "$dev\n$sta", 'dev = sta'),
+            array('staging', 'staging', 'poney_s = licorne_s', "$sta\n$sta", 'sta = sta'),
+        );    
     }
 }

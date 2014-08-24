@@ -11,8 +11,8 @@ class InMemoryReaderTest extends PHPUnit_Framework_TestCase
     protected function setUp()
     {
         $this->reader = new InMemoryReader(array(
-            'foo:dev' => 'foodev',
-            'foo:prod' => 'fooprod',
+            '@foo:dev' => 'foodev',
+            '@foo:prod' => 'fooprod',
             'bar:dev' => 'bardev',
             'baz:recette' => 'bazrecette',
         ));
@@ -149,5 +149,21 @@ class InMemoryReaderTest extends PHPUnit_Framework_TestCase
         
         $this->assertSame('foobar', $reader->read($var, 'dev'));
         $this->assertSame('SomeBaseparam', $reader->read($var, 'staging'));
+    }
+    
+    /**
+     * @dataProvider providerTestIsSystem
+     */
+    public function testIsSystem($variable, $expected)
+    {
+        $this->assertSame($expected, $this->reader->isSystem($variable));
+    }
+    
+    public function providerTestIsSystem()
+    {
+        return array(
+            array('foo', true),
+            array('bar', false),
+        );
     }
 }

@@ -65,17 +65,10 @@ class Reader extends AbstractReader
         return $this->readVariable($variable, $environment);
     }
     
-    private function readVariable($variable, $environment)
+    private function readVariable($variableName, $environment)
     {
-        if(! array_key_exists($variable, $this->variables))
-        {
-            throw new \RuntimeException(sprintf(
-                'Unknown variable %s',
-                $variable
-            ));   
-        }
-        
-        $envs = $this->variables[$variable]['env'];
+        $variable = $this->accessVariable($variableName);
+        $envs = $variable['env'];
 
         foreach($this->getEnvironmentEntries($environment) as $entry)
         {
@@ -85,7 +78,7 @@ class Reader extends AbstractReader
                 
                 if($value === self::EXTERNAL)
                 {
-                    $value = $this->processExternal($variable, $environment);
+                    $value = $this->processExternal($variableName, $environment);
                 }
                 
                 return $value;
@@ -94,9 +87,22 @@ class Reader extends AbstractReader
         
         throw new \RuntimeException(sprintf(
             'Value not found of variable %s in environment %s (and no default value has been provided)',
-            $variable,
+            $variableName,
             $environment
         ));
+    }
+    
+    private function accessVariable($variableName)
+    {
+        if(! array_key_exists($variableName, $this->variables))
+        {
+            throw new \RuntimeException(sprintf(
+                'Unknown variable %s',
+                $variableName
+            ));
+        }
+        
+        return $this->variables[$variableName];
     }
     
     private function getEnvironmentEntries($environment)
@@ -150,5 +156,12 @@ class Reader extends AbstractReader
         }
         
         return $diff;
+    }
+    
+    public function isSystem($variableName)
+    {
+        $variable = $this->accessVariable($variableName);
+
+        return $variable['system'];
     }
 }

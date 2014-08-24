@@ -2,6 +2,7 @@
 
 namespace Karma\Configuration\Parser;
 
+use Karma\Configuration;
 class VariableParser extends AbstractSectionParser
 {
     use \Karma\Configuration\FilterInputVariable;
@@ -30,11 +31,11 @@ class VariableParser extends AbstractSectionParser
             return true;
         }
         
-        $variableName = $this->extractVariableName($line); 
+        list($variableName, $isSystem) = $this->extractVariableName($line); 
         
         if($variableName !== null)
         {
-            return $this->changeCurrentVariable($variableName);
+            return $this->changeCurrentVariable($variableName, $isSystem);
         }
 
         $this->parseEnvironmentValue($line);
@@ -43,13 +44,16 @@ class VariableParser extends AbstractSectionParser
     private function extractVariableName($line)
     {
         $variableName = null;
+        $isSystem = false;
+        $flag = Configuration::SYSTEM_VARIABLE_FLAG;
         
-        if(preg_match('~(?P<variableName>[^:]+):$~', $line, $matches))
+        if(preg_match("~(?P<systemVariableFlag>$flag)?(?P<variableName>[^:]+):$~", $line, $matches))
         {
             $variableName = trim($matches['variableName']);
+            $isSystem = $matches['systemVariableFlag'] === $flag;
         }
         
-        return $variableName;
+        return array($variableName, $isSystem);
     }
     
     private function checkCurrentVariableState()
@@ -65,7 +69,7 @@ class VariableParser extends AbstractSectionParser
         }
     }
         
-    private function changeCurrentVariable($variableName)
+    private function changeCurrentVariable($variableName, $isSystem)
     {
         $this->checkCurrentVariableState();
         $this->currentVariable = $variableName;
@@ -84,6 +88,7 @@ class VariableParser extends AbstractSectionParser
             'env' => array(),
             'file' => $this->currentFilePath,
             'line' => $this->currentLineNumber,
+            'system' => $isSystem,
         );
         
         $this->valueFound = false;

@@ -658,4 +658,22 @@ CONFFILE;
     
         $this->assertSame('success', $reader->read('db.pass', 'staging'));
     }
+    
+    /**
+     * @dataProvider providerTestIsSystem
+     */
+    public function testIsSystem($variable, $expected)
+    {
+        $this->assertSame($expected, $this->reader->isSystem($variable));
+    }
+    
+    public function providerTestIsSystem()
+    {
+        return array(
+            array('gourdin', true),
+            array('tva', true),
+            array('debug', false),
+            array('list.ok', false),
+        );
+    }
 }

@@ -461,4 +461,23 @@ CONFFILE;
         
         $this->assertSame($expected, $groups);
     }
+    
+    /**
+     * @dataProvider providerTestIsSystem
+     */
+    public function testIsSystem($variable, $expected)
+    {
+        $this->parser->parse(self::MASTERFILE_PATH);
+        $this->assertSame($expected, $this->parser->isSystem($variable));
+    }
+    
+    public function providerTestIsSystem()
+    {
+        return array(
+            array('gourdin', true),
+            array('tva', true),
+            array('debug', false),
+            array('list.ok', false),
+        );
+    }    
 }

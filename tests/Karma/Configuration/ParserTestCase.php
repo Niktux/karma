@@ -37,7 +37,7 @@ debug:
     dev = true
     default = false
 
-gourdin:
+@gourdin:
     # 0 for prod
     prod = 0
     # 1 for non-dev & non-prod envs
@@ -48,7 +48,7 @@ gourdin:
 
                 # comment with bad indentation
 #compressedComment
-tva:
+@tva:
         dev =   19.0
         preprod = 20.50
     default=19.6            
