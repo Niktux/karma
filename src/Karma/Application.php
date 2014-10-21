@@ -74,7 +74,7 @@ class Application extends \Pimple
             $parser = $c['parser'];
             $variables = $parser->parse($c['configuration.masterFile']);
             
-            return new Reader($variables, $parser->getExternalVariables(), $parser->getGroups());    
+            return new Reader($variables, $parser->getExternalVariables(), $parser->getGroups(), $parser->getDefaultEnvironmentsForGroups());    
         });
     }
     
