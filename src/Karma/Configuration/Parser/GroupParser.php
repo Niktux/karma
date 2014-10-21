@@ -5,11 +5,13 @@ namespace Karma\Configuration\Parser;
 class GroupParser extends AbstractSectionParser
 {
     private
-        $groups;
+        $groups,
+        $defaultEnvironments;
     
     public function __construct()
     {
         $this->groups = array();
+        $this->defaultEnvironments = array();
     }
     
     protected function parseLine($line)
@@ -36,6 +38,7 @@ class GroupParser extends AbstractSectionParser
         $this->checkGroupStillNotExists($groupName);
         
         $environments = array_map('trim', explode(',', $envList));
+        $environments = $this->checkForDefaultMarker($groupName, $environments);
         $this->checkEnvironmentAreUnique($groupName, $environments);
         
         $this->groups[$groupName] = array();
@@ -49,6 +52,38 @@ class GroupParser extends AbstractSectionParser
             
             $this->groups[$groupName][] = $env;
         }
+    }
+    
+    private function checkForDefaultMarker($groupName, array $environments)
+    {
+        $environmentNames = array();
+        $this->defaultEnvironments[$groupName] = null;
+        
+        foreach($environments as $envString)
+        {
+            $name = $envString;
+            
+            if(preg_match('~\*\s*(?P<envName>.*)~', $envString, $matches))
+            {
+                $name = $matches['envName'];
+                
+                if(isset($this->defaultEnvironments[$groupName]))
+                {
+                    throw new \RuntimeException(sprintf(
+                        'Group %s must have only one default environment : %s and %s are declared as default',
+                        $groupName,
+                        $this->defaultEnvironments[$groupName],
+                        $name
+                    ));
+                }
+                
+                $this->defaultEnvironments[$groupName] = $name;                
+            }   
+            
+            $environmentNames[] = $name;
+        }
+        
+        return $environmentNames;
     }
     
     private function checkGroupStillNotExists($groupName)
@@ -122,5 +157,10 @@ class GroupParser extends AbstractSectionParser
                 implode(', ', $errors)
             ));
         }
+    }
+    
+    public function getDefaultEnvironmentsForGroups()
+    {
+        return $this->defaultEnvironments;
     }
 }

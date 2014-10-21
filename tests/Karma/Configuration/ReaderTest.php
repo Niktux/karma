@@ -590,6 +590,31 @@ CONFFILE;
         $reader = new Reader($variables, $parser->getExternalVariables(), $parser->getGroups());
         $reader->read('db.pass', 'qa');
     }
+
+    public function testGroupsAreReadableIfADefaultEnvIsDefined()
+    {
+        $masterContent = <<<CONFFILE
+[groups]
+qa = [ *staging, preprod ]
+        
+[variables]
+db.pass:
+    dev = 1234
+    qa = password
+    staging = password_staging
+    prod = root
+CONFFILE;
+        
+        $parser = new Parser(new Filesystem(new InMemory(array(self::MASTERFILE_PATH => $masterContent))));
+        
+        $parser->enableIncludeSupport()
+            ->enableExternalSupport()
+            ->enableGroupSupport();
+        
+        $variables = $parser->parse(self::MASTERFILE_PATH);
+        $reader = new Reader($variables, $parser->getExternalVariables(), $parser->getGroups(), $parser->getDefaultEnvironmentsForGroups());
+        $this->assertSame($reader->read('db.pass', 'qa'), $reader->read('db.pass', 'staging'));
+    }
     
     public function testGroupsInDifferentFiles()
     {

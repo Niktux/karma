@@ -456,10 +456,7 @@ CONFFILE;
             'production' => array('prod'),
         );
         
-        ksort($groups);
-        ksort($expected);
-        
-        $this->assertSame($expected, $groups);
+        $this->assertSameArraysExceptOrder($expected, $groups);
     }
     
     /**
@@ -479,5 +476,68 @@ CONFFILE;
             array('debug', false),
             array('list.ok', false),
         );
-    }    
+    } 
+
+    public function testDefaultEnvironmentForGroups()
+    {
+        $masterContent = <<<CONFFILE
+[groups]
+# comment
+qa = [ *staging, preprod ]
+dev = [ dev1,  *  dev2,dev3]
+ # comment
+production=[prod]
+CONFFILE;
+        
+        $parser = new Parser(new Filesystem(new InMemory(array(self::MASTERFILE_PATH => $masterContent))));
+        
+        $parser->enableIncludeSupport()
+            ->enableExternalSupport()
+            ->enableGroupSupport()
+            ->parse(self::MASTERFILE_PATH);
+        
+        $groups = $parser->getGroups();
+        $expected = array(
+            'dev' => array('dev1', 'dev2', 'dev3'),
+        	'qa' => array('staging', 'preprod'),
+            'production' => array('prod'),
+        );
+                
+        $this->assertSameArraysExceptOrder($expected, $groups);
+
+        $envs = $parser->getDefaultEnvironmentsForGroups();
+        $expected = array(
+            'dev' => 'dev2',
+            'qa' => 'staging',
+            'production' => null,
+        );
+        
+        $this->assertSameArraysExceptOrder($expected, $envs);
+    }
+    
+    private function assertSameArraysExceptOrder($expected, $result)
+    {
+        ksort($result);
+        ksort($expected);
+        
+        $this->assertSame($expected, $result);
+    }
+    
+    /**
+     * @expectedException \RuntimeException
+     */
+    public function testMultipleDefaultEnvironmentForASameGroup()
+    {
+        $masterContent = <<<CONFFILE
+[groups]
+dev = [ dev1, *dev2,*dev3]
+CONFFILE;
+        
+        $parser = new Parser(new Filesystem(new InMemory(array(self::MASTERFILE_PATH => $masterContent))));
+        
+        $parser->enableIncludeSupport()
+            ->enableExternalSupport()
+            ->enableGroupSupport()
+            ->parse(self::MASTERFILE_PATH);
+    }
 }
