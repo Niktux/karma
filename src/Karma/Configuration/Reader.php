@@ -13,9 +13,10 @@ class Reader extends AbstractReader
         $variables,
         $externalReader,
         $groupNames,
-        $environmentGroups;
+        $environmentGroups,
+        $defaultEnvironmentsForGroups;
     
-    public function __construct(array $variables, array $externalVariables, array $groups = array())
+    public function __construct(array $variables, array $externalVariables, array $groups = array(), array $defaultEnvironmentsForGroups = array())
     {
         parent::__construct();
         
@@ -30,6 +31,7 @@ class Reader extends AbstractReader
         }
         
         $this->loadGroups($groups);
+        $this->defaultEnvironmentsForGroups = $defaultEnvironmentsForGroups;
     }    
     
     private function loadGroups(array $groups)
@@ -56,10 +58,15 @@ class Reader extends AbstractReader
         
         if(in_array($environment, $this->groupNames))
         {
-            throw new \RuntimeException(sprintf(
-               'Group can not be used as environment (try with group %s detected)',
-                $environment
-            ));
+            if(! isset($this->defaultEnvironmentsForGroups[$environment]))
+            {
+                throw new \RuntimeException(sprintf(
+                   'Group can not be used as environment (try with group %s detected)',
+                    $environment
+                ));
+            }
+            
+            $environment = $this->defaultEnvironmentsForGroups[$environment];
         }
         
         return $this->readVariable($variable, $environment);

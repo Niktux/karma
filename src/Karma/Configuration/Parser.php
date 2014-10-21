@@ -292,4 +292,16 @@ class Parser
         
         return $system;
     }
+    
+    public function getDefaultEnvironmentsForGroups()
+    {
+         $defaultEnvironments = array();
+        
+        if(isset($this->parsers[self::GROUPS]))
+        {
+            $defaultEnvironments = $this->parsers[self::GROUPS]->getDefaultEnvironmentsForGroups();
+        }
+        
+        return $defaultEnvironments;
+    }
 }
