@@ -15,11 +15,11 @@ class VcsHandlerTest extends \PHPUnit_Framework_TestCase
     protected function setUp()
     {
         $files = array(
-        	'a.yml-dist' => null,
-        	'path/to/b.yml-dist' => null,
-        	'some/path/to/tracked.yml-dist' => null,
-        	'trackedAndIgnored.yml-dist' => null,
-        	'ignored.yml-dist' => null,
+            'a.yml-dist' => null,
+            'path/to/b.yml-dist' => null,
+            'some/path/to/tracked.yml-dist' => null,
+            'trackedAndIgnored.yml-dist' => null,
+            'ignored.yml-dist' => null,
             'anotherFile.ini-tpl' => null,
         );
         
@@ -41,9 +41,9 @@ class VcsHandlerTest extends \PHPUnit_Framework_TestCase
         $this->assertSameArrayExceptOrder($expectedUntrackedFiles, $this->vcs->getUntrackedFiles());
         
         $expectedIgnoredFiles = array(
-        	'root/a.yml',
-        	'root/path/to/b.yml',
-        	'root/some/path/to/tracked.yml',
+            'root/a.yml',
+            'root/path/to/b.yml',
+            'root/some/path/to/tracked.yml',
         );
         $this->assertSameArrayExceptOrder($expectedIgnoredFiles, $this->vcs->getIgnoredFiles());
     }
