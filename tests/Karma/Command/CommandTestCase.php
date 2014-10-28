@@ -1,11 +1,13 @@
 <?php
 
+namespace Karma\Command;
+
 use Karma\Application;
 use Gaufrette\Adapter\InMemory;
 use Karma\Console;
 use Symfony\Component\Console\Tester\CommandTester;
 
-abstract class CommandTestCase extends PHPUnit_Framework_TestCase
+abstract class CommandTestCase extends \PHPUnit_Framework_TestCase
 {
     protected
         $app,

@@ -1,16 +1,15 @@
 <?php
 
+namespace Karma;
+
 use Gaufrette\Filesystem;
 use Gaufrette\Adapter\InMemory;
-use Karma\Hydrator;
 use Karma\Configuration\InMemoryReader;
-use Karma\Finder;
-use Karma\ProfileReader;
 use Karma\FormatterProviders\NullProvider;
 use Karma\FormatterProviders\CallbackProvider;
 use Karma\Formatters\Rules;
 
-class HydratorTest extends PHPUnit_Framework_TestCase
+class HydratorTest extends \PHPUnit_Framework_TestCase
 {
     private
         $fs,

@@ -1,11 +1,11 @@
 <?php
 
-use Karma\VcsHandler;
-use Karma\Finder;
+namespace Karma;
+
 use Gaufrette\Filesystem;
 use Gaufrette\Adapter\InMemory;
 
-class VcsHandlerTest extends PHPUnit_Framework_TestCase
+class VcsHandlerTest extends \PHPUnit_Framework_TestCase
 {
     private
         $fs,

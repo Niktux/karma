@@ -1,5 +1,7 @@
 <?php
 
+namespace Karma\Command;
+
 require_once __DIR__ . '/CommandTestCase.php';
 
 class DisplayTest extends CommandTestCase

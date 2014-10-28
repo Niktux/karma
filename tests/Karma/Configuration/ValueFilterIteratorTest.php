@@ -1,15 +1,15 @@
 <?php
 
-use Karma\Configuration\ValueFilterIterator;
+namespace Karma\Configuration;
 
-class ValueFilterIteratorTest extends PHPUnit_Framework_TestCase
+class ValueFilterIteratorTest extends \PHPUnit_Framework_TestCase
 {
     private
         $values;
     
     protected function setUp()
     {
-        $this->values = new ArrayIterator(array(
+        $this->values = new \ArrayIterator(array(
             'db.user' => 'root',
             'db.pass' => 'rootroot',
             'db.host' => '192.160.13.12',

@@ -1,9 +1,11 @@
 <?php
 
+namespace Karma\Configuration;
+
 use Karma\Configuration\InMemoryReader;
 use Karma\Configuration;
 
-class InMemoryReaderTest extends PHPUnit_Framework_TestCase
+class InMemoryReaderTest extends \PHPUnit_Framework_TestCase
 {
     private
         $reader;

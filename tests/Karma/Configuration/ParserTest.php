@@ -1,8 +1,9 @@
 <?php
 
+namespace Karma\Configuration;
+
 use Gaufrette\Filesystem;
 use Gaufrette\Adapter\InMemory;
-use Karma\Configuration\Parser;
 
 require_once __DIR__ . '/ParserTestCase.php';
 

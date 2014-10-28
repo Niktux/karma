@@ -1,8 +1,8 @@
 <?php
 
-use Karma\Formatters\Rules;
+namespace Karma\Formatters;
 
-class RulesTests extends PHPUnit_Framework_TestCase
+class RulesTests extends \PHPUnit_Framework_TestCase
 {
     private
         $formatter;

@@ -1,13 +1,14 @@
 <?php
 
+namespace Karma\FormatterProviders;
+
 use Karma\ProfileReader;
 use Gaufrette\Filesystem;
 use Gaufrette\Adapter\InMemory;
 use Karma\Application;
 use Gaufrette\Adapter;
-use Karma\FormatterProviders\ProfileProvider;
 
-class ProfileProviderTest extends PHPUnit_Framework_TestCase
+class ProfileProviderTest extends \PHPUnit_Framework_TestCase
 {
     private function buildProvider($profileContent = null, $filename = Application::PROFILE_FILENAME)
     {

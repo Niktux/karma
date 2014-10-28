@@ -1,6 +1,8 @@
 <?php
 
-class InMemoryTest extends PHPUnit_Framework_TestCase
+namespace Karma\VCS;
+
+class InMemoryTest extends \PHPUnit_Framework_TestCase
 {
     private
         $files,

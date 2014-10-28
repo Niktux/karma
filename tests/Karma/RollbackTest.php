@@ -1,12 +1,12 @@
 <?php
 
+namespace Karma;
+
 use Gaufrette\Filesystem;
 use Gaufrette\Adapter\InMemory;
-use Karma\Hydrator;
 use Karma\Configuration\Reader;
-use Karma\Finder;
 
-class RollbackTest extends PHPUnit_Framework_TestCase
+class RollbackTest extends \PHPUnit_Framework_TestCase
 {
     private
         $rollback;

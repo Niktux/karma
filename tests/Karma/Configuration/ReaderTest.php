@@ -1,8 +1,8 @@
 <?php
 
-use Karma\Configuration\Reader;
+namespace Karma\Configuration;
+
 use Karma\Configuration;
-use Karma\Configuration\Parser;
 use Gaufrette\Filesystem;
 use Gaufrette\Adapter\InMemory;
 

@@ -1,9 +1,10 @@
 <?php
 
-use Karma\Application;
+namespace Karma;
+
 use Gaufrette\Adapter\InMemory;
 
-class ApplicationTest extends PHPUnit_Framework_TestCase
+class ApplicationTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @dataProvider providerTestContainer

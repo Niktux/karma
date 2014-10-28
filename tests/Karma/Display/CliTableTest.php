@@ -1,11 +1,13 @@
 <?php
 
+namespace Karma\Display;
+
 use Karma\Display\CliTable;
 
 /**
  * @group Unix
  */
-class CliTableTest extends PHPUnit_Framework_TestCase
+class CliTableTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @dataProvider providerTestRender
