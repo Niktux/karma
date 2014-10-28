@@ -51,6 +51,16 @@ class VariableParser extends AbstractSectionParser
         {
             $variableName = trim($matches['variableName']);
             $isSystem = $matches['systemVariableFlag'] === $flag;
+            
+            if(preg_match('~\s~', $variableName))
+            {
+                throw new \RuntimeException(sprintf(
+                    'Blank characters are not allowed in variable name : "%s" (in file %s line %d)',
+                    $variableName,
+                    $this->currentFilePath,
+                    $this->currentLineNumber
+                ));
+            }
         }
         
         return array($variableName, $isSystem);
