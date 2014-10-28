@@ -6,7 +6,7 @@ class ValueFilterIteratorTest extends \PHPUnit_Framework_TestCase
 {
     private
         $values;
-    
+
     protected function setUp()
     {
         $this->values = new \ArrayIterator(array(
@@ -26,17 +26,17 @@ class ValueFilterIteratorTest extends \PHPUnit_Framework_TestCase
             'list' => array(100, 'arootb', true, 'goo'),
         ));
     }
-    
+
     /**
      * @dataProvider providerTestFilter
      */
     public function testFilter($filter, $expected)
     {
         $it = new ValueFilterIterator($filter, $this->values);
-        
+
         $this->assertSame($expected, iterator_to_array($it));
     }
-    
+
     public function providerTestFilter()
     {
         return array(
@@ -84,11 +84,11 @@ class ValueFilterIteratorTest extends \PHPUnit_Framework_TestCase
                 'number' => 0,
                 'tenNumber' => 10,
                 'numberAsString' => '10',
-                'list' => array(100, 'arootb', true, 'goo'),                        
+                'list' => array(100, 'arootb', true, 'goo'),
             )),
             array('true', array(
                 'display_errors' => true,
-                'list' => array(100, 'arootb', true, 'goo'),                      
+                'list' => array(100, 'arootb', true, 'goo'),
             )),
             array('true*', array(
                 'trueString' => 'true',
@@ -113,20 +113,20 @@ class ValueFilterIteratorTest extends \PHPUnit_Framework_TestCase
                 'email' => 'root@db.org',
             )),
             array('db.*', array(
-            )),                        
+            )),
             array('b**te', array(
                 'stringWithStar' => 'b*te',
-            )),                        
+            )),
             array('b**t*', array(
                 'stringWithStar' => 'b*te',
-            )),                        
+            )),
             array('***te', array(
-            )),                        
+            )),
             array('b***', array(
                 'stringWithStar' => 'b*te',
-            )),                        
+            )),
             array('****', array(
-            )),                        
+            )),
         );
     }
 }

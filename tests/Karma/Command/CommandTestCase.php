@@ -28,7 +28,7 @@ CONFFILE;
         $this->app['configuration.fileSystem.adapter'] = new InMemory(array(
             Application::DEFAULT_MASTER_FILE => $masterContent,
         ));
-        
+
         $this->app['profile.fileSystem.adapter'] = function($c) {
             return new InMemory();
         };
@@ -40,22 +40,22 @@ CONFFILE;
         $command = $console
             ->getConsoleApplication()
             ->find($commandName);
-        
+
         $this->commandTester = new CommandTester($command);
-        
+
         $commandArguments = array_merge(
             array('command' => $command->getName()),
             $commandArguments
         );
-        
+
         $this->commandTester->execute($commandArguments);
     }
-    
+
     protected function assertDisplay($regex)
     {
         $this->assertRegExp($regex, $this->commandTester->getDisplay());
     }
-    
+
     protected function assertNotDisplay($regex)
     {
         $this->assertNotRegExp($regex, $this->commandTester->getDisplay());

@@ -12,11 +12,11 @@ abstract class ParserTestCase extends \PHPUnit_Framework_TestCase
 {
     const
         MASTERFILE_PATH = 'master.conf';
-    
+
     protected
         $parser,
         $variables;
-    
+
     protected function setUp()
     {
         $contentMaster = <<<CONFFILE
@@ -27,7 +27,7 @@ db.conf
 [externals]
 # Comments can be everywhere
 externalFileNotFound.conf
-                
+
 [variables]
 print_errors:
     prod, preprod = false
@@ -52,24 +52,24 @@ debug:
 @tva:
         dev =   19.0
         preprod = 20.50
-    default=19.6            
+    default=19.6
 server:
     prod = sql21
     preprod = prod21
     recette, qualif = rec21
-    
+
 apiKey:
     recette =
     dev==2
     default = qd4#qs64d6q6=fgh4f6ùftgg==sdr
-    
+
 my.var.with.subnames:
     default = 21
 
 param:
     dev = \${param}
     staging = Some\${nested}param
-            
+
 list.ok:
     dev = [ one, two, three]
     staging = [one,two]
@@ -93,10 +93,10 @@ list.notlist:
     string2 = [[]
     string3 = [[]]
     string4 = [][]
-    
+
 variable-name-with-dashes:
     default = poney
-    
+
 CONFFILE;
 
         $contentDb = <<< CONFFILE
@@ -106,17 +106,17 @@ db.conf
 
 [variables]
 user:
-    default = root        
+    default = root
 CONFFILE;
-        
+
         $files = array(
             self::MASTERFILE_PATH => $contentMaster,
             'db.conf' => $contentDb,
         );
-        
+
         $adapter = new InMemory($files);
         $fs = new Filesystem($adapter);
-        
+
         $this->parser = new Parser($fs);
         $this->parser
             ->enableIncludeSupport()

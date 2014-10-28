@@ -9,7 +9,7 @@ class InMemoryReaderTest extends \PHPUnit_Framework_TestCase
 {
     private
         $reader;
-    
+
     protected function setUp()
     {
         $this->reader = new InMemoryReader(array(
@@ -19,15 +19,15 @@ class InMemoryReaderTest extends \PHPUnit_Framework_TestCase
             'baz:recette' => 'bazrecette',
         ));
     }
-    
+
     /**
      * @dataProvider providerTestRead
      */
     public function testRead($variable, $environment, $expected)
     {
-        $this->assertSame($expected, $this->reader->read($variable, $environment));    
+        $this->assertSame($expected, $this->reader->read($variable, $environment));
     }
-    
+
     /**
      * @dataProvider providerTestRead
      */
@@ -36,7 +36,7 @@ class InMemoryReaderTest extends \PHPUnit_Framework_TestCase
         $this->reader->setDefaultEnvironment($environment);
         $this->assertSame($expected, $this->reader->read($variable));
     }
-    
+
     public function providerTestRead()
     {
         return array(
@@ -46,7 +46,7 @@ class InMemoryReaderTest extends \PHPUnit_Framework_TestCase
             array('foo', 'dev', 'foodev'),
         );
     }
-    
+
     /**
      * @expectedException \RuntimeException
      */
@@ -54,18 +54,18 @@ class InMemoryReaderTest extends \PHPUnit_Framework_TestCase
     {
         $this->reader->read('doesnotexist', 'dev');
     }
-    
+
     public function testGetAllVariables()
     {
         $variables = $this->reader->getAllVariables();
         sort($variables);
-        
+
         $expected = array('foo', 'bar', 'baz');
         sort($expected);
-        
+
         $this->assertSame($expected, $variables);
     }
-    
+
     /**
      * @dataProvider providerTestGetAllValuesForEnvironment
      */
@@ -73,19 +73,19 @@ class InMemoryReaderTest extends \PHPUnit_Framework_TestCase
     {
         $variables = $this->reader->getAllValuesForEnvironment($environment);
         $this->assertInternalType('array', $variables);
-    
+
         $keys = array_keys($variables);
         $expectedKeys = array_keys($expectedValues);
         sort($keys);
         sort($expectedKeys);
         $this->assertSame($expectedKeys, $keys);
-    
+
         foreach($keys as $variable)
         {
             $this->assertSame($expectedValues[$variable], $variables[$variable], "Value for $variable");
         }
     }
-    
+
     public function providerTestGetAllValuesForEnvironment()
     {
         return array(
@@ -106,53 +106,53 @@ class InMemoryReaderTest extends \PHPUnit_Framework_TestCase
             )),
         );
     }
-    
+
     public function testOverrideVariable()
     {
         $environment = 'dev';
-    
+
         $this->assertSame('foodev', $this->reader->read('foo', $environment));
         $this->assertSame('bardev', $this->reader->read('bar', $environment));
-    
+
         $this->reader->overrideVariable('foo', 'foofoo');
-    
+
         $this->assertSame('foofoo', $this->reader->read('foo', $environment));
         $this->assertSame('bardev', $this->reader->read('bar', $environment));
-        
+
         $this->reader->overrideVariable('bar', null);
-    
+
         $this->assertSame('foofoo', $this->reader->read('foo', $environment));
         $this->assertSame(null, $this->reader->read('bar', $environment));
     }
-    
+
     public function testCustomData()
     {
         $var = 'param';
-        
+
         $reader = new InMemoryReader(array(
             'param:dev' => '${param}',
             'param:staging' => 'Some${nested}param',
         ));
-        
+
         $this->assertSame('${param}', $reader->read($var, 'dev'));
         $this->assertSame('Some${nested}param', $reader->read($var, 'staging'));
-        
+
         $reader->setCustomData('PARAM', 'caseSensitive');
-        
+
         $this->assertSame('${param}', $reader->read($var, 'dev'));
         $this->assertSame('Some${nested}param', $reader->read($var, 'staging'));
-        
+
         $reader->setCustomData('param', 'foobar');
-        
+
         $this->assertSame('foobar', $reader->read($var, 'dev'));
         $this->assertSame('Some${nested}param', $reader->read($var, 'staging'));
-         
+
         $reader->setCustomData('nested', 'Base');
-        
+
         $this->assertSame('foobar', $reader->read($var, 'dev'));
         $this->assertSame('SomeBaseparam', $reader->read($var, 'staging'));
     }
-    
+
     /**
      * @dataProvider providerTestIsSystem
      */
@@ -160,7 +160,7 @@ class InMemoryReaderTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertSame($expected, $this->reader->isSystem($variable));
     }
-    
+
     public function providerTestIsSystem()
     {
         return array(

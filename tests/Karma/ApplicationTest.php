@@ -13,13 +13,13 @@ class ApplicationTest extends \PHPUnit_Framework_TestCase
     {
         $adapter = new InMemory();
         $adapter->write(Application::DEFAULT_MASTER_FILE, null);
-        
+
         $app = new Application();
         $app['configuration.fileSystem.adapter'] = $adapter;
-        
+
         $this->assertInstanceOf($expected, $app[$service]);
     }
-    
+
     public function providerTestContainer()
     {
         return array(

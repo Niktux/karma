@@ -13,38 +13,38 @@ use Karma\Configuration\FilterInputVariable;
 class Hydrate extends Command
 {
     use FilterInputVariable;
-    
+
     const
         ENV_DEV = 'dev',
         OPTION_ASSIGNMENT = '=';
-    
+
     private
         $dryRun,
         $isBackupEnabled,
         $environment,
         $systemEnvironment;
-    
+
     public function __construct(Application $app)
     {
         parent::__construct($app);
-        
+
         $this->dryRun = false;
         $this->isBackupEnabled = false;
-        
+
         $this->environment = self::ENV_DEV;
         $this->systemEnvironment = null;
     }
-    
+
     protected function configure()
     {
         parent::configure();
-        
+
         $this
             ->setName('hydrate')
             ->setDescription('Hydrate dist files')
-            
+
             ->addArgument('sourcePath', InputArgument::OPTIONAL, 'source path to hydrate')
-            
+
             ->addOption('env', 'e', InputOption::VALUE_REQUIRED, 'Target environment', self::ENV_DEV)
             ->addOption('system', 's', InputOption::VALUE_REQUIRED, 'Target environment for system variables', null)
             ->addOption('dry-run', null, InputOption::VALUE_NONE, 'Simulation mode')
@@ -53,32 +53,32 @@ class Hydrate extends Command
             ->addOption('data', 'd', InputOption::VALUE_IS_ARRAY | InputOption::VALUE_REQUIRED, 'Custom data values', array())
         ;
     }
-    
+
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         parent::execute($input, $output);
-        
+
         $this->processInputs($input);
         $this->launchHydration();
     }
-    
+
     private function processInputs(InputInterface $input)
     {
-        $this->environment = $input->getOption('env'); 
-        $this->systemEnvironment = $input->getOption('system'); 
-        
+        $this->environment = $input->getOption('env');
+        $this->systemEnvironment = $input->getOption('system');
+
         if($input->getOption('dry-run'))
         {
             $this->dryRun = true;
             $this->output->writeln("<fg=cyan>Run in dry-run mode</fg=cyan>");
         }
-        
+
         if($input->getOption('backup'))
         {
             $this->isBackupEnabled = true;
             $this->output->writeln("<fg=cyan>Backup enabled</fg=cyan>");
         }
-        
+
         $sourcePath = $input->getArgument('sourcePath');
         if($sourcePath === null)
         {
@@ -87,19 +87,19 @@ class Hydrate extends Command
             {
                 throw new \RuntimeException('Missing argument sourcePath');
             }
-            
+
             $sourcePath = $profile->getSourcePath();
         }
-        
+
         $this->output->writeln(sprintf(
             "<info>Hydrate <comment>%s</comment> with <comment>%s</comment> values</info>",
             $sourcePath,
             $this->environment
         ));
         $this->output->writeln('');
-        
+
         $this->app['sources.path'] = $sourcePath;
-        
+
         $this->processOverridenVariables(
             $this->parseOptionWithAssignments($input, 'override')
         );
@@ -107,34 +107,34 @@ class Hydrate extends Command
             $this->parseOptionWithAssignments($input, 'data')
         );
     }
-    
+
     private function launchHydration()
     {
         $hydrator = $this->app['hydrator'];
-        
+
         if($this->dryRun === true)
         {
             $hydrator->setDryRun();
         }
-        
+
         if($this->isBackupEnabled === true)
         {
             $hydrator->enableBackup();
         }
-        
+
         if($this->systemEnvironment !== null)
         {
             $hydrator->setSystemEnvironment($this->systemEnvironment);
-            
+
              $this->app['logger']->info(sprintf(
                 'Hydrate <important>system</important> variables with <important>%s</important> values',
                 $this->systemEnvironment
             ));
         }
-            
+
         $hydrator->hydrate($this->environment);
     }
-    
+
     private function parseOptionWithAssignments(InputInterface $input, $optionName)
     {
         $strings = $input->getOption($optionName);
@@ -143,9 +143,9 @@ class Hydrate extends Command
         {
             $strings = array($strings);
         }
-        
+
         $data = array();
-        
+
         foreach($strings as $string)
         {
             if(stripos($string, self::OPTION_ASSIGNMENT) === false)
@@ -154,23 +154,23 @@ class Hydrate extends Command
                     '%s option must contain %c : --%s <variable>=<value>',
                     $optionName,
                     self::OPTION_ASSIGNMENT,
-                    $optionName                        
-                ));    
+                    $optionName
+                ));
             }
 
             list($variable, $value) = explode(self::OPTION_ASSIGNMENT, $string, 2);
-            
+
             if(array_key_exists($variable, $data))
             {
-                throw new \InvalidArgumentException("Duplicated %s option value : $variable");    
+                throw new \InvalidArgumentException("Duplicated %s option value : $variable");
             }
-            
+
             $data[$variable] = $value;
         }
 
         return $data;
     }
-    
+
     private function processOverridenVariables(array $overrides)
     {
         $reader = $this->app['configuration'];
@@ -183,13 +183,13 @@ class Hydrate extends Command
                $variable,
                $value
             ));
-            
+
             $value = $this->parseList($value);
-            
+
             $reader->overrideVariable($variable, $this->filterValue($value));
         }
     }
-    
+
     private function processCustomData(array $data)
     {
         $reader = $this->app['configuration'];
@@ -202,7 +202,7 @@ class Hydrate extends Command
                $variable,
                $value
             ));
-            
+
             $reader->setCustomData($variable, $this->filterValue($value));
         }
     }

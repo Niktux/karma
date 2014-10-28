@@ -6,8 +6,8 @@ interface FormattersDefinition
 {
     const
         DEFAULT_FORMATTER_NAME = 'default';
-    
+
     public function getDefaultFormatterName();
     public function getFormatters();
-    public function getFileExtensionFormatters();    
+    public function getFileExtensionFormatters();
 }
