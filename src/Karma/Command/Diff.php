@@ -43,11 +43,11 @@ class Diff extends Command
         $table = new CliTable($diff);
 
         $table->enableFormattingTags()
-                ->setHeaders(array($environment1, $environment2))
-                ->displayKeys()
-                ->setValueRenderingFunction(function($value){
-                    return $this->formatValue($value);
-                });
+            ->setHeaders(array($environment1, $environment2))
+            ->displayKeys()
+            ->setValueRenderingFunction(function($value){
+                return $this->formatValue($value);
+            });
 
         $output->writeln($table->render());
     }
