@@ -7,7 +7,7 @@ use Karma\Logging\OutputInterfaceAdapter;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class ParserTestCase extends \PHPUnit_Framework_TestCase
+abstract class ParserTestCase extends \PHPUnit_Framework_TestCase
 {
     const
         MASTERFILE_PATH = 'master.conf';
