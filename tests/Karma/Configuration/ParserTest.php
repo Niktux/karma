@@ -317,6 +317,12 @@ foo = [baz]
 bar = [baz]
 CONFFILE
             ),
+            'spaces in variable name' => array(<<<CONFFILE
+[variables]
+var with spaces:
+    default = false
+CONFFILE
+            ),
         );
     }
     
