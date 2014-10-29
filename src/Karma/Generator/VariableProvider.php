@@ -34,7 +34,7 @@ class VariableProvider
 
         foreach($parsedVariables as $variable => $info)
         {
-            $variables[] = $this->nameTranslator->translate($info['file'], $variable);
+            $variables[$variable] = $this->nameTranslator->translate($info['file'], $variable);
         }
 
         return $variables;

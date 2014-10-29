@@ -4,6 +4,7 @@ namespace Karma\Generator\NameTranslators;
 
 use Karma\Generator\NameTranslator;
 use Karma\Application;
+use Karma\Generator\ConfigurationFileGenerator;
 
 class FilePrefixTranslator implements NameTranslator
 {
@@ -23,7 +24,7 @@ class FilePrefixTranslator implements NameTranslator
 
         if($prefix !== false)
         {
-            $variable = "$prefix.$variable";
+            $variable = $prefix . ConfigurationFileGenerator::DELIMITER . $variable;
         }
 
         return $variable;

@@ -8,6 +8,7 @@ use Gaufrette\Adapter\InMemory;
 use Karma\Application;
 use Karma\Configuration\Reader;
 use Karma\Generator\NameTranslators\NullTranslator;
+use Karma\Generator\NameTranslators\FilePrefixTranslator;
 
 class VariableProviderTest extends \PHPUnit_Framework_TestCase
 {
@@ -18,39 +19,39 @@ class VariableProviderTest extends \PHPUnit_Framework_TestCase
     {
         $masterContent = <<<CONFFILE
 [externals]
-external1.conf
-external2.conf
+external.conf
+
+[includes]
+db.conf
 
 [variables]
-db.pass:
-    dev = 1234
-    prod = <external>
-    default = root
-db.user:
-    staging = <external>
-    default = root
+logger.level:
+    staging = info
+    default = warning
 CONFFILE;
 
-        $externalContent1 = <<<CONFFILE
+        $externalContent = <<<CONFFILE
 [variables]
-db.pass:
+# db.conf
+pass:
     prod = veryComplexPass
 CONFFILE;
 
-        $externalContent2 = <<<CONFFILE
+        $dbContent = <<<CONFFILE
 [variables]
-db.user:
-    staging = someUser
+pass:
+    dev = 1234
+    prod = <external>
+    default = root
 CONFFILE;
 
         $files = array(
             Application::DEFAULT_MASTER_FILE => $masterContent,
-            'external1.conf' => $externalContent1,
-            'external2.conf' => $externalContent2,
+            'external.conf' => $externalContent,
+            'db.conf' => $dbContent,
         );
 
         $parser = new Parser(new Filesystem(new InMemory($files)));
-
         $parser->enableIncludeSupport()
             ->enableExternalSupport();
 
@@ -65,15 +66,28 @@ CONFFILE;
         $this->assertSame($expected, $result);
     }
 
-    public function testGetAllVariables()
+    /**
+     * @dataProvider providerTestGetAllVariables
+     */
+    public function testGetAllVariables($translator, $expected)
     {
-        $this->provider->setNameTranslator(new NullTranslator());
-
+        $this->provider->setNameTranslator($translator);
         $variables = $this->provider->getAllVariables();
-        $expected = array(
-            'db.pass', 'db.user',
-        );
 
         $this->assertSameArraysExceptOrder($expected, $variables);
+    }
+
+    public function providerTestGetAllVariables()
+    {
+        return array(
+            array(new NullTranslator(), array(
+                'pass' => 'pass',
+                'logger.level' => 'logger.level'
+            )),
+            array(new FilePrefixTranslator(), array(
+                'pass' => 'db.pass',
+                'logger.level' => 'logger.level',
+            )),
+        );
     }
 }
