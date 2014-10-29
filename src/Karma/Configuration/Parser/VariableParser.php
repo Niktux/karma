@@ -3,6 +3,7 @@
 namespace Karma\Configuration\Parser;
 
 use Karma\Configuration;
+
 class VariableParser extends AbstractSectionParser
 {
     use \Karma\Configuration\FilterInputVariable;

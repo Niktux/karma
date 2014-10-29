@@ -10,7 +10,7 @@ use Karma\Configuration\Parser\ExternalParser;
 use Psr\Log\NullLogger;
 use Karma\Configuration\Parser\GroupParser;
 
-class Parser
+class Parser implements FileParser
 {
     use \Karma\Logging\LoggerAware;
 
