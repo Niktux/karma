@@ -71,6 +71,9 @@ pass:
     prod = <external>
     default = root
 
+host:
+    dev = dev-sql
+    staging = [stg-sql1, stg-sql2, stg-sql3 ]
 CONFFILE;
 
         $files = array(
@@ -96,6 +99,7 @@ CONFFILE;
 
         $this->assertFileContains('db.yml', <<< YAML
 pass: 1234
+host: dev-sql
 
 YAML
 );
@@ -122,6 +126,10 @@ YAML
 
         $this->assertFileContains('db.yml', <<< YAML
 pass: root
+host:
+    - stg-sql1
+    - stg-sql2
+    - stg-sql3
 
 YAML
 );
