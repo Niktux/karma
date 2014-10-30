@@ -146,6 +146,20 @@ YAML
 );
     }
 
+    public function testOverride()
+    {
+        $this->fs->write('db.yml', 'burger over ponies');
+
+        $this->generator->generate('dev');
+
+        $this->assertFileContains('db.yml', <<< YAML
+pass: 1234
+host: dev-sql
+
+YAML
+        );
+    }
+
     private function assertNumberOfFilesIs($expectedCount)
     {
         $this->assertCount($expectedCount, $this->fs->keys(), "Filesystem must contain exactly $expectedCount files");

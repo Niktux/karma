@@ -54,7 +54,8 @@ class YamlGenerator extends AbstractFileGenerator implements ConfigurationFileGe
         {
             $this->fs->write(
                 $this->computeFilename($file),
-                $this->formatContent($content)
+                $this->formatContent($content),
+                true
             );
         }
     }
