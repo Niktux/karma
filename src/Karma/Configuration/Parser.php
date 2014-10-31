@@ -238,13 +238,13 @@ class Parser
 
         foreach($files as $file => $status)
         {
-            $message = sprintf(
-               'External file %s was %s',
-               $file,
-               $status['found'] ? 'found' : 'not found'
-            );
-
-            $this->warning($message);
+            if($status['found'] === false)
+            {
+                $this->warning(sprintf(
+                   'External file %s was not found',
+                   $file
+                ));
+            }
         }
     }
 
