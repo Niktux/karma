@@ -11,6 +11,9 @@ use Karma\VCS\Vcs;
 use Karma\VCS\Git;
 use Karma\VCS\Git\GitWrapperAdapter;
 use Karma\FormatterProviders\ProfileProvider;
+use Karma\Generator\NameTranslators\FilePrefixTranslator;
+use Karma\Generator\VariableProvider;
+use Karma\Generator\ConfigurationFileGenerators\YamlGenerator;
 
 class Application extends \Pimple
 {
@@ -184,5 +187,22 @@ class Application extends \Pimple
 
             return $hydrator;
         };
+
+        $this['generator.nameTranslator'] = $this->share(function ($c) {
+            // FIXME conf
+            return new FilePrefixTranslator();
+        });
+
+        $this['generator.variableProvider'] = function ($c) {
+            // FIXME use profile reader
+            $provider = new VariableProvider($c['parser'], $c['configuration.masterFile']);
+            $provider->setNameTranslator($c['generator.nameTranslator']);
+
+            return $provider;
+        };
+
+        $this['configurationFilesGenerator'] = $this->share(function ($c) {
+            return new YamlGenerator($c['sources.fileSystem'], $c['configuration'], $c['generator.variableProvider']);
+        });
     }
 }

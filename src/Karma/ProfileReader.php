@@ -15,7 +15,8 @@ class ProfileReader implements FormattersDefinition
         SOURCE_PATH_INDEX = 'sourcePath',
         DEFAULT_FORMATTER_INDEX = 'defaultFormatter',
         FORMATTERS_INDEX = 'formatters',
-        FILE_EXTENSION_FORMATTERS_INDEX = 'fileExtensionFormatters';
+        FILE_EXTENSION_FORMATTERS_INDEX = 'fileExtensionFormatters',
+        GENERATOR_INDEX = 'generator';
 
     private
         $attributes;
