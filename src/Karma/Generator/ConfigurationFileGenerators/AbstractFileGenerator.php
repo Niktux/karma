@@ -12,13 +12,22 @@ abstract class AbstractFileGenerator implements ConfigurationFileGenerator
     protected
         $fs,
         $reader,
-        $variableProvider;
+        $variableProvider,
+        $dryRun;
 
     public function __construct(Filesystem $fs, Configuration $reader, VariableProvider $variableProvider)
     {
         $this->fs = $fs;
         $this->reader = $reader;
         $this->variableProvider = $variableProvider;
+        $this->dryRun = false;
+    }
+
+    public function setDryRun($value = true)
+    {
+        $this->dryRun = (bool) $value;
+
+        return $this;
     }
 
     public function generate($environment)

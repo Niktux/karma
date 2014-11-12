@@ -50,6 +50,11 @@ class YamlGenerator extends AbstractFileGenerator implements ConfigurationFileGe
 
     protected function postGenerate()
     {
+        if($this->dryRun === true)
+        {
+            return;
+        }
+
         foreach($this->files as $file => $content)
         {
             $this->fs->write(

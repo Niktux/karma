@@ -114,8 +114,7 @@ class Generate extends Command
 
         if($this->dryRun === true)
         {
-            //$hydrator->setDryRun();
-            throw new \RuntimeException('Not supported yet');
+            $generator->setDryRun();
         }
 
         if($this->isBackupEnabled === true)

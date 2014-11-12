@@ -89,6 +89,14 @@ CONFFILE;
         return $parser;
     }
 
+    public function testDryRun()
+    {
+        $this->assertNumberOfFilesIs(0);
+        $this->generator->setDryRun();
+        $this->generator->generate('dev');
+        $this->assertNumberOfFilesIs(0);
+    }
+
     public function testGenerateForDev()
     {
         $this->generator->generate('dev');
