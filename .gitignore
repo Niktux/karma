@@ -17,6 +17,8 @@ report/
 # Test data
 env/
 data/
+genEnv/
+genConfig/
 .karma
 src/.solidifier.yml
 
