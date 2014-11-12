@@ -131,6 +131,11 @@ class Parser
         {
             $currentLineNumber++;
 
+            if(empty($line))
+            {
+                continue;
+            }
+
             $sectionName = $this->extractSectionName($line);
             if($sectionName !== null)
             {
@@ -155,7 +160,6 @@ class Parser
 
         $lines = explode($this->eol, $content);
         $lines = $this->trimLines($lines);
-        $lines = $this->removeEmptyLines($lines);
 
         $this->parsedFiles[] = $filePath;
 
@@ -170,11 +174,6 @@ class Parser
     private function trimLines(array $lines)
     {
         return array_map('trim', $lines);
-    }
-
-    private function removeEmptyLines(array $lines)
-    {
-        return array_filter($lines);
     }
 
     private function changeCurrentFile($filePath)
