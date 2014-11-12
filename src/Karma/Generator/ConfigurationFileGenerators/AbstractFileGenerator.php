@@ -14,7 +14,8 @@ abstract class AbstractFileGenerator implements ConfigurationFileGenerator
         $reader,
         $variableProvider,
         $dryRun,
-        $enableBackup;
+        $enableBackup,
+        $systemEnvironment;
 
     public function __construct(Filesystem $fs, Configuration $reader, VariableProvider $variableProvider)
     {
@@ -23,6 +24,7 @@ abstract class AbstractFileGenerator implements ConfigurationFileGenerator
         $this->variableProvider = $variableProvider;
         $this->dryRun = false;
         $this->enableBackup = false;
+        $this->systemEnvironment = null;
     }
 
     public function setDryRun($value = true)
@@ -47,16 +49,28 @@ abstract class AbstractFileGenerator implements ConfigurationFileGenerator
 
         foreach($variables as $variable => $translatedVariableName)
         {
-            $value = $this->reader->read($variable, $environment);
+            $value = $this->read($variable, $environment);
             $this->generateVariable($translatedVariableName, $value);
         }
 
         $this->postGenerate();
     }
 
+    private function read($variable, $environment)
+    {
+        if($this->systemEnvironment !== null && $this->reader->isSystem($variable))
+        {
+            $environment = $this->systemEnvironment;
+        }
+
+        return $this->reader->read($variable, $environment);
+    }
+
     public function setSystemEnvironment($environment)
     {
-        // TODO FIXME
+        $this->systemEnvironment = $environment;
+
+        return $this;
     }
 
     abstract protected function generateVariable($variableName, $value);

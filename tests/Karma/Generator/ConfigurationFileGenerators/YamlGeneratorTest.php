@@ -66,7 +66,7 @@ CONFFILE;
 
         $dbContent = <<<CONFFILE
 [variables]
-pass:
+@pass:
     dev = 1234
     prod = <external>
     default = root
@@ -208,6 +208,23 @@ YAML
 
         $this->assertHasFile('db.yml~');
         $this->assertFileContains('db.yml~', 'burger over ponies');
+    }
+
+    public function testGenerateForDevWithStagingSystem()
+    {
+        $this->generator->setSystemEnvironment('staging');
+        $this->generator->generate('dev');
+
+        $this->assertNumberOfFilesIs(2);
+        $this->assertHasFile('db.yml');
+        $this->assertHasFile('logger.yml');
+
+        $this->assertFileContains('db.yml', <<< YAML
+pass: root
+host: dev-sql
+
+YAML
+        );
     }
 
     private function assertNumberOfFilesIs($expectedCount)
