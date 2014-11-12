@@ -191,6 +191,25 @@ YAML
         $this->assertFileContains('db.yml~', 'burger over ponies');
     }
 
+    public function testOverrideBackupedFiles()
+    {
+        $this->fs->write('db.yml', 'burger over ponies');
+        $this->fs->write('db.yml~', 'old backup');
+
+        $this->generator->enableBackup();
+        $this->generator->generate('dev');
+
+        $this->assertFileContains('db.yml', <<< YAML
+pass: 1234
+host: dev-sql
+
+YAML
+        );
+
+        $this->assertHasFile('db.yml~');
+        $this->assertFileContains('db.yml~', 'burger over ponies');
+    }
+
     private function assertNumberOfFilesIs($expectedCount)
     {
         $this->assertCount($expectedCount, $this->fs->keys(), "Filesystem must contain exactly $expectedCount files");

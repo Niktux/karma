@@ -61,11 +61,7 @@ class YamlGenerator extends AbstractFileGenerator implements ConfigurationFileGe
             $filename = $this->computeFilename($file);
 
             $this->backupFile($filename);
-            $this->fs->write(
-                $filename,
-                $this->formatContent($content),
-                true
-            );
+            $this->fs->write($filename, $this->formatContent($content), true);
         }
     }
 
@@ -78,7 +74,7 @@ class YamlGenerator extends AbstractFileGenerator implements ConfigurationFileGe
                 $content = $this->fs->read($filename);
                 $backupFilename = $filename . Application::BACKUP_SUFFIX;
 
-                $this->fs->write($backupFilename, $content);
+                $this->fs->write($backupFilename, $content, true);
             }
         }
     }
