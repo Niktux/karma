@@ -6,7 +6,7 @@ use Gaufrette\Filesystem;
 use Psr\Log\NullLogger;
 use Karma\FormatterProviders\NullProvider;
 
-class Hydrator
+class Hydrator implements ConfigurableProcessor
 {
     use \Karma\Logging\LoggerAware;
 

@@ -54,6 +54,11 @@ abstract class AbstractFileGenerator implements ConfigurationFileGenerator
         $this->postGenerate();
     }
 
+    public function setSystemEnvironment($environment)
+    {
+        // TODO FIXME
+    }
+
     abstract protected function generateVariable($variableName, $value);
 
     protected function preGenerate()

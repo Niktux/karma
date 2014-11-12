@@ -2,12 +2,12 @@
 
 namespace Karma\Generator;
 
-interface ConfigurationFileGenerator
+use Karma\ConfigurableProcessor;
+
+interface ConfigurationFileGenerator extends ConfigurableProcessor
 {
     const
         DELIMITER = '.';
 
     public function generate($environment);
-    public function setDryRun($value = true);
-    public function enableBackup($value = true);
 }
