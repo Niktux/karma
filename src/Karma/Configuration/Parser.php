@@ -209,7 +209,7 @@ class Parser implements FileParser
         $this->currentParser = $this->parsers[$sectionName];
     }
 
-    private function getVariables()
+    public function getVariables()
     {
         return $this->parsers[self::VARIABLES]->getVariables();
     }

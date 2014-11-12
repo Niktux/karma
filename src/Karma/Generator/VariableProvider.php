@@ -9,13 +9,11 @@ class VariableProvider
 {
     private
         $parser,
-        $masterFilePath,
         $nameTranslator;
 
-    public function __construct(FileParser $parser, $masterFilePath)
+    public function __construct(FileParser $parser)
     {
         $this->parser = $parser;
-        $this->masterFilePath = $masterFilePath;
         $this->nameTranslator = new NullTranslator();
     }
 
@@ -28,7 +26,7 @@ class VariableProvider
 
     public function getAllVariables()
     {
-        $parsedVariables = $this->parser->parse($this->masterFilePath);
+        $parsedVariables = $this->parser->getVariables();
 
         $variables = array();
 

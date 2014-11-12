@@ -26,7 +26,7 @@ class YamlGeneratorTest extends \PHPUnit_Framework_TestCase
         $variables = $parser->parse(Application::DEFAULT_MASTER_FILE);
         $reader = new Reader($variables, $parser->getExternalVariables(), $parser->getGroups(), $parser->getDefaultEnvironmentsForGroups());
 
-        $this->variableProvider = new VariableProvider($this->initializeParserAndConfFiles(), Application::DEFAULT_MASTER_FILE);
+        $this->variableProvider = new VariableProvider($parser);
         $this->variableProvider->setNameTranslator(new FilePrefixTranslator());
 
         $this->generator = new YamlGenerator($this->fs, $reader, $this->variableProvider);

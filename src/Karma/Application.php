@@ -62,22 +62,27 @@ class Application extends \Pimple
             return new Filesystem($c['configuration.fileSystem.adapter']);
         };
 
-        $this['parser'] = function($c) {
+        $this['parser'] = $this->share(function($c) {
             $parser = new Parser($c['configuration.fileSystem']);
 
             $parser->enableIncludeSupport()
                 ->enableExternalSupport()
                 ->enableGroupSupport()
-                ->setLogger($c['logger']);
+                ->setLogger($c['logger'])
+                ->parse($c['configuration.masterFile']);
 
             return $parser;
-        };
+        });
 
         $this['configuration'] = $this->share(function($c) {
             $parser = $c['parser'];
-            $variables = $parser->parse($c['configuration.masterFile']);
 
-            return new Reader($variables, $parser->getExternalVariables(), $parser->getGroups(), $parser->getDefaultEnvironmentsForGroups());
+            return new Reader(
+                $parser->getVariables(),
+                $parser->getExternalVariables(),
+                $parser->getGroups(),
+                $parser->getDefaultEnvironmentsForGroups()
+            );
         });
     }
 

@@ -53,9 +53,10 @@ CONFFILE;
 
         $parser = new Parser(new Filesystem(new InMemory($files)));
         $parser->enableIncludeSupport()
-            ->enableExternalSupport();
+            ->enableExternalSupport()
+            ->parse(Application::DEFAULT_MASTER_FILE);
 
-        $this->provider = new VariableProvider($parser, Application::DEFAULT_MASTER_FILE);
+        $this->provider = new VariableProvider($parser);
     }
 
     private function assertSameArraysExceptOrder($expected, $result)
