@@ -7,6 +7,7 @@ use Gaufrette\Filesystem;
 use Karma\Configuration;
 use Karma\Generator\VariableProvider;
 use Symfony\Component\Yaml\Yaml;
+use Karma\Application;
 
 class YamlGenerator extends AbstractFileGenerator implements ConfigurationFileGenerator
 {
@@ -57,11 +58,28 @@ class YamlGenerator extends AbstractFileGenerator implements ConfigurationFileGe
 
         foreach($this->files as $file => $content)
         {
+            $filename = $this->computeFilename($file);
+
+            $this->backupFile($filename);
             $this->fs->write(
-                $this->computeFilename($file),
+                $filename,
                 $this->formatContent($content),
                 true
             );
+        }
+    }
+
+    private function backupFile($filename)
+    {
+        if($this->enableBackup === true)
+        {
+            if($this->fs->has($filename))
+            {
+                $content = $this->fs->read($filename);
+                $backupFilename = $filename . Application::BACKUP_SUFFIX;
+
+                $this->fs->write($backupFilename, $content);
+            }
         }
     }
 

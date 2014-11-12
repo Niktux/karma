@@ -92,7 +92,12 @@ CONFFILE;
     public function testDryRun()
     {
         $this->assertNumberOfFilesIs(0);
+
         $this->generator->setDryRun();
+        $this->generator->generate('dev');
+        $this->assertNumberOfFilesIs(0);
+
+        $this->generator->enableBackup();
         $this->generator->generate('dev');
         $this->assertNumberOfFilesIs(0);
     }
@@ -166,6 +171,24 @@ host: dev-sql
 
 YAML
         );
+    }
+
+    public function testBackup()
+    {
+        $this->fs->write('db.yml', 'burger over ponies');
+
+        $this->generator->enableBackup();
+        $this->generator->generate('dev');
+
+        $this->assertFileContains('db.yml', <<< YAML
+pass: 1234
+host: dev-sql
+
+YAML
+        );
+
+        $this->assertHasFile('db.yml~');
+        $this->assertFileContains('db.yml~', 'burger over ponies');
     }
 
     private function assertNumberOfFilesIs($expectedCount)

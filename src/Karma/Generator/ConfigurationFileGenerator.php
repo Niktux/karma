@@ -9,4 +9,5 @@ interface ConfigurationFileGenerator
 
     public function generate($environment);
     public function setDryRun($value = true);
+    public function enableBackup($value = true);
 }

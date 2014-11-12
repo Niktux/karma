@@ -119,8 +119,7 @@ class Generate extends Command
 
         if($this->isBackupEnabled === true)
         {
-            //$hydrator->enableBackup();
-            throw new \RuntimeException('Not supported yet');
+            $generator->enableBackup();
         }
 
         if($this->systemEnvironment !== null)

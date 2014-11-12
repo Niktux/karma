@@ -13,7 +13,8 @@ abstract class AbstractFileGenerator implements ConfigurationFileGenerator
         $fs,
         $reader,
         $variableProvider,
-        $dryRun;
+        $dryRun,
+        $enableBackup;
 
     public function __construct(Filesystem $fs, Configuration $reader, VariableProvider $variableProvider)
     {
@@ -21,11 +22,19 @@ abstract class AbstractFileGenerator implements ConfigurationFileGenerator
         $this->reader = $reader;
         $this->variableProvider = $variableProvider;
         $this->dryRun = false;
+        $this->enableBackup = false;
     }
 
     public function setDryRun($value = true)
     {
         $this->dryRun = (bool) $value;
+
+        return $this;
+    }
+
+    public function enableBackup($value = true)
+    {
+        $this->enableBackup = (bool) $value;
 
         return $this;
     }
