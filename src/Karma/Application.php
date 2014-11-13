@@ -194,14 +194,23 @@ class Application extends \Pimple
         };
 
         $this['generator.nameTranslator'] = $this->share(function ($c) {
-            // FIXME conf
-            return new FilePrefixTranslator();
+            $translator = new FilePrefixTranslator();
+            $translator->changeMasterFile($c['configuration.masterFile']);
+
+            // TODO read prefix for masterfile from profile
+
+            return $translator;
         });
 
         $this['generator.variableProvider'] = function ($c) {
-            // FIXME use profile reader
             $provider = new VariableProvider($c['parser'], $c['configuration.masterFile']);
-            $provider->setNameTranslator($c['generator.nameTranslator']);
+
+            $profile = $c['profile'];
+            $options = $profile->getGeneratorOptions();
+            if(! isset($options['translator']) || $options['translator'] === 'prefix')
+            {
+                $provider->setNameTranslator($c['generator.nameTranslator']);
+            }
 
             return $provider;
         };

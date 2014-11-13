@@ -30,7 +30,8 @@ class ProfileReader implements FormattersDefinition
             self::SOURCE_PATH_INDEX => null,
             self::DEFAULT_FORMATTER_INDEX => self::DEFAULT_FORMATTER_NAME,
             self::FORMATTERS_INDEX => array(),
-            self::FILE_EXTENSION_FORMATTERS_INDEX => array()
+            self::FILE_EXTENSION_FORMATTERS_INDEX => array(),
+            self::GENERATOR_INDEX => array(),
         );
 
         $this->read($fs);
@@ -122,6 +123,11 @@ class ProfileReader implements FormattersDefinition
     public function getFileExtensionFormatters()
     {
         return $this->get(self::FILE_EXTENSION_FORMATTERS_INDEX);
+    }
+
+    public function getGeneratorOptions()
+    {
+        return $this->get(self::GENERATOR_INDEX);
     }
 
     private function has($attributeName)
