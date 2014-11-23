@@ -166,6 +166,7 @@ class InMemoryReaderTest extends \PHPUnit_Framework_TestCase
         return array(
             array('foo', true),
             array('bar', false),
+            array('does_not_exist', false),
         );
     }
 }

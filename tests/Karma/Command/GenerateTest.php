@@ -8,10 +8,10 @@ use Gaufrette\Adapter\InMemory;
 use Gaufrette\Filesystem;
 use Karma\Application;
 
-class HydrateTest extends CommandTestCase
+class GenerateTest extends CommandTestCase
 {
     const
-        COMMAND_NAME = 'hydrate';
+        COMMAND_NAME = 'generate';
 
     protected function setUp()
     {
@@ -19,6 +19,10 @@ class HydrateTest extends CommandTestCase
 
         $this->app['sources.fileSystem.adapter'] = new InMemory(array(
             'src/file' => '',
+        ));
+
+        $this->app['profile.fileSystem.adapter'] = new InMemory(array(
+            Application::PROFILE_FILENAME => "generator:\n  translator: none",
         ));
     }
 
@@ -28,15 +32,15 @@ class HydrateTest extends CommandTestCase
     public function testOptions($option, $expectedMethodCall)
     {
         $mock = $this->getMock(
-            'Karma\Hydrator',
+            'Karma\Generator\ConfigurationFileGenerators\YamlGenerator',
             array(),
-            array($this->app['sources.fileSystem'], $this->app['configuration'], $this->app['finder'])
+            array($this->app['sources.fileSystem'], $this->app['configuration'], $this->app['generator.variableProvider'])
         );
 
         $mock->expects($this->once())
             ->method($expectedMethodCall);
 
-        $this->app['hydrator'] = $mock;
+        $this->app['configurationFilesGenerator'] = $mock;
 
         $this->runCommand(self::COMMAND_NAME, array(
             $option => true,
@@ -59,7 +63,7 @@ class HydrateTest extends CommandTestCase
         ));
 
         $this->runCommand(self::COMMAND_NAME, array());
-        $this->assertDisplay('~Hydrate lib/~');
+        $this->assertDisplay('~Generate configuration files in lib/~');
     }
 
     /**
@@ -70,30 +74,6 @@ class HydrateTest extends CommandTestCase
         $this->app['profile.fileSystem.adapter'] = new InMemory();
 
         $this->runCommand(self::COMMAND_NAME, array());
-    }
-
-    public function testCache()
-    {
-        $cacheAdapter = new InMemory(array());
-        $this->app['finder.cache.adapter'] = $cacheAdapter;
-
-        $cache = new Filesystem($cacheAdapter);
-        $this->assertEmpty($cache->keys());
-
-        // exec without cache
-        $this->runCommand(self::COMMAND_NAME, array(
-            'sourcePath' => 'src/',
-        ));
-
-        $this->assertEmpty($cache->keys());
-
-        // exec with cache
-        $this->runCommand(self::COMMAND_NAME, array(
-            '--cache' => true,
-            'sourcePath' => 'src/',
-        ));
-
-        $this->assertNotEmpty($cache->keys());
     }
 
     public function testOverride()
@@ -110,16 +90,22 @@ class HydrateTest extends CommandTestCase
     public function testOverrideWithList()
     {
         $this->app['sources.fileSystem.adapter'] = $adapter = new InMemory(array(
-            'src/file-dist' => '<%foo%>',
         ));
 
         $this->runCommand(self::COMMAND_NAME, array(
-            '--override' => array('foo=[1,2,3]'),
+            '--override' => array('app.foo=[1,2,3]'),
             'sourcePath' => 'src/',
         ));
 
-        $expected = "1\n2\n3";
-        $this->assertSame($expected, $adapter->read(('src/file')));
+        $expected = <<<YAML
+foo:
+    - 1
+    - 2
+    - 3
+bar: valueAll
+
+YAML;
+        $this->assertSame($expected, $adapter->read(('app.yml')));
     }
 
     /**

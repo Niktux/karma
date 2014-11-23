@@ -17,10 +17,10 @@ abstract class CommandTestCase extends \PHPUnit_Framework_TestCase
     {
         $masterContent = <<< CONFFILE
 [variables]
-foo:
+app.foo:
     dev = value1
     default = value2
-bar:
+app.bar:
     default = valueAll
 CONFFILE;
 

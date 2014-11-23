@@ -327,6 +327,20 @@ CONFFILE
         );
     }
 
+    public function testEmptyFile()
+    {
+        $masterContent = '';
+
+        $parser = new Parser(new Filesystem(new InMemory(array(self::MASTERFILE_PATH => $masterContent))));
+
+        $variables = $parser->enableIncludeSupport()
+            ->enableExternalSupport()
+            ->enableGroupSupport()
+            ->parse(self::MASTERFILE_PATH);
+
+        $this->assertEmpty($variables);
+    }
+
     public function testExternal()
     {
         $masterContent = <<<CONFFILE

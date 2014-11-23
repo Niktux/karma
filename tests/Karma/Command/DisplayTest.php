@@ -14,7 +14,7 @@ class DisplayTest extends CommandTestCase
         $this->runCommand('display', array('--env' => $env));
 
         $reader = $this->app['configuration'];
-        $valueFoo = $reader->read('foo', $env);
+        $valueFoo = $reader->read('app.foo', $env);
 
         $this->assertDisplay("~Display $env values~");
         $this->assertDisplay("~$valueFoo~");
@@ -33,8 +33,8 @@ class DisplayTest extends CommandTestCase
         $env = 'dev';
 
         $reader = $this->app['configuration'];
-        $valueFoo = $reader->read('foo', $env);
-        $valueBar = $reader->read('bar', $env);
+        $valueFoo = $reader->read('app.foo', $env);
+        $valueBar = $reader->read('app.bar', $env);
 
         $this->runCommand('display', array('--value' => $valueBar));
 
