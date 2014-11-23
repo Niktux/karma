@@ -100,6 +100,8 @@ suffix: -tpl
 master: othermaster.conf
 confDir: env2/
 sourcePath: lib/
+generator:
+  translator: prefix
 YAML;
 
         $reader = $this->buildReader($yaml);
@@ -115,6 +117,8 @@ YAML;
 
         $this->assertTrue($reader->hasSourcePath());
         $this->assertSame('lib/', $reader->getSourcePath());
+
+        $this->assertSame(array('translator' => 'prefix'), $reader->getGeneratorOptions());
     }
 
     /**

@@ -27,6 +27,7 @@ class ApplicationTest extends \PHPUnit_Framework_TestCase
             array('parser', 'Karma\\Configuration\\Parser'),
             array('configuration', 'Karma\\Configuration'),
             array('finder', 'Karma\\Finder'),
+            array('configurationFilesGenerator', 'Karma\\Generator\\ConfigurationFileGenerator'),
         );
     }
 }
