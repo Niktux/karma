@@ -82,6 +82,24 @@ class HydratorTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($this->fs->has('b.php'));
     }
 
+    public function testGetUnusedVariables()
+    {
+        $this->write('a.php');
+        $this->write('b.php-dist', '<%var%>');
+        $this->write('c.php-dist', '<%list%>');
+
+        $this->hydrator
+            ->hydrate('dev');
+
+        $unusedVariables = $this->hydrator->getUnusedVariables();
+
+        $this->assertContains('db.user', $unusedVariables);
+        $this->assertContains('bool', $unusedVariables);
+        $this->assertNotContains('var', $unusedVariables);
+        $this->assertNotContains('list', $unusedVariables);
+        $this->assertCount(2, $unusedVariables);
+    }
+
     public function testTrappedFilenames()
     {
         $existingFiles = array('a.php', 'b.php-dist', 'c.php-dis', 'd.php-distt', 'e.php-dist.dist', 'f.dist', 'g-dist.php', 'h.php-dist-dist');
