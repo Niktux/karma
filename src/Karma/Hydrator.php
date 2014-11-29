@@ -23,7 +23,8 @@ class Hydrator implements ConfigurableProcessor
         $formatterProvider,
         $currentFormatterName,
         $currentTargetFile,
-        $systemEnvironment;
+        $systemEnvironment,
+        $unusedVariables;
 
     public function __construct(Filesystem $sources, Configuration $reader, Finder $finder, FormatterProvider $formatterProvider = null)
     {
@@ -46,6 +47,7 @@ class Hydrator implements ConfigurableProcessor
         $this->currentFormatterName = null;
         $this->currentTargetFile = null;
         $this->systemEnvironment = null;
+        $this->unusedVariables = array_flip($reader->getAllVariables());
     }
 
     public function setSuffix($suffix)
@@ -224,6 +226,8 @@ class Hydrator implements ConfigurableProcessor
             $environment = $this->systemEnvironment;
         }
 
+        $this->markVariableAsUsed($variableName);
+
         return $this->reader->read($variableName, $environment);
     }
 
@@ -344,6 +348,19 @@ class Hydrator implements ConfigurableProcessor
                 $backupContent = $this->sources->read($backupFile);
                 $this->sources->write($targetFile, $backupContent, true);
             }
+        }
+    }
+
+    public function getUnusedVariables()
+    {
+        return array_merge(array_flip($this->unusedVariables));
+    }
+
+    private function markVariableAsUsed($variableName)
+    {
+        if(isset($this->unusedVariables[$variableName]))
+        {
+            unset($this->unusedVariables[$variableName]);
         }
     }
 }
