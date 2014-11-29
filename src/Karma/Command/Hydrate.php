@@ -60,6 +60,7 @@ class Hydrate extends Command
 
         $this->processInputs($input);
         $this->launchHydration();
+        $this->warnForUnusedVariables();
     }
 
     private function processInputs(InputInterface $input)
@@ -133,6 +134,23 @@ class Hydrate extends Command
         }
 
         $hydrator->hydrate($this->environment);
+    }
+
+    private function warnForUnusedVariables()
+    {
+        $hydrator = $this->app['hydrator'];
+        $unusedVariables = $hydrator->getUnusedVariables();
+
+        if(! empty($unusedVariables))
+        {
+            $logger = $this->app['logger'];
+
+            $logger->warning('You have unused variables : you should remove them or check if you have not mispelled them').
+            $logger->warning(sprintf(
+                'Unused variables : %s',
+                implode(', ', $unusedVariables)
+            ));
+        }
     }
 
     private function parseOptionWithAssignments(InputInterface $input, $optionName)
