@@ -76,7 +76,7 @@ list.ok:
     prod = [alone]
     preprod = not_a_list
     default = [ single value with blanks]
-    other = [, 2, third]
+    other = [, 2, 0, third, false, null]
     staging2 = []
     staging3 = [,,       ,  ,]
 
