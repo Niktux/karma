@@ -75,7 +75,7 @@ class ReaderTest extends ParserTestCase
             array('list.ok', 'staging', array('one', 'two')),
             array('list.ok', 'prod', array('alone')),
             array('list.ok', 'preprod', 'not_a_list'),
-            array('list.ok', 'other', array(2, 'third')),
+            array('list.ok', 'other', array(2, 0, 'third', false, null)),
             array('list.ok', 'staging2', array()),
             array('list.ok', 'staging3', array()),
             array('list.ok', 'staging_default', array('single value with blanks')),

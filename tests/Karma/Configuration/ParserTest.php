@@ -68,7 +68,7 @@ class ParserTest extends ParserTestCase
             array('list.ok', 'prod', array('alone')),
             array('list.ok', 'preprod', 'not_a_list'),
             array('list.ok', 'default', array('single value with blanks')),
-            array('list.ok', 'other', array(2, 'third')),
+            array('list.ok', 'other', array(2, 0, 'third', false, null)),
             array('list.ok', 'staging2', array()),
             array('list.ok', 'staging3', array()),
 

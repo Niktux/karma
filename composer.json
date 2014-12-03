@@ -1,42 +1,42 @@
 {
-	"name" : "niktux/karma",
-	"description" : "CLI tool to manage environment dependent configuration",
-	"type" : "script",
-	"authors" : [{
-			"name" : "Nicolas Le Nardou",
-			"email" : "nico.ln@gmail.com"
-		}
-	],
-	"keywords" : [
-		"configuration",
-		"environment"
-	],
-	"homepage" : "http://karma-php.com",
-	"license" : [
-		"MIT"
-	],
-	"require" : {
-		"symfony/console" : "~2.4",
-		"pimple/pimple" : "~1.1",
-		"php" : ">=5.4",
-		"symfony/yaml" : "~2.4",
-		"knplabs/gaufrette" : "~0.1",
-		"cpliakas/git-wrapper" : "~1.2",
-		"psr/log" : "~1"
-	},
-	"require-dev" : {
-		"ptrofimov/xpmock" : "1.1.3",
-		"phpunit/phpunit" : "~3.7"
-	},
-	"autoload" : {
-		"psr-0" : {
-			"Karma" : "src"
-		}
-	},
-	"support" : {
-		"issues" : "https://github.com/Niktux/karma/issues"
-	},
-	"bin" : [
-		"karma"
-	]
+    "name" : "niktux/karma",
+    "description" : "CLI tool to manage environment dependent configuration",
+    "type" : "script",
+    "authors" : [{
+            "name" : "Nicolas Le Nardou",
+            "email" : "nico.ln@gmail.com"
+        }
+    ],
+    "keywords" : [
+        "configuration",
+        "environment"
+    ],
+    "homepage" : "http://karma-php.com",
+    "license" : [
+        "MIT"
+    ],
+    "require" : {
+        "symfony/console" : "~2.4",
+        "pimple/pimple" : "~1.1",
+        "php" : ">=5.4",
+        "symfony/yaml" : "~2.4",
+        "knplabs/gaufrette" : "~0.1",
+        "cpliakas/git-wrapper" : "~1.2",
+        "psr/log" : "~1"
+    },
+    "require-dev" : {
+        "ptrofimov/xpmock" : "1.1.3",
+        "phpunit/phpunit" : "~3.7"
+    },
+    "autoload" : {
+        "psr-0" : {
+            "Karma" : "src"
+        }
+    },
+    "support" : {
+        "issues" : "https://github.com/Niktux/karma/issues"
+    },
+    "bin" : [
+        "karma"
+    ]
 }
