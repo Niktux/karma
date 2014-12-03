@@ -15,7 +15,7 @@ use Karma\FormatterProviders\ProfileProvider;
 class Application extends \Pimple
 {
     const
-        VERSION = '4.0.3',
+        VERSION = '4.0.4',
         DEFAULT_DISTFILE_SUFFIX = '-dist',
         DEFAULT_CONF_DIRECTORY = 'env',
         DEFAULT_MASTER_FILE = 'master.conf',
