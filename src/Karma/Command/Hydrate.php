@@ -9,6 +9,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Karma\Application;
 use Karma\Command;
 use Karma\Configuration\FilterInputVariable;
+use Karma\Hydrator;
 
 class Hydrate extends Command
 {
@@ -60,7 +61,6 @@ class Hydrate extends Command
 
         $this->processInputs($input);
         $this->launchHydration();
-        $this->warnForUnusedVariables();
     }
 
     private function processInputs(InputInterface $input)
@@ -134,11 +134,12 @@ class Hydrate extends Command
         }
 
         $hydrator->hydrate($this->environment);
+
+        $this->warnForUnusedVariables($hydrator);
     }
 
-    private function warnForUnusedVariables()
+    private function warnForUnusedVariables(Hydrator $hydrator)
     {
-        $hydrator = $this->app['hydrator'];
         $unusedVariables = $hydrator->getUnusedVariables();
 
         if(! empty($unusedVariables))
