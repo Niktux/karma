@@ -39,8 +39,8 @@ class Hydrate extends ConfigureActionCommand
 
             $logger->warning('You have unused variables : you should remove them or check if you have not mispelled them').
             $logger->warning(sprintf(
-                    'Unused variables : %s',
-                    implode(', ', $unusedVariables)
+                'Unused variables : %s',
+                implode(', ', $unusedVariables)
             ));
         }
     }
