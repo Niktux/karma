@@ -48,7 +48,7 @@ class VariableParser extends AbstractSectionParser
         $isSystem = false;
         $flag = Configuration::SYSTEM_VARIABLE_FLAG;
 
-        if(preg_match("~(?P<systemVariableFlag>$flag)?(?P<variableName>[^:]+):$~", $line, $matches))
+        if(preg_match("~^\s*(?P<systemVariableFlag>$flag)?(?P<variableName>[^:=]+):$~", $line, $matches))
         {
             $variableName = trim($matches['variableName']);
             $isSystem = $matches['systemVariableFlag'] === $flag;

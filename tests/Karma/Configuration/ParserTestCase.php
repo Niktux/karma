@@ -97,6 +97,9 @@ list.notlist:
 variable-name-with-dashes:
     default = poney
 
+redis_prefix:
+    default = prefix:ending:with:semi:colon:
+
 CONFFILE;
 
         $contentDb = <<< CONFFILE

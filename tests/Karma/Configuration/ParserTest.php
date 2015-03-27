@@ -87,6 +87,7 @@ class ParserTest extends ParserTestCase
             array('list.notlist', 'string4', '[][]'),
 
             array('variable-name-with-dashes', 'default', 'poney'),
+            array('redis_prefix', 'default', 'prefix:ending:with:semi:colon:'),
         );
     }
 
@@ -321,6 +322,12 @@ CONFFILE
             'spaces in variable name' => array(<<<CONFFILE
 [variables]
 var with spaces:
+    default = false
+CONFFILE
+            ),
+            '= in variable name' => array(<<<CONFFILE
+[variables]
+invalid=varname:
     default = false
 CONFFILE
             ),
