@@ -97,6 +97,8 @@ class ReaderTest extends ParserTestCase
             array('list.notlist', 'string4', '[][]'),
 
             array('variable-name-with-dashes', 'default', 'poney'),
+
+            array('redis_prefix', 'default', 'prefix:ending:with:semi:colon:'),
         );
     }
 
@@ -140,7 +142,7 @@ class ReaderTest extends ParserTestCase
         $variables = $this->reader->getAllVariables();
         sort($variables);
 
-        $expected = array('print_errors', 'debug', 'gourdin', 'server', 'tva', 'apiKey', 'my.var.with.subnames', 'param', 'user', 'list.ok', 'list.notlist', 'variable-name-with-dashes');
+        $expected = array('print_errors', 'debug', 'gourdin', 'server', 'tva', 'apiKey', 'my.var.with.subnames', 'param', 'user', 'list.ok', 'list.notlist', 'variable-name-with-dashes', 'redis_prefix');
         sort($expected);
 
         $this->assertSame($expected, $variables);
@@ -182,6 +184,7 @@ class ReaderTest extends ParserTestCase
                 'list.ok' => array('one', 'two', 'three'),
                 'list.notlist' => 'string[weird',
                 'variable-name-with-dashes' => 'poney',
+                'redis_prefix' => 'prefix:ending:with:semi:colon:',
             )),
             array('prod', array(
                 'print_errors' => false,
@@ -196,6 +199,7 @@ class ReaderTest extends ParserTestCase
                 'list.ok' => array('alone'),
                 'list.notlist' => '[string[weird',
                 'variable-name-with-dashes' => 'poney',
+                'redis_prefix' => 'prefix:ending:with:semi:colon:',
             )),
         );
     }
