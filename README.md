@@ -21,7 +21,7 @@ Use composer :
 ```json
 {
     "require": {
-		    "niktux/karma" : "~4.0"
+		    "niktux/karma" : "~5.0"
     }
 }
 ```
