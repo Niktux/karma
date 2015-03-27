@@ -197,8 +197,6 @@ class Application extends \Pimple
             $translator = new FilePrefixTranslator();
             $translator->changeMasterFile($c['configuration.masterFile']);
 
-            // TODO read prefix for masterfile from profile
-
             return $translator;
         });
 
