@@ -11,6 +11,7 @@ class Hydrator implements ConfigurableProcessor
     use \Karma\Logging\LoggerAware;
 
     const
+        TODO_VALUE = '__TODO__',
         VARIABLE_REGEX = '~<%(?P<variableName>[A-Za-z0-9_\.\-]+)%>~';
 
     private
@@ -228,7 +229,23 @@ class Hydrator implements ConfigurableProcessor
 
         $this->markVariableAsUsed($variableName);
 
-        return $this->reader->read($variableName, $environment);
+        $value = $this->reader->read($variableName, $environment);
+        
+        $this->checkValueIsAllowed($variableName, $environment, $value);
+        
+        return $value;
+    }
+    
+    private function checkValueIsAllowed($variableName, $environment, $value)
+    {
+        if($value === self::TODO_VALUE)
+        {
+            throw new \RuntimeException(sprintf(
+                'Missing value for variable %s in environment %s (TODO marker found)',
+                $variableName,
+                $environment
+            ));
+        }
     }
 
     private function getFormatterForCurrentTargetFile()

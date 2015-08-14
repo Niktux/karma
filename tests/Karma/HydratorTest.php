@@ -28,6 +28,7 @@ class HydratorTest extends \PHPUnit_Framework_TestCase
             'bool:prod' => false,
             'list:dev' => array('str', 2, true, null),
             'list:prod' => array(42),
+            'notValued:dev' => '__TODO__',
         ));
 
         $this->hydrator = new Hydrator($this->fs, $reader, new Finder($this->fs), new NullProvider());
@@ -95,9 +96,10 @@ class HydratorTest extends \PHPUnit_Framework_TestCase
 
         $this->assertContains('db.user', $unusedVariables);
         $this->assertContains('bool', $unusedVariables);
+        $this->assertContains('notValued', $unusedVariables);
         $this->assertNotContains('var', $unusedVariables);
         $this->assertNotContains('list', $unusedVariables);
-        $this->assertCount(2, $unusedVariables);
+        $this->assertCount(3, $unusedVariables);
     }
 
     public function testTrappedFilenames()
@@ -246,6 +248,19 @@ class HydratorTest extends \PHPUnit_Framework_TestCase
         $this->write('a-dist', <<< FILE
 <% karma:formatter = a %>
 <% karma:formatter = b %>
+FILE
+        );
+
+        $this->hydrator->hydrate('dev');
+    }
+    
+    /**
+     * @expectedException \RuntimeException
+     */
+    public function testTodo()
+    {
+        $this->write('a-dist', <<< FILE
+<%notValued%>
 FILE
         );
 
