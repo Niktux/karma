@@ -18,7 +18,7 @@ use Karma\Generator\ConfigurationFileGenerators\YamlGenerator;
 class Application extends \Pimple
 {
     const
-        VERSION = '5.0.0',
+        VERSION = '5.1.1',
         DEFAULT_DISTFILE_SUFFIX = '-dist',
         DEFAULT_CONF_DIRECTORY = 'env',
         DEFAULT_MASTER_FILE = 'master.conf',
