@@ -5,6 +5,7 @@ namespace Karma;
 use Gaufrette\Filesystem;
 use Psr\Log\NullLogger;
 use Karma\FormatterProviders\NullProvider;
+use Karma\Display\Diff;
 
 class Hydrator implements ConfigurableProcessor
 {
@@ -122,6 +123,16 @@ class Hydrator implements ConfigurableProcessor
             $this->backupFile($this->currentTargetFile);
             $this->sources->write($this->currentTargetFile, $targetContent, true);
         }
+        else
+        {
+            $diff = new Display\Diff;
+            $this->info(sprintf(
+                "%s will change : %s%s",
+                $this->currentTargetFile,
+                PHP_EOL,
+                $diff->diff($this->sources->read($this->currentTargetFile), $targetContent)
+            ));
+        }
     }
 
     private function parseFileDirectives($file, & $fileContent, $environment)
@@ -230,12 +241,12 @@ class Hydrator implements ConfigurableProcessor
         $this->markVariableAsUsed($variableName);
 
         $value = $this->reader->read($variableName, $environment);
-        
+
         $this->checkValueIsAllowed($variableName, $environment, $value);
-        
+
         return $value;
     }
-    
+
     private function checkValueIsAllowed($variableName, $environment, $value)
     {
         if($value === self::TODO_VALUE)

@@ -10,6 +10,7 @@ use Karma\Application;
 use Karma\Command;
 use Karma\Configuration\FilterInputVariable;
 use Karma\ConfigurableProcessor;
+use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 
 abstract class ConfigureActionCommand extends Command
 {
@@ -68,11 +69,24 @@ abstract class ConfigureActionCommand extends Command
     {
         parent::execute($input, $output);
 
+        $this->addFormattingStyleToOutput($output);
+
         $this->processInputs($input);
 
         $processor = $this->getProcessor();
         $this->configureProcessor($processor);
         $this->launchConfigurationAction($processor);
+    }
+
+    private function addFormattingStyleToOutput(OutputInterface $output)
+    {
+        $formatter = $output->getFormatter();
+
+        $style = new OutputFormatterStyle('green', null, ['bold']);
+        $formatter->setStyle('addition', $style);
+
+        $style = new OutputFormatterStyle('red', null, ['bold']);
+        $formatter->setStyle('deletion', $style);
     }
 
     private function processInputs(InputInterface $input)
