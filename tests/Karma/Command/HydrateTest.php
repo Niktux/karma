@@ -18,7 +18,7 @@ class HydrateTest extends CommandTestCase
         parent::setUp();
 
         $this->app['sources.fileSystem.adapter'] = new InMemory(array(
-            'src/file' => '',
+            'src/file-dist' => '<%app.foo%>',
         ));
     }
 
@@ -185,5 +185,15 @@ class HydrateTest extends CommandTestCase
         ));
 
         $this->assertDisplay('~Hydrate system variables with dev values~');
+    }
+
+    public function testTodo()
+    {
+        $this->runCommand(self::COMMAND_NAME, array(
+            '--override' => array('app.foo=__TODO__'),
+            'sourcePath' => 'src/',
+        ));
+
+        $this->assertDisplay('~Missing value.*app.foo~');
     }
 }

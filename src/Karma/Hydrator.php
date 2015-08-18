@@ -12,6 +12,7 @@ class Hydrator implements ConfigurableProcessor
 
     const
         TODO_VALUE = '__TODO__',
+        FIXME_VALUE = '__FIXME__',
         VARIABLE_REGEX = '~<%(?P<variableName>[A-Za-z0-9_\.\-]+)%>~';
 
     private
@@ -25,7 +26,8 @@ class Hydrator implements ConfigurableProcessor
         $currentFormatterName,
         $currentTargetFile,
         $systemEnvironment,
-        $unusedVariables;
+        $unusedVariables,
+        $unvaluedVariables;
 
     public function __construct(Filesystem $sources, Configuration $reader, Finder $finder, FormatterProvider $formatterProvider = null)
     {
@@ -49,6 +51,7 @@ class Hydrator implements ConfigurableProcessor
         $this->currentTargetFile = null;
         $this->systemEnvironment = null;
         $this->unusedVariables = array_flip($reader->getAllVariables());
+        $this->unvaluedVariables = array();
     }
 
     public function setSuffix($suffix)
@@ -238,13 +241,17 @@ class Hydrator implements ConfigurableProcessor
     
     private function checkValueIsAllowed($variableName, $environment, $value)
     {
-        if($value === self::TODO_VALUE)
+        if($value === self::FIXME_VALUE)
         {
             throw new \RuntimeException(sprintf(
-                'Missing value for variable %s in environment %s (TODO marker found)',
+                'Missing value for variable %s in environment %s (FIXME marker found)',
                 $variableName,
                 $environment
             ));
+        }
+        elseif($value === self::TODO_VALUE)
+        {
+            $this->unvaluedVariables[] = $variableName;
         }
     }
 
@@ -379,5 +386,10 @@ class Hydrator implements ConfigurableProcessor
         {
             unset($this->unusedVariables[$variableName]);
         }
+    }
+    
+    public function getUnvaluedVariables()
+    {
+        return $this->unvaluedVariables;
     }
 }

@@ -27,6 +27,7 @@ class Hydrate extends ConfigureActionCommand
     {
         $processor->hydrate($this->environment);
         $this->warnForUnusedVariables($processor);
+        $this->warnForUnvaluedVariables($processor);
     }
 
     private function warnForUnusedVariables(Hydrator $processor)
@@ -41,6 +42,21 @@ class Hydrate extends ConfigureActionCommand
             $logger->warning(sprintf(
                 'Unused variables : %s',
                 implode(', ', $unusedVariables)
+            ));
+        }
+    }
+
+    private function warnForUnvaluedVariables(Hydrator $processor)
+    {
+        $unvaluedVariables = $processor->getUnvaluedVariables();
+
+        if(! empty($unvaluedVariables))
+        {
+            $logger = $this->app['logger'];
+
+            $logger->warning(sprintf(
+                'Missing values for variables : %s (TODO markers found)',
+                implode(', ', $unvaluedVariables)
             ));
         }
     }
