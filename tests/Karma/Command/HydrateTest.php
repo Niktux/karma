@@ -40,7 +40,7 @@ class HydrateTest extends CommandTestCase
 
         $this->runCommand(self::COMMAND_NAME, array(
             $option => true,
-            'sourcePath' => 'src/',
+            'sourcePath' => ['src/', 'settings/'],
         ));
     }
 
@@ -60,6 +60,22 @@ class HydrateTest extends CommandTestCase
 
         $this->runCommand(self::COMMAND_NAME, array());
         $this->assertDisplay('~Hydrate lib/~');
+    }
+
+    public function testSourcePathsFromProfile()
+    {
+        $profileContent = <<<YAML
+sourcePath:
+    - lib/
+    - settings/
+YAML;
+        
+        $this->app['profile.fileSystem.adapter'] = new InMemory(array(
+            Application::PROFILE_FILENAME => $profileContent,
+        ));
+
+        $this->runCommand(self::COMMAND_NAME, array());
+        $this->assertDisplay('~Hydrate lib/ settings/~');
     }
 
     /**

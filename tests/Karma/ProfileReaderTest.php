@@ -121,6 +121,34 @@ YAML;
         $this->assertSame(array('translator' => 'prefix'), $reader->getGeneratorOptions());
     }
 
+    public function testSourcePathAsArray()
+    {
+        $yaml = <<<YAML
+suffix: -tpl
+master: othermaster.conf
+confDir: env2/
+sourcePath:
+    - lib/
+    - config/
+    - settings/
+generator:
+  translator: prefix
+YAML;
+
+        $reader = $this->buildReader($yaml);
+
+        $this->assertTrue($reader->hasSourcePath());
+        $srcPath = $reader->getSourcePath();
+        $this->assertInternalType('array', $srcPath);
+        $this->assertCount(3, $srcPath);
+        
+        $this->assertContains('lib/', $srcPath);
+        $this->assertContains('config/', $srcPath);
+        $this->assertContains('settings/', $srcPath);
+
+        $this->assertSame(array('translator' => 'prefix'), $reader->getGeneratorOptions());
+    }
+
     /**
      * @expectedException RuntimeException
      */
@@ -153,10 +181,10 @@ fileExtensionFormatters:
 YAML
         );
 
-        $this->assertFalse($reader->hasTemplatesSuffix(), 'Tempalte suffix must only allow strings');
+        $this->assertFalse($reader->hasTemplatesSuffix(), 'Template suffix must only allow strings');
         $this->assertFalse($reader->hasMasterFilename(), 'Master file name must only allow strings');
         $this->assertFalse($reader->hasConfigurationDirectory(), 'confDir must only allow strings');
-        $this->assertFalse($reader->hasSourcePath(), 'sourcePath must only allow strings');
+        $this->assertTrue($reader->hasSourcePath(), 'sourcePath must allow both strings and arrays');
 
         $this->assertFalse(is_array($reader->getDefaultFormatterName()), 'Default formatter must only allow strings');
 

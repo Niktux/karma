@@ -53,7 +53,7 @@ abstract class ConfigureActionCommand extends Command
             ->setName($this->name)
             ->setDescription($this->description)
 
-            ->addArgument('sourcePath', InputArgument::OPTIONAL, 'source path to hydrate/generate')
+            ->addArgument('sourcePath', InputArgument::OPTIONAL | InputArgument::IS_ARRAY, 'source path to hydrate/generate')
 
             ->addOption('env', 'e', InputOption::VALUE_REQUIRED, 'Target environment', self::ENV_DEV)
             ->addOption('system', 's', InputOption::VALUE_REQUIRED, 'Target environment for system variables', null)
@@ -93,7 +93,7 @@ abstract class ConfigureActionCommand extends Command
         }
 
         $sourcePath = $input->getArgument('sourcePath');
-        if($sourcePath === null)
+        if(empty($sourcePath))
         {
             $profile = $this->app['profile'];
             if($profile->hasSourcePath() !== true)
@@ -104,10 +104,15 @@ abstract class ConfigureActionCommand extends Command
             $sourcePath = $profile->getSourcePath();
         }
 
+        if(! is_array($sourcePath))
+        {
+            $sourcePath = array($sourcePath);
+        }
+        
         $this->output->writeln(sprintf(
             "<info>%s <comment>%s</comment> with <comment>%s</comment> values</info>",
             $this->outputTitle,
-            $sourcePath,
+            implode(' ', $sourcePath),
             $this->environment
         ));
         $this->output->writeln('');

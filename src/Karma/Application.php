@@ -14,6 +14,7 @@ use Karma\FormatterProviders\ProfileProvider;
 use Karma\Generator\NameTranslators\FilePrefixTranslator;
 use Karma\Generator\VariableProvider;
 use Karma\Generator\ConfigurationFileGenerators\YamlGenerator;
+use Karma\Filesystem\Adapters\MultipleAdapter;
 
 class Application extends \Pimple
 {
@@ -104,7 +105,22 @@ class Application extends \Pimple
     private function initializeSourceFileSystem()
     {
         $this['sources.fileSystem.adapter'] = function($c) {
-            return new Local($c['sources.path']);
+            
+            $paths = $c['sources.path'];
+            
+            if(! is_array($paths))
+            {
+                $paths = array($paths);
+            }
+            
+            $adapter = new MultipleAdapter();
+             
+            foreach($paths as $path)
+            {
+                $adapter->mount($path, new Local($path));
+            }
+             
+            return $adapter;
         };
 
         $this['sources.fileSystem'] = function($c) {
