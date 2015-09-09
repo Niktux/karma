@@ -102,12 +102,12 @@ class ProfileReader implements FormattersDefinition
 
     public function hasSourcePath()
     {
-        return $this->hasString(self::SOURCE_PATH_INDEX);
+        return $this->has(self::SOURCE_PATH_INDEX);
     }
 
     public function getSourcePath()
     {
-        return $this->getString(self::SOURCE_PATH_INDEX);
+        return $this->get(self::SOURCE_PATH_INDEX);
     }
 
     public function getDefaultFormatterName()
