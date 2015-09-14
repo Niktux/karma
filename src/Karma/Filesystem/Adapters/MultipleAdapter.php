@@ -90,7 +90,6 @@ class MultipleAdapter implements Adapter
         list($adapter, $relativeKey) = $this->find($key);
         
         return $adapter->mtime($relativeKey);
-        
     }
     
     public function delete($key)
