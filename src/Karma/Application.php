@@ -19,7 +19,7 @@ use Karma\Filesystem\Adapters\MultipleAdapter;
 class Application extends \Pimple
 {
     const
-        VERSION = '5.3.0',
+        VERSION = '5.3.1',
         DEFAULT_DISTFILE_SUFFIX = '-dist',
         DEFAULT_CONF_DIRECTORY = 'env',
         DEFAULT_MASTER_FILE = 'master.conf',
