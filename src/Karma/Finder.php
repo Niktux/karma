@@ -19,7 +19,8 @@ class Finder
     {
         return new FileFilterIterator(
             new \ArrayIterator($this->fs->keys()),
-            $regex
+            $regex,
+            $this->fs
         );
     }
 }

@@ -47,6 +47,7 @@ class HydratorTest extends \PHPUnit_Framework_TestCase
         $this->write('d.php-dist', 'var');
         $this->write('e.php-dist', '<%var %>');
         $this->write('f.php-dist', '<%db.user%>');
+        $this->write('dir-dist/yolo.php', 'raw content');
 
         $this->hydrator->hydrate($environment);
 
