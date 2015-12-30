@@ -11,6 +11,7 @@ interface Configuration
     public function read($variable, $environment = null);
 
     public function setDefaultEnvironment($environment);
+    public function getDefaultEnvironment();
 
     public function getAllVariables();
     public function getAllValuesForEnvironment($environment = null);

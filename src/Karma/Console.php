@@ -17,6 +17,7 @@ class Console
         $this->app->add(new Command\Diff($dic));
         $this->app->add(new Command\Rollback($dic));
         $this->app->add(new Command\VCS($dic));
+        $this->app->add(new Command\GenerateSecuredSkeleton($dic));
     }
 
     public function run()

@@ -47,6 +47,11 @@ abstract class AbstractReader implements Configuration
 
         return $this;
     }
+    
+    public function getDefaultEnvironment()
+    {
+        return $this->defaultEnvironment;
+    }
 
     public function getAllValuesForEnvironment($environment = null)
     {
