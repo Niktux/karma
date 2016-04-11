@@ -256,7 +256,7 @@ FILE
 
         $this->hydrator->hydrate('dev');
     }
-    
+
     public function testTodo()
     {
         $this->write('a-dist', <<< FILE
@@ -266,11 +266,11 @@ FILE
 
         $this->hydrator->hydrate('dev');
         $unvaluedVariables = $this->hydrator->getUnvaluedVariables();
-        
+
         $this->assertCount(1, $unvaluedVariables);
         $this->assertContains('todo', $unvaluedVariables);
     }
-    
+
     /**
      * @expectedException \RuntimeException
      */
@@ -449,6 +449,8 @@ TXT;
             'items:dev' => array(42, 51, 69, 'someString'),
             'items:staging' => array(33),
             'items:prod' => 1337,
+            'servers:dev' => null,
+            'servers:staging' => array(),
             'servers:prod' => array('a', 'b', 'c'),
         ));
 
@@ -472,66 +474,126 @@ TXT;
         $contentD = 'servers[<% karma:list VAR=servers     delimiter="," %>]';
         // empty delimiter
         $contentE = 'servers[<% karma:list var=servers delimiter="" %>]';
+        // simple char wrapper
+        $contentW = 'servers: <% karma:list var=servers delimiter=", " wrapper="{":"}" %>';
+        // more complex wrapper
+        $contentX = 'servers: <% karma:list var=servers delimiter="</val><val>" wrapper="<values><val>":"</val></values>" %>';
+        // prefix only wrapper
+        $contentY = 'servers: <% karma:list var=servers delimiter="/" wrapper="arr/":"" %>';
 
         return array(
             array(
-                $contentA,
-                'dev',
+                $contentA, 'dev',
                 "items = array( 42, 51, 69, someString );"
             ),
             array(
-                $contentA,
-                'staging',
+                $contentA, 'staging',
                 "items = array( 33 );"
             ),
             array(
-                $contentA,
-                'prod',
+                $contentA, 'prod',
                 "items = array( 1337 );"
             ),
 
             array(
-                $contentB,
-                'dev',
+                $contentB, 'dev',
                 "items: 42-51-69-someString"
             ),
             array(
-                $contentB,
-                'staging',
+                $contentB, 'staging',
                 "items: 33"
             ),
             array(
-                $contentB,
-                'prod',
+                $contentB, 'prod',
                 "items: 1337"
             ),
 
             array(
-                $contentC,
-                'dev',
+                $contentC, 'dev',
                 "items: 425169someString"
             ),
             array(
-                $contentC,
-                'staging',
+                $contentC, 'staging',
                 "items: 33"
             ),
             array(
-                $contentC,
-                'prod',
+                $contentC, 'prod',
                 "items: 1337"
             ),
 
             array(
-                $contentD,
-                'prod',
+                $contentD, 'dev',
+                "servers[]"
+            ),
+
+            array(
+                $contentD, 'staging',
+                "servers[]"
+            ),
+
+            array(
+                $contentD, 'prod',
                 "servers[a,b,c]"
             ),
 
             array(
-                $contentE,
-                'prod',
+                $contentE, 'dev',
+                "servers[]"
+            ),
+
+            array(
+                $contentE, 'staging',
+                "servers[]"
+            ),
+
+            array(
+                $contentE, 'prod',
                 "servers[abc]"
+            ),
+
+            array(
+                $contentW, 'dev',
+                "servers: "
+            ),
+
+            array(
+                $contentW, 'staging',
+                "servers: "
+            ),
+
+            array(
+                $contentW, 'prod',
+                "servers: {a, b, c}"
+            ),
+
+            array(
+                $contentX, 'dev',
+                "servers: "
+            ),
+
+            array(
+                $contentX, 'staging',
+                "servers: "
+            ),
+
+            array(
+                $contentX, 'prod',
+                "servers: <values><val>a</val><val>b</val><val>c</val></values>"
+            ),
+
+            array(
+                $contentY, 'dev',
+                "servers: "
+            ),
+
+            array(
+                $contentY, 'staging',
+                "servers: "
+            ),
+
+            array(
+                $contentY, 'prod',
+                "servers: arr/a/b/c"
             ),
         );
     }
@@ -561,8 +623,12 @@ TXT;
             'mispelled parameter' => array('<% karma:list var=db.user delimiterssss="," %>'),
             'wrong order #1' => array('<% var=db.user karma:list %>'),
             'wrong order #2' => array('<% karma:list delimiter=", " var=db.user %>'),
+            'wrong order #3' => array('<% karma:list var=db.user wrapper="<":">" delimiter=", " %>'),
+            'wrong order #4' => array('<% karma:list wrapper="<":">" var=db.user delimiter=", " %>'),
             'wrong directive' => array('<% karma:listing var=db.user %>'),
             'delimiter without quotes' => array('<% karma:list var=db.user delimiter=- %>'),
+            'wrapper without quotes' => array('<% karma:list var=db.user delimiter=- wrapper=<:> %>'),
+            'wrapper without both values' => array('<% karma:list var=db.user delimiter=- wrapper="<" %>'),
         );
     }
 

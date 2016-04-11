@@ -160,7 +160,11 @@ class Hydrator implements ConfigurableProcessor
     {
         $replacementCounter = 0;
 
-        while(preg_match('~<%\s*karma:list\s*var=(?P<variableName>[\S]+)\s*(delimiter="(?P<delimiterName>[^"]*)")?\s*%>~i', $fileContent, $matches))
+        $regexDelimiter = '(delimiter="(?P<delimiterName>[^"]*)")?';
+        $regexWrapper = '(wrapper="(?P<wrapperPrefix>[^"]*)":"(?P<wrapperSuffix>[^"]*)")?';
+        $regex = '~<%\s*karma:list\s*var=(?P<variableName>[\S]+)\s*' . $regexDelimiter . '\s*' . $regexWrapper . '\s*%>~i';
+
+        while(preg_match($regex, $fileContent, $matches))
         {
             $delimiter = '';
             if(isset($matches['delimiterName']))
@@ -168,7 +172,16 @@ class Hydrator implements ConfigurableProcessor
                 $delimiter = $matches['delimiterName'];
             }
 
-            $generatedList = $this->generateContentForListDirective($matches['variableName'], $environment, $delimiter);
+            $wrapper = ['prefix' => '', 'suffix' => ''];
+            if(isset($matches['wrapperPrefix'], $matches['wrapperSuffix']))
+            {
+                $wrapper = [
+                    'prefix' => $matches['wrapperPrefix'],
+                    'suffix' => $matches['wrapperSuffix']
+                ];
+            }
+
+            $generatedList = $this->generateContentForListDirective($matches['variableName'], $environment, $delimiter, $wrapper);
             $fileContent = str_replace($matches[0], $generatedList, $fileContent);
 
             $replacementCounter++;
@@ -188,7 +201,7 @@ class Hydrator implements ConfigurableProcessor
         }
     }
 
-    private function generateContentForListDirective($variable, $environment, $delimiter = '')
+    private function generateContentForListDirective($variable, $environment, $delimiter, array $wrapper)
     {
         $values = $this->readValueToInject($variable, $environment);
         $formatter = $this->getFormatterForCurrentTargetFile();
@@ -202,7 +215,13 @@ class Hydrator implements ConfigurableProcessor
             $value = $formatter->format($value);
         });
 
-        return implode($delimiter, $values);
+        $generated = implode($delimiter, $values);
+        return sprintf(
+            '%s%s%s',
+            ! empty($generated) ? $wrapper['prefix'] : '',
+            $generated,
+            ! empty($generated) ? $wrapper['suffix'] : ''
+        );
     }
 
     private function removeFileDirectives($fileContent)
@@ -233,12 +252,12 @@ class Hydrator implements ConfigurableProcessor
         $this->markVariableAsUsed($variableName);
 
         $value = $this->reader->read($variableName, $environment);
-        
+
         $this->checkValueIsAllowed($variableName, $environment, $value);
-        
+
         return $value;
     }
-    
+
     private function checkValueIsAllowed($variableName, $environment, $value)
     {
         if($value === self::FIXME_VALUE)
@@ -387,7 +406,7 @@ class Hydrator implements ConfigurableProcessor
             unset($this->unusedVariables[$variableName]);
         }
     }
-    
+
     public function getUnvaluedVariables()
     {
         return $this->unvaluedVariables;
