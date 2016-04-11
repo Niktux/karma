@@ -132,25 +132,30 @@ class InMemoryReaderTest extends \PHPUnit_Framework_TestCase
         $reader = new InMemoryReader(array(
             'param:dev' => '${param}',
             'param:staging' => 'Some${nested}param',
+            'param:demo' => ['Some${nested}param', '${param}'],
         ));
 
         $this->assertSame('${param}', $reader->read($var, 'dev'));
         $this->assertSame('Some${nested}param', $reader->read($var, 'staging'));
+        $this->assertSame(['Some${nested}param', '${param}'], $reader->read($var, 'demo'));
 
         $reader->setCustomData('PARAM', 'caseSensitive');
 
         $this->assertSame('${param}', $reader->read($var, 'dev'));
         $this->assertSame('Some${nested}param', $reader->read($var, 'staging'));
+        $this->assertSame(['Some${nested}param', '${param}'], $reader->read($var, 'demo'));
 
         $reader->setCustomData('param', 'foobar');
 
         $this->assertSame('foobar', $reader->read($var, 'dev'));
         $this->assertSame('Some${nested}param', $reader->read($var, 'staging'));
+        $this->assertSame(['Some${nested}param', 'foobar'], $reader->read($var, 'demo'));
 
         $reader->setCustomData('nested', 'Base');
 
         $this->assertSame('foobar', $reader->read($var, 'dev'));
         $this->assertSame('SomeBaseparam', $reader->read($var, 'staging'));
+        $this->assertSame(['SomeBaseparam', 'foobar'], $reader->read($var, 'demo'));
     }
 
     /**

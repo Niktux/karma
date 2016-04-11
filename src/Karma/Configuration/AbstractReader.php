@@ -88,6 +88,13 @@ abstract class AbstractReader implements Configuration
 
     private function handleCustomData($value)
     {
+        if(is_array($value))
+        {
+            return array_map(function($value) {
+                return $this->handleCustomData($value);
+            }, $value);
+        }
+
         if(! is_string($value))
         {
             return $value;

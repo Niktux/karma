@@ -66,6 +66,7 @@ class ReaderTest extends ParserTestCase
 
             array('param', 'dev', '${param}'),
             array('param', 'staging', 'Some${nested}param'),
+            array('param', 'demo', array('none', 'nest${param}ed', '${nested}', 'double_${param}_${param}', '${nested}${param}')),
 
             // db.conf
             array('user', 'default', 'root'),
@@ -458,16 +459,28 @@ CONFFILE;
         $this->reader->setCustomData('PARAM', 'caseSensitive');
 
         $this->assertSame('${param}', $this->reader->read($var, 'dev'));
+        $this->assertSame(
+            ['none', 'nest${param}ed', '${nested}', 'double_${param}_${param}', '${nested}${param}'],
+            $this->reader->read($var, 'demo')
+        );
         $this->assertSame('Some${nested}param', $this->reader->read($var, 'staging'));
 
         $this->reader->setCustomData('param', 'foobar');
 
         $this->assertSame('foobar', $this->reader->read($var, 'dev'));
+        $this->assertSame(
+            ['none', 'nestfoobared', '${nested}', 'double_foobar_foobar', '${nested}foobar'],
+            $this->reader->read($var, 'demo')
+        );
         $this->assertSame('Some${nested}param', $this->reader->read($var, 'staging'));
 
         $this->reader->setCustomData('nested', 'Base');
 
         $this->assertSame('foobar', $this->reader->read($var, 'dev'));
+        $this->assertSame(
+            ['none', 'nestfoobared', 'Base', 'double_foobar_foobar', 'Basefoobar'],
+            $this->reader->read($var, 'demo')
+        );
         $this->assertSame('SomeBaseparam', $this->reader->read($var, 'staging'));
     }
 

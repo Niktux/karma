@@ -69,6 +69,7 @@ my.var.with.subnames:
 param:
     dev = \${param}
     staging = Some\${nested}param
+    demo = [none, nest\${param}ed, \${nested}, double_\${param}_\${param}, \${nested}\${param}]
 
 list.ok:
     dev = [ one, two, three]
