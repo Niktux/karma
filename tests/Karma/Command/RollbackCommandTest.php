@@ -27,7 +27,7 @@ class RollbackCommandTest extends CommandTestCase
         $mock = $this->getMock(
             'Karma\Hydrator',
             array(),
-            array($this->app['sources.fileSystem'], $this->app['configuration'], $this->app['finder'])
+            array($this->app['sources.fileSystem'], $this->app['target.fileSystem'], $this->app['configuration'], $this->app['finder'])
         );
         $mock->expects($this->once())
             ->method($expectedMethodCall);

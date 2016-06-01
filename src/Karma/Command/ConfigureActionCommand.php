@@ -55,6 +55,7 @@ abstract class ConfigureActionCommand extends Command
 
             ->addArgument('sourcePath', InputArgument::OPTIONAL | InputArgument::IS_ARRAY, 'source path to hydrate/generate')
 
+            ->addOption('targetPath', 't', InputOption::VALUE_REQUIRED, 'target path to hydrate/generate', null)
             ->addOption('env', 'e', InputOption::VALUE_REQUIRED, 'Target environment', self::ENV_DEV)
             ->addOption('system', 's', InputOption::VALUE_REQUIRED, 'Target environment for system variables', null)
             ->addOption('dry-run', null, InputOption::VALUE_NONE, 'Simulation mode')
@@ -92,10 +93,10 @@ abstract class ConfigureActionCommand extends Command
             $this->output->writeln("<fg=cyan>Backup enabled</fg=cyan>");
         }
 
+        $profile = $this->app['profile'];
         $sourcePath = $input->getArgument('sourcePath');
         if(empty($sourcePath))
         {
-            $profile = $this->app['profile'];
             if($profile->hasSourcePath() !== true)
             {
                 throw new \RuntimeException('Missing argument sourcePath');
@@ -108,7 +109,14 @@ abstract class ConfigureActionCommand extends Command
         {
             $sourcePath = array($sourcePath);
         }
-        
+
+        $targetPath = $input->getOption('targetPath');
+
+        if(empty($targetPath) && $profile->hasTargetPath() === true)
+        {
+            $targetPath = $profile->getTargetPath();
+        }
+
         $this->output->writeln(sprintf(
             "<info>%s <comment>%s</comment> with <comment>%s</comment> values</info>",
             $this->outputTitle,
@@ -118,6 +126,12 @@ abstract class ConfigureActionCommand extends Command
         $this->output->writeln('');
 
         $this->app['sources.path'] = $sourcePath;
+
+        $this->app['target.path'] = $targetPath;
+        if(empty($targetPath))
+        {
+            $this->app['target.path'] = $sourcePath;
+        }
 
         $this->processOverridenVariables(
             $this->parseOptionWithAssignments($input, 'override')

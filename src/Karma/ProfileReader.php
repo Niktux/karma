@@ -13,6 +13,7 @@ class ProfileReader implements FormattersDefinition
         MASTER_FILENAME_INDEX = 'master',
         CONFIGURATION_DIRECTORY_INDEX = 'confDir',
         SOURCE_PATH_INDEX = 'sourcePath',
+        TARGET_PATH_INDEX = 'targetPath',
         DEFAULT_FORMATTER_INDEX = 'defaultFormatter',
         FORMATTERS_INDEX = 'formatters',
         FILE_EXTENSION_FORMATTERS_INDEX = 'fileExtensionFormatters',
@@ -28,6 +29,7 @@ class ProfileReader implements FormattersDefinition
             self::MASTER_FILENAME_INDEX => null,
             self::CONFIGURATION_DIRECTORY_INDEX => null,
             self::SOURCE_PATH_INDEX => null,
+            self::TARGET_PATH_INDEX => null,
             self::DEFAULT_FORMATTER_INDEX => self::DEFAULT_FORMATTER_NAME,
             self::FORMATTERS_INDEX => array(),
             self::FILE_EXTENSION_FORMATTERS_INDEX => array(),
@@ -108,6 +110,16 @@ class ProfileReader implements FormattersDefinition
     public function getSourcePath()
     {
         return $this->get(self::SOURCE_PATH_INDEX);
+    }
+
+    public function hasTargetPath()
+    {
+        return $this->has(self::TARGET_PATH_INDEX);
+    }
+
+    public function getTargetPath()
+    {
+        return $this->get(self::TARGET_PATH_INDEX);
     }
 
     public function getDefaultFormatterName()

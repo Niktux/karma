@@ -49,6 +49,8 @@ class Application extends \Pimple
         $this['configuration.masterFile'] = 'master.conf';
 
         $this['sources.path'] = 'src';
+        $this['target.path'] = null;
+        $this['hydrator.allowNonDistFilesOverwrite'] = false;
 
         $this['distFiles.suffix'] = '-dist';
     }
@@ -119,8 +121,34 @@ class Application extends \Pimple
             {
                 $adapter->mount($path, new Local($path));
             }
-             
+
             return $adapter;
+        };
+
+        $this['target.fileSystem.adapter'] = function($c) {
+
+            if($c['target.path'] !== $c['sources.path'])
+            {
+                $c['hydrator.allowNonDistFilesOverwrite'] = true;
+            }
+
+            if(! is_array($c['target.path']))
+            {
+                return new Local($c['target.path']);
+            }
+
+            $adapter = new MultipleAdapter();
+
+            foreach($c['target.path'] as $path)
+            {
+                $adapter->mount($path, new Local($path));
+            }
+
+            return $adapter;
+        };
+
+        $this['target.fileSystem'] = function($c) {
+            return new Filesystem($c['target.fileSystem.adapter']);
         };
 
         $this['sources.fileSystem'] = function($c) {
@@ -202,7 +230,8 @@ class Application extends \Pimple
         });
 
         $this['hydrator'] = function($c) {
-            $hydrator = new Hydrator($c['sources.fileSystem'], $c['configuration'], $c['finder'], $c['formatter.provider']);
+            $hydrator = new Hydrator($c['sources.fileSystem'], $c['target.fileSystem'], $c['configuration'], $c['finder'], $c['formatter.provider']);
+            $hydrator->allowNonDistFilesOverwrite($c['hydrator.allowNonDistFilesOverwrite']);
 
             $hydrator->setLogger($c['logger'])
                 ->setSuffix($c['distFiles.suffix']);
