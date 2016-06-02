@@ -102,20 +102,20 @@ class Hydrator implements ConfigurableProcessor
 
     public function hydrate($environment)
     {
-        $distFiles = $this->collectDistFiles();
+        $files = $this->collectFiles();
 
-        foreach($distFiles as $file)
+        foreach($files as $file)
         {
             $this->hydrateFile($file, $environment);
         }
 
         $this->info(sprintf(
            '%d files generated',
-            count($distFiles)
+            count($files)
         ));
     }
 
-    private function collectDistFiles()
+    private function collectFiles()
     {
         $pattern = sprintf('.*\%s$', $this->suffix);
         if($this->nonDistFilesOverwriteAllowed === true)
@@ -390,9 +390,9 @@ class Hydrator implements ConfigurableProcessor
 
     public function rollback()
     {
-        $distFiles = $this->collectDistFiles();
+        $files = $this->collectFiles();
 
-        foreach($distFiles as $file)
+        foreach($files as $file)
         {
             $this->rollbackFile($file);
         }
