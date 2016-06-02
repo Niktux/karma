@@ -117,7 +117,7 @@ class Hydrator implements ConfigurableProcessor
 
     private function collectDistFiles()
     {
-        $pattern = '.*\-dist$';
+        $pattern = sprintf('.*\%s$', $this->suffix);
         if($this->nonDistFilesOverwriteAllowed === true)
         {
             $pattern = '.*';
