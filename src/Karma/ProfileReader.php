@@ -65,10 +65,14 @@ class ProfileReader implements FormattersDefinition
 
         foreach(array_keys($this->attributes) as $name)
         {
-            if(isset($values[$name]))
+            if(! isset($values[$name]))
             {
-                $this->attributes[$name] = $values[$name];
+                continue;
             }
+
+            $this->ensureParameterFormatIsValid($name, $values[$name]);
+
+            $this->attributes[$name] = $values[$name];
         }
     }
 
@@ -174,5 +178,27 @@ class ProfileReader implements FormattersDefinition
         }
 
         return $value;
+    }
+
+    private function ensureParameterFormatIsValid($parameter, $value)
+    {
+        $parameterValidators = array(
+            'targetPath' => function($value) {
+                return is_string($value);
+            }
+        );
+
+        if(
+            ! array_key_exists($parameter, $parameterValidators)
+            || ! $parameterValidators[$parameter] instanceof \Closure
+        )
+        {
+            return true;
+        }
+
+        if(! $parameterValidators[$parameter]($value))
+        {
+            throw new \RuntimeException('Paramater %s format is invalid');
+        }
     }
 }

@@ -100,6 +100,7 @@ suffix: -tpl
 master: othermaster.conf
 confDir: env2/
 sourcePath: lib/
+targetPath: target/
 generator:
   translator: prefix
 YAML;
@@ -117,6 +118,9 @@ YAML;
 
         $this->assertTrue($reader->hasSourcePath());
         $this->assertSame('lib/', $reader->getSourcePath());
+
+        $this->assertTrue($reader->hasTargetPath());
+        $this->assertSame('target/', $reader->getTargetPath());
 
         $this->assertSame(array('translator' => 'prefix'), $reader->getGeneratorOptions());
     }
@@ -155,6 +159,20 @@ YAML;
     public function testSyntaxError()
     {
         $this->buildReader("\tsuffix:-tpl");
+    }
+
+    /**
+     * @expectedException RuntimeException
+     */
+    public function testTargetPathAsArray()
+    {
+        $yaml = <<<YAML
+targetPath:
+    - path1/
+    - path2/
+YAML;
+
+        $reader = $this->buildReader($yaml);
     }
 
     public function testInvalidFormat()

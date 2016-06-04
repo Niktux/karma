@@ -112,6 +112,11 @@ abstract class ConfigureActionCommand extends Command
 
         $targetPath = $input->getOption('targetPath');
 
+        if(is_array($targetPath))
+        {
+            throw new \RuntimeException('Invalid argument targetPath : could not be mutiple (single path required as string)');
+        }
+
         if(empty($targetPath) && $profile->hasTargetPath() === true)
         {
             $targetPath = $profile->getTargetPath();
