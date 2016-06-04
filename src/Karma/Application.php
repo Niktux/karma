@@ -127,24 +127,14 @@ class Application extends \Pimple
 
         $this['target.fileSystem.adapter'] = function($c) {
 
-            if($c['target.path'] !== $c['sources.path'])
+            if(! empty($c['target.path']))
             {
                 $c['hydrator.allowNonDistFilesOverwrite'] = true;
-            }
 
-            if(! is_array($c['target.path']))
-            {
                 return new Local($c['target.path']);
             }
 
-            $adapter = new MultipleAdapter();
-
-            foreach($c['target.path'] as $path)
-            {
-                $adapter->mount($path, new Local($path));
-            }
-
-            return $adapter;
+            return $this['sources.fileSystem.adapter'];
         };
 
         $this['target.fileSystem'] = function($c) {
