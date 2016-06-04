@@ -151,7 +151,7 @@ class HydratorTest extends \PHPUnit_Framework_TestCase
         
         foreach($existingFiles as $file)
         {
-            $this->assertFalse($this->targetFs->has($file), "File $file should'nt have been overwritted");
+            $this->assertFalse($this->targetFs->has($file), "File $file should'nt be overwritten");
         }
     }
     
