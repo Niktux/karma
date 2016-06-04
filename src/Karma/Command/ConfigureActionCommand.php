@@ -126,12 +126,7 @@ abstract class ConfigureActionCommand extends Command
         $this->output->writeln('');
 
         $this->app['sources.path'] = $sourcePath;
-
         $this->app['target.path'] = $targetPath;
-        if(empty($targetPath))
-        {
-            $this->app['target.path'] = $sourcePath;
-        }
 
         $this->processOverridenVariables(
             $this->parseOptionWithAssignments($input, 'override')
