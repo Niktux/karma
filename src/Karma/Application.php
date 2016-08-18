@@ -15,6 +15,7 @@ use Karma\Generator\NameTranslators\FilePrefixTranslator;
 use Karma\Generator\VariableProvider;
 use Karma\Generator\ConfigurationFileGenerators\YamlGenerator;
 use Karma\Filesystem\Adapters\MultipleAdapter;
+use Karma\Filesystem\Adapters\SingleLocalFile;
 
 class Application extends \Pimple
 {
@@ -117,7 +118,18 @@ class Application extends \Pimple
              
             foreach($paths as $path)
             {
-                $adapter->mount($path, new Local($path));
+                if(is_file($path))
+                {
+                    $filename = basename($path);
+                    $path = realpath(dirname($path));
+                    $localAdapter = new SingleLocalFile($filename, new Local($path));
+                }
+                else
+                {
+                    $localAdapter = new Local($path);
+                }
+
+                $adapter->mount($path, $localAdapter);
             }
              
             return $adapter;
