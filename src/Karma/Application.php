@@ -118,17 +118,15 @@ class Application extends \Pimple
              
             foreach($paths as $path)
             {
+                $localAdapter = new Local($path);
+
                 if(is_file($path))
                 {
                     $filename = basename($path);
                     $path = realpath(dirname($path));
                     $localAdapter = new SingleLocalFile($filename, new Local($path));
                 }
-                else
-                {
-                    $localAdapter = new Local($path);
-                }
-
+                
                 $adapter->mount($path, $localAdapter);
             }
              
