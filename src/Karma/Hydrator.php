@@ -117,7 +117,7 @@ class Hydrator implements ConfigurableProcessor
 
     private function collectFiles()
     {
-        $pattern = sprintf('.*\%s$', $this->suffix);
+        $pattern = sprintf('.*%s$', preg_quote($this->suffix));
         if($this->nonDistFilesOverwriteAllowed === true)
         {
             $pattern = '.*';
@@ -128,7 +128,7 @@ class Hydrator implements ConfigurableProcessor
 
     private function hydrateFile($file, $environment)
     {
-        $this->currentTargetFile = preg_replace(sprintf('~(.*)(\%s)$~', $this->suffix), '$1', $file);
+        $this->currentTargetFile = preg_replace(sprintf('~(.*)(%s)$~', preg_quote($this->suffix)), '$1', $file);
 
         if($this->nonDistFilesOverwriteAllowed)
         {
