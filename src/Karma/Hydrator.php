@@ -133,6 +133,11 @@ class Hydrator implements ConfigurableProcessor
         if($this->nonDistFilesOverwriteAllowed)
         {
             $this->currentTargetFile = (new \SplFileInfo($this->currentTargetFile))->getFilename();
+
+            if($this->target->has($this->currentTargetFile))
+            {
+                throw new \RuntimeException(sprintf('The fileName "%s" is defined in 2 config folders (not allowed with targetPath config enabled)', $this->currentTargetFile));
+            }
         }
 
         $content = $this->sources->read($file);

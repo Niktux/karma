@@ -157,7 +157,7 @@ class HydratorTest extends \PHPUnit_Framework_TestCase
     
     public function testTrappedFilenamesToTarget()
     {
-        $existingFiles = array('a.php', 'b.php-dist', 'c.php-dis', 'd.php-distt', 'e.php-dist.dist', 'f.dist', 'g-dist.php', 'h.php-dist-dist');
+        $existingFiles = array('a.php', 'b.php-dist', 'c.php-dis', 'd.php-distt', 'e.php-dist.dist', 'f.dist', 'g-dist.php', 'h.php-dist-dist', 'dist-dir/z-dist');
     
         foreach($existingFiles as $file)
         {
@@ -168,7 +168,7 @@ class HydratorTest extends \PHPUnit_Framework_TestCase
             ->allowNonDistFilesOverwrite()
             ->hydrate('prod');
     
-        $expectedFiles = array('b.php', 'h.php-dist', 'a.php', 'c.php-dis', 'd.php-distt', 'e.php-dist.dist', 'f.dist', 'g-dist.php');
+        $expectedFiles = array('b.php', 'h.php-dist', 'a.php', 'c.php-dis', 'd.php-distt', 'e.php-dist.dist', 'f.dist', 'g-dist.php', 'z');
         
         // check there is no extra generated file
         $this->assertSame(count($expectedFiles), count($this->targetFs->keys()));
@@ -179,6 +179,32 @@ class HydratorTest extends \PHPUnit_Framework_TestCase
         }
     }
     
+    /**
+     * @expectedException \RuntimeException
+     */
+    public function testDuplicatedFilenamesToTarget()
+    {
+        $existingFiles = array('dist-1/test.php-dist', 'dist-2/test.php-dist');
+
+        foreach($existingFiles as $file)
+        {
+            $this->write($file);
+        }
+
+        $this->hydrator
+            ->allowNonDistFilesOverwrite()
+            ->hydrate('prod');
+
+        $expectedFiles = array('b.php', 'h.php-dist', 'a.php', 'c.php-dis', 'd.php-distt', 'e.php-dist.dist', 'f.dist', 'g-dist.php', 'z');
+
+        // check there is no extra generated file
+        $this->assertSame(count($expectedFiles), count($this->targetFs->keys()));
+
+        foreach($expectedFiles as $file)
+        {
+            $this->assertTrue($this->targetFs->has($file), "File $file should be created");
+        }
+    }
 
     private function write($name, $content = null)
     {
