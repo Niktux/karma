@@ -9,11 +9,14 @@ use Karma\Configuration\Reader;
 class RollbackTest extends \PHPUnit_Framework_TestCase
 {
     private
+        $sourceFs,
+        $targetFs,
         $rollback;
 
     protected function setUp()
     {
-        $this->fs = new Filesystem(new InMemory());
+        $this->sourceFs = new Filesystem(new InMemory());
+        $this->targetFs = new Filesystem(new InMemory());
 
         $this->write('a.php-dist', 'a');
         $this->write('a.php', 'a');
@@ -42,7 +45,7 @@ class RollbackTest extends \PHPUnit_Framework_TestCase
         $this->write('subdir/s.php~', 'old_s');
 
         $reader = new Reader(array(), array());
-        $this->rollback = new Hydrator($this->fs, $reader, new Finder($this->fs));
+        $this->rollback = new Hydrator($this->sourceFs, $this->targetFs, $reader, new Finder($this->sourceFs));
     }
 
     public function testRollback()
@@ -81,13 +84,13 @@ class RollbackTest extends \PHPUnit_Framework_TestCase
 
         foreach($shouldExists as $f => $content)
         {
-            $this->assertTrue($this->fs->has($f), "File $f should exists");
-            $this->assertSame($content, $this->fs->read($f));
+            $this->assertTrue($this->sourceFs->has($f), "File $f should exists");
+            $this->assertSame($content, $this->sourceFs->read($f));
         }
 
         foreach($shouldNotExists as $f)
         {
-            $this->assertFalse($this->fs->has($f), "File should not exists");
+            $this->assertFalse($this->sourceFs->has($f), "File should not exists");
         }
     }
 
@@ -127,18 +130,18 @@ class RollbackTest extends \PHPUnit_Framework_TestCase
 
         foreach($shouldExists as $f => $content)
         {
-            $this->assertTrue($this->fs->has($f), "File $f should exists");
-            $this->assertSame($content, $this->fs->read($f));
+            $this->assertTrue($this->sourceFs->has($f), "File $f should exists");
+            $this->assertSame($content, $this->sourceFs->read($f));
         }
 
         foreach($shouldNotExists as $f)
         {
-            $this->assertFalse($this->fs->has($f), "File should not exists");
+            $this->assertFalse($this->sourceFs->has($f), "File should not exists");
         }
     }
 
     private function write($name, $content = null)
     {
-        $this->fs->write($name, $content);
+        $this->sourceFs->write($name, $content);
     }
 }

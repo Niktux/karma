@@ -20,6 +20,8 @@ class HydrateTest extends CommandTestCase
         $this->app['sources.fileSystem.adapter'] = new InMemory(array(
             'src/file-dist' => '<%app.foo%>',
         ));
+
+        $this->app['target.fileSystem.adapter'] = new InMemory();
     }
 
     /**
@@ -30,7 +32,7 @@ class HydrateTest extends CommandTestCase
         $mock = $this->getMock(
             'Karma\Hydrator',
             array(),
-            array($this->app['sources.fileSystem'], $this->app['configuration'], $this->app['finder'])
+            array($this->app['sources.fileSystem'], $this->app['target.fileSystem'], $this->app['configuration'], $this->app['finder'])
         );
 
         $mock->expects($this->once())
@@ -128,6 +130,8 @@ YAML;
         $this->app['sources.fileSystem.adapter'] = $adapter = new InMemory(array(
             'src/file-dist' => '<%foo%>',
         ));
+        
+        $this->app['target.fileSystem.adapter'] = $adapter = new InMemory();
 
         $this->runCommand(self::COMMAND_NAME, array(
             '--override' => array('foo=[1,2,3]'),

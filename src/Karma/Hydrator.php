@@ -27,13 +27,16 @@ class Hydrator implements ConfigurableProcessor
         $currentTargetFile,
         $systemEnvironment,
         $unusedVariables,
-        $unvaluedVariables;
+        $unvaluedVariables,
+        $target,
+        $nonDistFilesOverwriteAllowed;
 
-    public function __construct(Filesystem $sources, Configuration $reader, Finder $finder, FormatterProvider $formatterProvider = null)
+    public function __construct(Filesystem $sources, Filesystem $target, Configuration $reader, Finder $finder, FormatterProvider $formatterProvider = null)
     {
         $this->logger = new NullLogger();
 
         $this->sources = $sources;
+        $this->target = $target;
         $this->reader = $reader;
         $this->finder = $finder;
 
@@ -52,6 +55,7 @@ class Hydrator implements ConfigurableProcessor
         $this->systemEnvironment = null;
         $this->unusedVariables = array_flip($reader->getAllVariables());
         $this->unvaluedVariables = array();
+        $this->nonDistFilesOverwriteAllowed = false;
     }
 
     public function setSuffix($suffix)
@@ -74,6 +78,13 @@ class Hydrator implements ConfigurableProcessor
 
         return $this;
     }
+    
+    public function allowNonDistFilesOverwrite($nonDistFilesOverwriteAllowed = true)
+    {
+        $this->nonDistFilesOverwriteAllowed = $nonDistFilesOverwriteAllowed;
+
+        return $this;
+    }
 
     public function setFormatterProvider(FormatterProvider $formatterProvider)
     {
@@ -91,27 +102,43 @@ class Hydrator implements ConfigurableProcessor
 
     public function hydrate($environment)
     {
-        $distFiles = $this->collectDistFiles();
+        $files = $this->collectFiles();
 
-        foreach($distFiles as $file)
+        foreach($files as $file)
         {
             $this->hydrateFile($file, $environment);
         }
 
         $this->info(sprintf(
            '%d files generated',
-            count($distFiles)
+            count($files)
         ));
     }
 
-    private function collectDistFiles()
+    private function collectFiles()
     {
-        return $this->finder->findFiles("~$this->suffix$~");
+        $pattern = sprintf('.*%s$', preg_quote($this->suffix));
+        if($this->nonDistFilesOverwriteAllowed === true)
+        {
+            $pattern = '.*';
+        }
+        
+        return $this->finder->findFiles(sprintf('~%s~', $pattern));
     }
 
     private function hydrateFile($file, $environment)
     {
-        $this->currentTargetFile = substr($file, 0, strlen($this->suffix) * -1);
+        $this->currentTargetFile = preg_replace(sprintf('~(.*)(%s)$~', preg_quote($this->suffix)), '$1', $file);
+
+        if($this->nonDistFilesOverwriteAllowed)
+        {
+            $this->currentTargetFile = (new \SplFileInfo($this->currentTargetFile))->getFilename();
+
+            if($this->target->has($this->currentTargetFile))
+            {
+                throw new \RuntimeException(sprintf('The fileName "%s" is defined in 2 config folders (not allowed with targetPath config enabled)', $this->currentTargetFile));
+            }
+        }
 
         $content = $this->sources->read($file);
         $replacementCounter = $this->parseFileDirectives($file, $content, $environment);
@@ -123,7 +150,8 @@ class Hydrator implements ConfigurableProcessor
         if($this->dryRun === false)
         {
             $this->backupFile($this->currentTargetFile);
-            $this->sources->write($this->currentTargetFile, $targetContent, true);
+
+            $this->target->write($this->currentTargetFile, $targetContent, true);
         }
     }
 
@@ -357,19 +385,19 @@ class Hydrator implements ConfigurableProcessor
     {
         if($this->enableBackup === true)
         {
-            if($this->sources->has($targetFile))
+            if($this->target->has($targetFile))
             {
                 $backupFile = $targetFile . Application::BACKUP_SUFFIX;
-                $this->sources->write($backupFile, $this->sources->read($targetFile), true);
+                $this->target->write($backupFile, $this->target->read($targetFile), true);
             }
         }
     }
 
     public function rollback()
     {
-        $distFiles = $this->collectDistFiles();
+        $files = $this->collectFiles();
 
-        foreach($distFiles as $file)
+        foreach($files as $file)
         {
             $this->rollbackFile($file);
         }
