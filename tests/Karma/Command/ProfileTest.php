@@ -1,5 +1,7 @@
 <?php
 
+namespace Karma\Command;
+
 require_once __DIR__ . '/CommandTestCase.php';
 
 use Karma\Application;
@@ -17,32 +19,32 @@ foo:
 bar:
     default = valueAll
 CONFFILE;
-    
+
         $this->app = new Application();
         $this->app['configuration.fileSystem.adapter'] = new InMemory(array(
             'masterAlias.conf' => $masterContent,
         ));
-        
+
         $profileContent = <<< YAML
 master: masterAlias.conf
 confDir: env
-suffix: -tpl                
+suffix: -tpl
 YAML;
-        
+
         $this->app['profile.fileSystem.adapter'] = new InMemory(array(
         	Application::PROFILE_FILENAME => $profileContent
         ));
     }
-    
+
     public function testDisplay()
     {
         $env = 'dev';
         $this->runCommand('display', array('--env' => $env));
-        
+
         $reader = $this->app['configuration'];
         $valueFoo = $reader->read('foo', $env);
-        
-        $this->assertDisplay("~Display $env values~");    
-        $this->assertDisplay("~$valueFoo~");       
+
+        $this->assertDisplay("~Display $env values~");
+        $this->assertDisplay("~$valueFoo~");
     }
 }

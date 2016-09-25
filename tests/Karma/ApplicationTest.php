@@ -1,9 +1,10 @@
 <?php
 
-use Karma\Application;
+namespace Karma;
+
 use Gaufrette\Adapter\InMemory;
 
-class ApplicationTest extends PHPUnit_Framework_TestCase
+class ApplicationTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @dataProvider providerTestContainer
@@ -12,13 +13,13 @@ class ApplicationTest extends PHPUnit_Framework_TestCase
     {
         $adapter = new InMemory();
         $adapter->write(Application::DEFAULT_MASTER_FILE, null);
-        
+
         $app = new Application();
         $app['configuration.fileSystem.adapter'] = $adapter;
-        
+
         $this->assertInstanceOf($expected, $app[$service]);
     }
-    
+
     public function providerTestContainer()
     {
         return array(
@@ -26,6 +27,7 @@ class ApplicationTest extends PHPUnit_Framework_TestCase
             array('parser', 'Karma\\Configuration\\Parser'),
             array('configuration', 'Karma\\Configuration'),
             array('finder', 'Karma\\Finder'),
+            array('configurationFilesGenerator', 'Karma\\Generator\\ConfigurationFileGenerator'),
         );
     }
 }

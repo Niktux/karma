@@ -10,7 +10,7 @@ class ExternalParser extends AbstractSectionParser
         $parser,
         $variables,
         $filesStatus;
-    
+
     public function __construct(Parser $parser)
     {
         parent::__construct();
@@ -19,34 +19,34 @@ class ExternalParser extends AbstractSectionParser
         $this->variables = array();
         $this->filesStatus = array();
     }
-    
+
     public function parseLine($line)
     {
         if($this->isACommentLine($line))
         {
             return true;
         }
-                
+
         $file = trim($line);
-        
+
         $found = false;
         if($this->parser->getFileSystem()->has($file))
         {
             $found = true;
             $this->variables = $this->parser->parse($file);
         }
-        
+
         $this->filesStatus[$file] = array(
             'found' => $found,
             'referencedFrom' => $this->currentFilePath,
         );
     }
-    
+
     public function getExternalVariables()
     {
         return $this->variables;
     }
-    
+
     public function getExternalFilesStatus()
     {
         return $this->filesStatus;

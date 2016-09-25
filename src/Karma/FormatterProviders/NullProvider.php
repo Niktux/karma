@@ -9,12 +9,12 @@ class NullProvider implements FormatterProvider
 {
     private
         $raw;
-    
+
     public function __construct()
     {
-        $this->raw = new Raw();    
+        $this->raw = new Raw();
     }
-    
+
     public function hasFormatter($index)
     {
         return false;

@@ -1,8 +1,9 @@
 <?php
 
+namespace Karma\Configuration;
+
 use Gaufrette\Filesystem;
 use Gaufrette\Adapter\InMemory;
-use Karma\Configuration\Parser;
 
 require_once __DIR__ . '/ParserTestCase.php';
 
@@ -14,37 +15,37 @@ class ParserTest extends ParserTestCase
     public function testRead($variable, $environment, $expectedValue)
     {
         $this->variables = $this->parser->setEOL("\n")->parse(self::MASTERFILE_PATH);
-    
+
         $this->assertArrayHasKey($variable, $this->variables);
         $this->assertArrayHasKey('env', $this->variables[$variable]);
         $this->assertArrayHasKey($environment, $this->variables[$variable]['env']);
         $this->assertSame($expectedValue, $this->variables[$variable]['env'][$environment]);
     }
-    
+
     public function providerTestRead()
     {
         return array(
             // master.conf
-            array('print_errors', 'prod', false),    
-            array('print_errors', 'preprod', false),    
-            array('print_errors', 'default', true),   
-             
-            array('debug', 'dev', true),    
-            array('debug', 'default', false),    
-            
-            array('gourdin', 'prod', 0),    
-            array('gourdin', 'preprod', 1),    
-            array('gourdin', 'recette', 1),    
-            array('gourdin', 'qualif', 1),    
-            array('gourdin', 'integration', null),    
+            array('print_errors', 'prod', false),
+            array('print_errors', 'preprod', false),
+            array('print_errors', 'default', true),
+
+            array('debug', 'dev', true),
+            array('debug', 'default', false),
+
+            array('gourdin', 'prod', 0),
+            array('gourdin', 'preprod', 1),
+            array('gourdin', 'recette', 1),
+            array('gourdin', 'qualif', 1),
+            array('gourdin', 'integration', null),
             array('gourdin', 'dev', 2),
             array('gourdin', 'staging', 'string with blanks'),
-                
-            array('server', 'prod', 'sql21'),    
-            array('server', 'preprod', 'prod21'),    
-            array('server', 'recette', 'rec21'),    
-            array('server', 'qualif', 'rec21'),   
-             
+
+            array('server', 'prod', 'sql21'),
+            array('server', 'preprod', 'prod21'),
+            array('server', 'recette', 'rec21'),
+            array('server', 'qualif', 'rec21'),
+
             array('tva', 'dev', 19.0),
             array('tva', 'preprod', 20.5),
             array('tva', 'default', 19.6),
@@ -52,25 +53,26 @@ class ParserTest extends ParserTestCase
             array('apiKey', 'dev', '=2'),
             array('apiKey', 'recette', ''),
             array('apiKey', 'default', 'qd4#qs64d6q6=fgh4f6ùftgg==sdr'),
-            
+
             array('my.var.with.subnames', 'default', 21),
-                        
+
             array('param', 'dev', '${param}'),
             array('param', 'staging', 'Some${nested}param'),
-                        
+            array('param', 'demo', array('none', 'nest${param}ed', '${nested}', 'double_${param}_${param}', '${nested}${param}')),
+
             // db.conf
-            array('user', 'default', 'root'),    
-            
+            array('user', 'default', 'root'),
+
             // lists
             array('list.ok', 'dev', array('one', 'two', 'three')),
             array('list.ok', 'staging', array('one', 'two')),
             array('list.ok', 'prod', array('alone')),
             array('list.ok', 'preprod', 'not_a_list'),
             array('list.ok', 'default', array('single value with blanks')),
-            array('list.ok', 'other', array(2, 'third')),
+            array('list.ok', 'other', array(2, 0, 'third', false, null)),
             array('list.ok', 'staging2', array()),
             array('list.ok', 'staging3', array()),
-            
+
             array('list.notlist', 'dev', 'string[weird'),
             array('list.notlist', 'staging', 'string]weird'),
             array('list.notlist', 'prod', '[string[weird'),
@@ -79,14 +81,17 @@ class ParserTest extends ParserTestCase
             array('list.notlist', 'other', 'arr[]'),
             array('list.notlist', 'staging2', 'arr[tung]'),
             array('list.notlist', 'staging3', '[1,2,3]4'),
-            
+
             array('list.notlist', 'string1', '[]]'),
             array('list.notlist', 'string2', '[[]'),
             array('list.notlist', 'string3', '[[]]'),
             array('list.notlist', 'string4', '[][]'),
-        );    
+
+            array('variable-name-with-dashes', 'default', 'poney'),
+            array('redis_prefix', 'default', 'prefix:ending:with:semi:colon:'),
+        );
     }
-    
+
     /**
      * @dataProvider providerTestSyntaxError
      * @expectedException \RuntimeException
@@ -106,17 +111,17 @@ viciousDuplicatedVariable:
 [variables]
 var2:
         default= 0
-            
+
 CONFFILE
         ))));
-        
+
         $this->parser
             ->enableIncludeSupport()
             ->enableExternalSupport()
             ->enableGroupSupport()
             ->parse(self::MASTERFILE_PATH);
     }
-    
+
     public function providerTestSyntaxError()
     {
         return array(
@@ -125,12 +130,12 @@ CONFFILE
 print_errors:
     default:true
 CONFFILE
-            ), 
+            ),
             'missing variables' => array(<<<CONFFILE
 print_errors:
     default:true
 CONFFILE
-            ), 
+            ),
             'include not found' => array(<<<CONFFILE
 [includes]
 empty.conf
@@ -187,7 +192,7 @@ vicious.conf
 viciousDuplicatedVariable:
     prod = tata
 CONFFILE
-            ),            
+            ),
             'duplicated environment' => array(<<<CONFFILE
 [variables]
 toto:
@@ -228,7 +233,7 @@ CONFFILE
             ),
             'invalid name format for include file' => array(<<<CONFFILE
 [includes]
-notADotConfFile                            
+notADotConfFile
 CONFFILE
             ),
             'comments not on its own line' => array(<<<CONFFILE
@@ -315,9 +320,35 @@ foo = [baz]
 bar = [baz]
 CONFFILE
             ),
+            'spaces in variable name' => array(<<<CONFFILE
+[variables]
+var with spaces:
+    default = false
+CONFFILE
+            ),
+            '= in variable name' => array(<<<CONFFILE
+[variables]
+invalid=varname:
+    default = false
+CONFFILE
+            ),
         );
     }
-    
+
+    public function testEmptyFile()
+    {
+        $masterContent = '';
+
+        $parser = new Parser(new Filesystem(new InMemory(array(self::MASTERFILE_PATH => $masterContent))));
+
+        $variables = $parser->enableIncludeSupport()
+            ->enableExternalSupport()
+            ->enableGroupSupport()
+            ->parse(self::MASTERFILE_PATH);
+
+        $this->assertEmpty($variables);
+    }
+
     public function testExternal()
     {
         $masterContent = <<<CONFFILE
@@ -334,32 +365,32 @@ db.user:
     staging = <external>
     default = root
 CONFFILE;
-        
+
         $externalContent1 = <<<CONFFILE
 [variables]
 db.pass:
     prod = veryComplexPass
 CONFFILE;
-        
+
         $externalContent2 = <<<CONFFILE
 [variables]
 db.user:
     staging = someUser
 CONFFILE;
-        
+
         $files = array(
             self::MASTERFILE_PATH => $masterContent,
             'external1.conf' => $externalContent1,
             'external2.conf' => $externalContent2,
         );
-        
+
         $parser = new Parser(new Filesystem(new InMemory($files)));
-        
+
         $parser->enableIncludeSupport()
             ->enableExternalSupport();
 
         $variables = $parser->parse(self::MASTERFILE_PATH);
-        
+
         $expected = array(
             'db.pass' => array(
                 'dev' => 1234,
@@ -371,7 +402,7 @@ CONFFILE;
                 'default' => 'root',
             ),
         );
-        
+
         foreach($expected as $variable => $info)
         {
             foreach($info as $environment => $expectedValue)
@@ -383,7 +414,7 @@ CONFFILE;
             }
         }
     }
-    
+
     public function testGroups()
     {
         $masterContent = <<<CONFFILE
@@ -408,15 +439,15 @@ db.cache:
     preprod = true
     default = false
 CONFFILE;
-        
+
         $parser = new Parser(new Filesystem(new InMemory(array(self::MASTERFILE_PATH => $masterContent))));
-        
+
         $parser->enableIncludeSupport()
             ->enableExternalSupport()
             ->enableGroupSupport();
 
         $variables = $parser->parse(self::MASTERFILE_PATH);
-        
+
         $expected = array(
             'db.pass' => array(
                 'dev' => 1234,
@@ -434,7 +465,7 @@ CONFFILE;
                 'default' => false,
             ),
         );
-        
+
         foreach($expected as $variable => $info)
         {
             foreach($info as $environment => $expectedValue)
@@ -445,18 +476,97 @@ CONFFILE;
                 $this->assertSame($expectedValue, $variables[$variable]['env'][$environment]);
             }
         }
-        
+
         $groups = $parser->getGroups();
-        
+
         $expected = array(
         	'dev' => array('dev1', 'dev2', 'dev3'),
         	'qa' => array('staging', 'preprod'),
             'production' => array('prod'),
         );
-        
-        ksort($groups);
+
+        $this->assertSameArraysExceptOrder($expected, $groups);
+    }
+
+    /**
+     * @dataProvider providerTestIsSystem
+     */
+    public function testIsSystem($variable, $expected)
+    {
+        $this->parser->parse(self::MASTERFILE_PATH);
+        $this->assertSame($expected, $this->parser->isSystem($variable));
+    }
+
+    public function providerTestIsSystem()
+    {
+        return array(
+            array('gourdin', true),
+            array('tva', true),
+            array('debug', false),
+            array('list.ok', false),
+        );
+    }
+
+    public function testDefaultEnvironmentForGroups()
+    {
+        $masterContent = <<<CONFFILE
+[groups]
+# comment
+qa = [ *staging, preprod ]
+dev = [ dev1,  *  dev2,dev3]
+ # comment
+production=[prod]
+CONFFILE;
+
+        $parser = new Parser(new Filesystem(new InMemory(array(self::MASTERFILE_PATH => $masterContent))));
+
+        $parser->enableIncludeSupport()
+            ->enableExternalSupport()
+            ->enableGroupSupport()
+            ->parse(self::MASTERFILE_PATH);
+
+        $groups = $parser->getGroups();
+        $expected = array(
+            'dev' => array('dev1', 'dev2', 'dev3'),
+        	'qa' => array('staging', 'preprod'),
+            'production' => array('prod'),
+        );
+
+        $this->assertSameArraysExceptOrder($expected, $groups);
+
+        $envs = $parser->getDefaultEnvironmentsForGroups();
+        $expected = array(
+            'dev' => 'dev2',
+            'qa' => 'staging',
+            'production' => null,
+        );
+
+        $this->assertSameArraysExceptOrder($expected, $envs);
+    }
+
+    private function assertSameArraysExceptOrder($expected, $result)
+    {
+        ksort($result);
         ksort($expected);
-        
-        $this->assertSame($expected, $groups);
+
+        $this->assertSame($expected, $result);
+    }
+
+    /**
+     * @expectedException \RuntimeException
+     */
+    public function testMultipleDefaultEnvironmentForASameGroup()
+    {
+        $masterContent = <<<CONFFILE
+[groups]
+dev = [ dev1, *dev2,*dev3]
+CONFFILE;
+
+        $parser = new Parser(new Filesystem(new InMemory(array(self::MASTERFILE_PATH => $masterContent))));
+
+        $parser->enableIncludeSupport()
+            ->enableExternalSupport()
+            ->enableGroupSupport()
+            ->parse(self::MASTERFILE_PATH);
     }
 }

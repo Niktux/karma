@@ -2,194 +2,62 @@
 
 namespace Karma\Command;
 
-use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Input\InputOption;
+use Karma\ConfigurableProcessor;
 use Karma\Application;
-use Karma\Command;
-use Karma\Configuration\FilterInputVariable;
+use Karma\Hydrator;
 
-class Hydrate extends Command
+class Hydrate extends ConfigureActionCommand
 {
-    use FilterInputVariable;
-    
-    const
-        ENV_DEV = 'dev',
-        OPTION_ASSIGNMENT = '=';
-    
-    private
-        $dryRun,
-        $isBackupEnabled,
-        $environment;
-    
     public function __construct(Application $app)
     {
-        parent::__construct($app);
-        
-        $this->dryRun = false;
-        $this->isBackupEnabled = false;
-        
-        $this->environment = self::ENV_DEV;
-    }
-    
-    protected function configure()
-    {
-        parent::configure();
-        
-        $this
-            ->setName('hydrate')
-            ->setDescription('Hydrate dist files')
-            
-            ->addArgument('sourcePath', InputArgument::OPTIONAL, 'source path to hydrate')
-            
-            ->addOption('env', 'e', InputOption::VALUE_REQUIRED, 'Target environment', self::ENV_DEV)
-            ->addOption('dry-run', null, InputOption::VALUE_NONE, 'Simulation mode')
-            ->addOption('backup', 'b', InputOption::VALUE_NONE, 'Backup overwritten files')
-            ->addOption('override', 'o', InputOption::VALUE_IS_ARRAY | InputOption::VALUE_REQUIRED, 'Override variable values', array())
-            ->addOption('data', 'd', InputOption::VALUE_IS_ARRAY | InputOption::VALUE_REQUIRED, 'Custom data values', array())
-        ;
-    }
-    
-    protected function execute(InputInterface $input, OutputInterface $output)
-    {
-        parent::execute($input, $output);
-        
-        $this->processInputs($input);
-        $this->launchHydration();
-    }
-    
-    private function processInputs(InputInterface $input)
-    {
-        $this->environment = $input->getOption('env'); 
-        
-        if($input->getOption('dry-run'))
-        {
-            $this->dryRun = true;
-            $this->output->writeln("<fg=cyan>Run in dry-run mode</fg=cyan>");
-        }
-        
-        if($input->getOption('backup'))
-        {
-            $this->isBackupEnabled = true;
-            $this->output->writeln("<fg=cyan>Backup enabled</fg=cyan>");
-        }
-        
-        $sourcePath = $input->getArgument('sourcePath');
-        if($sourcePath === null)
-        {
-            $profile = $this->app['profile'];
-            if($profile->hasSourcePath() !== true)
-            {
-                throw new \RuntimeException('Missing argument sourcePath');
-            }
-            
-            $sourcePath = $profile->getSourcePath();
-        }
-        
-        $this->output->writeln(sprintf(
-            "<info>Hydrate <comment>%s</comment> with <comment>%s</comment> values</info>",
-            $sourcePath,
-            $this->environment
-        ));
-        $this->output->writeln('');
-        
-        $this->app['sources.path'] = $sourcePath;
-        
-        $this->processOverridenVariables(
-            $this->parseOptionWithAssignments($input, 'override')
-        );
-        $this->processCustomData(
-            $this->parseOptionWithAssignments($input, 'data')
+        parent::__construct(
+            $app,
+            'hydrate',
+            'Hydrate dist files',
+            'Hydrate'
         );
     }
-    
-    private function launchHydration()
+
+    protected function getProcessor()
     {
-        $hydrator = $this->app['hydrator'];
-        
-        if($this->dryRun === true)
-        {
-            $hydrator->setDryRun();
-        }
-        
-        if($this->isBackupEnabled === true)
-        {
-            $hydrator->enableBackup();
-        }
-            
-        $hydrator->hydrate($this->environment);
+        return $this->app['hydrator'];
     }
-    
-    private function parseOptionWithAssignments(InputInterface $input, $optionName)
+
+    protected function launchConfigurationAction(ConfigurableProcessor $processor)
     {
-        $strings = $input->getOption($optionName);
-
-        if(! is_array($strings))
-        {
-            $strings = array($strings);
-        }
-        
-        $data = array();
-        
-        foreach($strings as $string)
-        {
-            if(stripos($string, self::OPTION_ASSIGNMENT) === false)
-            {
-                throw new \InvalidArgumentException(sprintf(
-                    '%s option must contain %c : --%s <variable>=<value>',
-                    $optionName,
-                    self::OPTION_ASSIGNMENT,
-                    $optionName                        
-                ));    
-            }
-
-            list($variable, $value) = explode(self::OPTION_ASSIGNMENT, $string, 2);
-            
-            if(array_key_exists($variable, $data))
-            {
-                throw new \InvalidArgumentException("Duplicated %s option value : $variable");    
-            }
-            
-            $data[$variable] = $value;
-        }
-
-        return $data;
+        $processor->hydrate($this->environment);
+        $this->warnForUnusedVariables($processor);
+        $this->warnForUnvaluedVariables($processor);
     }
-    
-    private function processOverridenVariables(array $overrides)
-    {
-        $reader = $this->app['configuration'];
-        $logger = $this->app['logger'];
 
-        foreach($overrides as $variable => $value)
+    private function warnForUnusedVariables(Hydrator $processor)
+    {
+        $unusedVariables = $processor->getUnusedVariables();
+
+        if(! empty($unusedVariables))
         {
-            $logger->info(sprintf(
-               'Override <important>%s</important> with value <important>%s</important>',
-               $variable,
-               $value
+            $logger = $this->app['logger'];
+
+            $logger->warning('You have unused variables : you should remove them or check if you have not mispelled them').
+            $logger->warning(sprintf(
+                'Unused variables : %s',
+                implode(', ', $unusedVariables)
             ));
-            
-            $value = $this->parseList($value);
-            
-            $reader->overrideVariable($variable, $this->filterValue($value));
         }
     }
-    
-    private function processCustomData(array $data)
-    {
-        $reader = $this->app['configuration'];
-        $logger = $this->app['logger'];
 
-        foreach($data as $variable => $value)
+    private function warnForUnvaluedVariables(Hydrator $processor)
+    {
+        $unvaluedVariables = $processor->getUnvaluedVariables();
+
+        if(! empty($unvaluedVariables))
         {
-            $logger->info(sprintf(
-               'Set custom data <important>%s</important> with value <important>%s</important>',
-               $variable,
-               $value
+            $logger = $this->app['logger'];
+
+            $logger->warning(sprintf(
+                'Missing values for variables : %s (TODO markers found)',
+                implode(', ', $unvaluedVariables)
             ));
-            
-            $reader->setCustomData($variable, $this->filterValue($value));
         }
     }
 }
