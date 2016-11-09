@@ -20,7 +20,7 @@ use Karma\Filesystem\Adapters\SingleLocalFile;
 class Application extends \Pimple
 {
     const
-        VERSION = '5.5.1',
+        VERSION = '5.5.2',
         DEFAULT_DISTFILE_SUFFIX = '-dist',
         DEFAULT_CONF_DIRECTORY = 'env',
         DEFAULT_MASTER_FILE = 'master.conf',
