@@ -24,3 +24,8 @@ src/.solidifier.yml
 
 # Cache
 cache/
+
+# Packaging
+php-composer.phar
+box.phar
+karma.phar

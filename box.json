@@ -1,0 +1,20 @@
+{
+    "output": "karma.phar",
+    "chmod": "0755",
+    "main": "karma",
+     "compactors": [
+        "Herrera\\Box\\Compactor\\Php"
+    ],
+    "extract": false,
+    "directories": [
+        "src"
+    ],
+    "finder": [
+        {
+            "name": "*.*",
+            "exclude": ["Tests"],
+            "in": "vendor"
+        }
+    ],
+    "stub": true
+}

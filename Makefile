@@ -1,8 +1,8 @@
-phar: phar-composer.phar
-	php -d phar.readonly=off phar-composer.phar build niktux/karma
+BOX_VERSION=2.7.4
 
-local-phar: phar-composer.phar
-	php -d phar.readonly=off phar-composer.phar build .
+phar: box.phar
+	php -d phar.readonly=off box.phar build
 
-phar-composer.phar:
-	wget -q https://github.com/clue/phar-composer/releases/download/v1.0.0/phar-composer.phar
+box.phar:
+	wget -q https://github.com/box-project/box2/releases/download/2.7.4/box-${BOX_VERSION}.phar
+	mv box-${BOX_VERSION}.phar box.phar
