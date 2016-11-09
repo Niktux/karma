@@ -19,10 +19,10 @@ Installation
 ------------
 Download latest phar:
 ```
-  wget https://github.com/Niktux/karma/releases/download/5.5.0/karma.phar
+  wget https://github.com/Niktux/karma/releases/download/5.5.1/karma.phar
 ```
 
-Or use composer (but you could experiment illegitimate dependencoes conflict with your project) :
+Or use composer (but you could experiment illegitimate dependencies conflict with your project) :
 ```json
 {
     "require": {

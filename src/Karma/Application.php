@@ -20,7 +20,7 @@ use Karma\Filesystem\Adapters\SingleLocalFile;
 class Application extends \Pimple
 {
     const
-        VERSION = '5.5.0',
+        VERSION = '5.5.1',
         DEFAULT_DISTFILE_SUFFIX = '-dist',
         DEFAULT_CONF_DIRECTORY = 'env',
         DEFAULT_MASTER_FILE = 'master.conf',
@@ -108,16 +108,16 @@ class Application extends \Pimple
     private function initializeSourceFileSystem()
     {
         $this['sources.fileSystem.adapter'] = function($c) {
-            
+
             $paths = $c['sources.path'];
-            
+
             if(! is_array($paths))
             {
                 $paths = array($paths);
             }
-            
+
             $adapter = new MultipleAdapter();
-             
+
             foreach($paths as $path)
             {
                 $localAdapter = new Local($path);
@@ -128,7 +128,7 @@ class Application extends \Pimple
                     $path = realpath(dirname($path));
                     $localAdapter = new SingleLocalFile($filename, new Local($path));
                 }
-                
+
                 $adapter->mount($path, $localAdapter);
             }
 
