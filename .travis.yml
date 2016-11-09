@@ -12,7 +12,9 @@ before_script:
 script:
     - vendor/bin/phpunit -c phpunit.xml
 
-before_deploy: make phar
+before_deploy:
+    - composer install --no-dev 
+    - make phar
 
 deploy:
     provider: releases
