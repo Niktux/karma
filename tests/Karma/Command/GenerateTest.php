@@ -31,11 +31,9 @@ class GenerateTest extends CommandTestCase
      */
     public function testOptions($option, $expectedMethodCall)
     {
-        $mock = $this->getMock(
-            'Karma\Generator\ConfigurationFileGenerators\YamlGenerator',
-            array(),
-            array($this->app['sources.fileSystem'], $this->app['configuration'], $this->app['generator.variableProvider'])
-        );
+        $mock = $this->getMockBuilder('Karma\Generator\ConfigurationFileGenerators\YamlGenerator')->setConstructorArgs([
+            $this->app['sources.fileSystem'], $this->app['configuration'], $this->app['generator.variableProvider']
+        ])->getMock();
 
         $mock->expects($this->once())
             ->method($expectedMethodCall);

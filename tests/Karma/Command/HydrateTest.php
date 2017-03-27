@@ -29,11 +29,9 @@ class HydrateTest extends CommandTestCase
      */
     public function testOptions($option, $expectedMethodCall)
     {
-        $mock = $this->getMock(
-            'Karma\Hydrator',
-            array(),
-            array($this->app['sources.fileSystem'], $this->app['target.fileSystem'], $this->app['configuration'], $this->app['finder'])
-        );
+        $mock = $this->getMockBuilder('Karma\Hydrator')->setConstructorArgs([
+            $this->app['sources.fileSystem'], $this->app['target.fileSystem'], $this->app['configuration'], $this->app['finder']
+        ])->getMock();
 
         $mock->expects($this->once())
             ->method($expectedMethodCall);
