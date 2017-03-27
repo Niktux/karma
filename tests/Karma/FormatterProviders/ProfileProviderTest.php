@@ -6,7 +6,6 @@ use Karma\ProfileReader;
 use Gaufrette\Filesystem;
 use Gaufrette\Adapter\InMemory;
 use Karma\Application;
-use Gaufrette\Adapter;
 
 class ProfileProviderTest extends \PHPUnit_Framework_TestCase
 {

@@ -4,7 +4,6 @@ namespace Karma;
 
 use Gaufrette\Filesystem;
 use Gaufrette\Adapter\InMemory;
-use Gaufrette\Adapter;
 
 class ProfileReaderTest extends \PHPUnit_Framework_TestCase
 {

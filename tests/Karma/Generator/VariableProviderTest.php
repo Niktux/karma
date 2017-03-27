@@ -6,7 +6,6 @@ use Karma\Configuration\Parser;
 use Gaufrette\Filesystem;
 use Gaufrette\Adapter\InMemory;
 use Karma\Application;
-use Karma\Configuration\Reader;
 use Karma\Generator\NameTranslators\NullTranslator;
 use Karma\Generator\NameTranslators\FilePrefixTranslator;
 

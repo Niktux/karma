@@ -2,7 +2,6 @@
 
 namespace Karma\Filesystem\Adapters;
 
-use Gaufrette\Adapter;
 use Gaufrette\Adapter\InMemory;
 
 class SingleLocalFileTest extends \PHPUnit_Framework_TestCase
