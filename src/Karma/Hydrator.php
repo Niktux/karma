@@ -29,7 +29,8 @@ class Hydrator implements ConfigurableProcessor
         $unusedVariables,
         $unvaluedVariables,
         $target,
-        $nonDistFilesOverwriteAllowed;
+        $nonDistFilesOverwriteAllowed,
+        $hydratedFiles;
 
     public function __construct(Filesystem $sources, Filesystem $target, Configuration $reader, Finder $finder, FormatterProvider $formatterProvider = null)
     {
@@ -56,6 +57,7 @@ class Hydrator implements ConfigurableProcessor
         $this->unusedVariables = array_flip($reader->getAllVariables());
         $this->unvaluedVariables = array();
         $this->nonDistFilesOverwriteAllowed = false;
+        $this->hydratedFiles = [];
     }
 
     public function setSuffix($suffix)
@@ -133,11 +135,6 @@ class Hydrator implements ConfigurableProcessor
         if($this->nonDistFilesOverwriteAllowed)
         {
             $this->currentTargetFile = (new \SplFileInfo($this->currentTargetFile))->getFilename();
-
-            if($this->target->has($this->currentTargetFile))
-            {
-                throw new \RuntimeException(sprintf('The fileName "%s" is defined in 2 config folders (not allowed with targetPath config enabled)', $this->currentTargetFile));
-            }
         }
 
         $content = $this->sources->read($file);
@@ -149,10 +146,16 @@ class Hydrator implements ConfigurableProcessor
 
         if($this->dryRun === false)
         {
-            $this->backupFile($this->currentTargetFile);
+            if(in_array($this->currentTargetFile, $this->hydratedFiles) && $this->nonDistFilesOverwriteAllowed)
+            {
+                throw new \RuntimeException(sprintf('The fileName "%s" is defined in 2 config folders (not allowed with targetPath config enabled)', $this->currentTargetFile));
+            }
 
+            $this->backupFile($this->currentTargetFile);
             $this->target->write($this->currentTargetFile, $targetContent, true);
         }
+
+        $this->hydratedFiles[] = $this->currentTargetFile;
     }
 
     private function parseFileDirectives($file, & $fileContent, $environment)

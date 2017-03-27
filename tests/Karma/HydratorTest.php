@@ -194,16 +194,31 @@ class HydratorTest extends \PHPUnit_Framework_TestCase
         $this->hydrator
             ->allowNonDistFilesOverwrite()
             ->hydrate('prod');
+    }
 
-        $expectedFiles = array('b.php', 'h.php-dist', 'a.php', 'c.php-dis', 'd.php-distt', 'e.php-dist.dist', 'f.dist', 'g-dist.php', 'z');
+    public function testIdempotentHydratationToTarget()
+    {
+        $this->targetFs->write('test.php', 'oldValue');
+        $existingFiles = array('dist/test.php-dist', 'dist/test2.php-dist');
+
+        foreach($existingFiles as $file)
+        {
+            $this->write($file, 'newValue');
+        }
+
+        $this->hydrator
+            ->allowNonDistFilesOverwrite()
+            ->hydrate('prod');
 
         // check there is no extra generated file
+        $expectedFiles = array('test.php', 'test2.php');
         $this->assertSame(count($expectedFiles), count($this->targetFs->keys()));
 
         foreach($expectedFiles as $file)
         {
             $this->assertTrue($this->targetFs->has($file), "File $file should be created");
         }
+        $this->assertSame('newValue', $this->targetFs->read('test.php'), "File test.php shoud have been updated");
     }
 
     private function write($name, $content = null)
