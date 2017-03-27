@@ -53,6 +53,7 @@ class HydratorTest extends \PHPUnit_Framework_TestCase
 
         $this->hydrator->hydrate($environment);
 
+        $this->assertFalse($this->targetFs->has('a.php'));
         $this->assertTrue($this->targetFs->has('b.php'));
         $this->assertFalse($this->targetFs->has('c.php'));
         $this->assertTrue($this->targetFs->has('d.php'));
