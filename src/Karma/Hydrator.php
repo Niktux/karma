@@ -370,6 +370,16 @@ class Hydrator implements ConfigurableProcessor
                 {
                     $values = $this->readValueToInject($matches['variableName'], $environment);
 
+                    if(!is_array($values))
+                    {
+                        throw new \RuntimeException(sprintf(
+                            "Nested variable detected [%s] while writing %s at line %d",
+                            $matches['variableName'],
+                            $this->currentTargetFile,
+                            $line
+                        ));
+                    }
+                    
                     $replacementCounter++;
                     foreach($values as $value)
                     {

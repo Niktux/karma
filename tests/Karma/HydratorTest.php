@@ -859,6 +859,7 @@ FILE
         ));
 
         $this->hydrator = new Hydrator($this->sourceFs, $this->targetFs, $reader, new Finder($this->sourceFs));
+        
         $this->write('a-dist', '<%poney%> = <%licorne%>');
         $this->write('list-dist', "<%dsn%>\n<%env%>");
         $this->write('directive-dist', '<% karma:list var=dsn delimiter="" %> = <% karma:list var=env delimiter="" %>');
@@ -883,5 +884,23 @@ FILE
             array('staging', 'dev', 'poney_s = licorne_d', "$dev\n$sta", 'dev = sta'),
             array('staging', 'staging', 'poney_s = licorne_s', "$sta\n$sta", 'sta = sta'),
         );
+    }
+    
+    /**
+     * @expectedException \RuntimeException
+     * @group nested
+     */
+    public function testNestedVariables()
+    {
+        $reader = new InMemoryReader(array(
+            'meat:dev' => 'pony',
+            'burger:dev' => "<%meat%> with sparkles",
+            'customer:dev' => 'prudman',
+        ));
+
+        $hydrator = new Hydrator($this->sourceFs, $this->targetFs, $reader, new Finder($this->sourceFs));
+        
+        $this->write('a-dist', "<%burger%>");
+        $hydrator->hydrate('dev');
     }
 }
