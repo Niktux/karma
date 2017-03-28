@@ -14,13 +14,14 @@ class HydratorTest extends \PHPUnit_Framework_TestCase
     private
         $sourceFs,
         $targetFs,
+        $reader,
         $hydrator;
 
     protected function setUp()
     {
         $this->sourceFs = new Filesystem(new InMemory());
         $this->targetFs = new Filesystem(new InMemory());
-        $reader = new InMemoryReader(array(
+        $this->reader = new InMemoryReader(array(
             'var:dev' => 42,
             'var:preprod' => 51,
             'var:prod' => 69,
@@ -34,7 +35,7 @@ class HydratorTest extends \PHPUnit_Framework_TestCase
             'fixme:dev' => '__FIXME__',
         ));
 
-        $this->hydrator = new Hydrator($this->sourceFs, $this->targetFs, $reader, new Finder($this->sourceFs), new NullProvider());
+        $this->hydrator = new Hydrator($this->sourceFs, $this->targetFs, $this->reader, new Finder($this->sourceFs), new NullProvider());
         $this->hydrator->setSuffix('-dist');
     }
 
@@ -53,20 +54,99 @@ class HydratorTest extends \PHPUnit_Framework_TestCase
 
         $this->hydrator->hydrate($environment);
 
-        $this->assertFalse($this->targetFs->has('a.php'));
-        $this->assertTrue($this->targetFs->has('b.php'));
-        $this->assertFalse($this->targetFs->has('c.php'));
-        $this->assertTrue($this->targetFs->has('d.php'));
-        $this->assertTrue($this->targetFs->has('e.php'));
-        $this->assertTrue($this->targetFs->has('f.php'));
+        $this->assertTargetHasNot('a.php');
+        $this->assertTargetHasNot('c.php');
 
-        $this->assertSame($expectedBValue, $this->targetFs->read('b.php'));
+        $this->assertTargetHas('b.php');
+        $this->assertTargetHas('d.php');
+        $this->assertTargetHas('e.php');
+        $this->assertTargetHas('f.php');
 
-        $this->assertSame('<%var%>', $this->sourceFs->read('c.php'));
+        $this->assertTargetContent($expectedBValue, 'b.php');
+
+        $this->assertSourceContent('<%var%>', 'c.php');
         
-        $this->assertSame('var', $this->targetFs->read('d.php'));
-        $this->assertSame('<%var %>', $this->targetFs->read('e.php'));
-        $this->assertSame($expectedFValue, $this->targetFs->read('f.php'));
+        $this->assertTargetContent('var', 'd.php');
+        $this->assertTargetContent('<%var %>', 'e.php');
+        $this->assertTargetContent($expectedFValue, 'f.php');
+    }
+    
+    /**
+     * @dataProvider providerTestSimple
+     */
+    public function testSimpleWithoutTarget($environment, $expectedBValue, $expectedFValue)
+    {
+        $this->targetFs = $this->sourceFs;
+        $hydrator = new Hydrator($this->sourceFs, $this->sourceFs, $this->reader, new Finder($this->sourceFs), new NullProvider());
+        $hydrator->setSuffix('-dist');
+        
+        $this->write('a.php');
+        $this->write('b.php-dist', '<%var%>');
+        $this->write('c.php', '<%var%>');
+        $this->write('d.php-dist', 'var');
+        $this->write('d.php', 'oldvalue');
+        $this->write('e.php-dist', '<%var %>');
+        $this->write('f.php-dist', '<%db.user%>');
+        $this->write('f.php', 'old value');
+        $this->write('dir-dist/yolo.php', 'raw content');
+
+        $hydrator->hydrate($environment);
+
+        $this->assertTargetHas('a.php');
+        $this->assertTargetHas('b.php');
+        $this->assertTargetHas('c.php');
+        $this->assertTargetHas('d.php');
+        $this->assertTargetHas('e.php');
+        $this->assertTargetHas('f.php');
+
+        $this->assertTargetContent($expectedBValue, 'b.php');
+        $this->assertTargetContent('<%var%>', 'c.php');
+        $this->assertTargetContent('var', 'd.php');
+        $this->assertTargetContent('<%var %>', 'e.php');
+        $this->assertTargetContent($expectedFValue, 'f.php');
+    }
+
+    public function providerTestSimple()
+    {
+        return array(
+            array('dev', '42', 'root'),
+            array('preprod', '51', 'someUser'),
+        );
+    }
+    
+    private function assertTargetHas($filename, $message = null)
+    {
+        if(empty($message))
+        {
+            $message = "$filename should exist in target FS";
+        }
+        
+        $this->assertTrue($this->targetFs->has($filename), $message);
+    }
+
+    private function assertTargetHasNot($filename, $message = null)
+    {
+        if(empty($message))
+        {
+            $message = "$filename should NOT exist in target FS";
+        }
+        
+        $this->assertFalse($this->targetFs->has($filename), $message);
+    }
+    
+    private function assertTargetContent($expectedContent, $filename, $message = null)
+    {
+        $this->assertSame($expectedContent, $this->targetFs->read($filename), $message);
+    }
+    
+    private function assertSourceContent($expectedContent, $filename, $message = null)
+    {
+        $this->assertSame($expectedContent, $this->sourceFs->read($filename), $message);
+    }
+    
+    private function assertTargetNbFiles($expectedCount)
+    {
+        $this->assertCount($expectedCount, $this->targetFs->keys());
     }
 
     public function testTarget()
@@ -81,18 +161,11 @@ class HydratorTest extends \PHPUnit_Framework_TestCase
         $hydrator->allowNonDistFilesOverwrite();
         $hydrator->hydrate('dev');
 
-        $this->assertTrue($this->targetFs->has('a.php'));
-        $this->assertSame('test', $this->targetFs->read('a.php'));
-        $this->assertTrue($this->targetFs->has('b.php'));
-        $this->assertSame('test', $this->targetFs->read('b.php'));
-    }
+        $this->assertTargetHas('a.php');
+        $this->assertTargetContent('test', 'a.php');
 
-    public function providerTestSimple()
-    {
-        return array(
-            array('dev', '42', 'root'),
-            array('preprod', '51', 'someUser'),
-        );
+        $this->assertTargetHas('b.php');
+        $this->assertTargetContent('<%var%>', 'b.php');
     }
 
     public function testDryRun()
@@ -105,7 +178,7 @@ class HydratorTest extends \PHPUnit_Framework_TestCase
             ->setDryRun()
             ->hydrate('dev');
 
-        $this->assertFalse($this->targetFs->has('b.php'));
+        $this->assertTargetHasNot('b.php');
     }
 
     public function testGetUnusedVariables()
@@ -130,7 +203,9 @@ class HydratorTest extends \PHPUnit_Framework_TestCase
 
     public function testTrappedFilenames()
     {
-        $existingFiles = array('a.php', 'b.php-dist', 'c.php-dis', 'd.php-distt', 'e.php-dist.dist', 'f.dist', 'g-dist.php', 'h.php-dist-dist');
+        $existingFiles = array(
+            'a.php', 'b.php-dist', 'c.php-dis', 'd.php-distt', 'e.php-dist.dist', 'f.dist', 'g-dist.php', 'h.php-dist-dist'
+        );
 
         foreach($existingFiles as $file)
         {
@@ -143,22 +218,24 @@ class HydratorTest extends \PHPUnit_Framework_TestCase
         $allFiles = array_merge($existingFiles, $createdFiles);
 
         // check there is no extra generated file
-        $this->assertSame(count($createdFiles), count($this->targetFs->keys()));
+        $this->assertTargetNbFiles(count($createdFiles));
 
         foreach($createdFiles as $file)
         {
-            $this->assertTrue($this->targetFs->has($file), "File $file should be created");
+            $this->assertTargetHas($file, "File $file should be created");
         }
         
         foreach($existingFiles as $file)
         {
-            $this->assertFalse($this->targetFs->has($file), "File $file should'nt be overwritten");
+            $this->assertTargetHasNot($file, "File $file should'nt be overwritten");
         }
     }
     
     public function testTrappedFilenamesToTarget()
     {
-        $existingFiles = array('a.php', 'b.php-dist', 'c.php-dis', 'd.php-distt', 'e.php-dist.dist', 'f.dist', 'g-dist.php', 'h.php-dist-dist', 'dist-dir/z-dist');
+        $existingFiles = array(
+            'a.php', 'b.php-dist', 'c.php-dis', 'd.php-distt', 'e.php-dist.dist', 'f.dist', 'g-dist.php', 'h.php-dist-dist', 'dist-dir/z-dist'
+        );
     
         foreach($existingFiles as $file)
         {
@@ -169,14 +246,16 @@ class HydratorTest extends \PHPUnit_Framework_TestCase
             ->allowNonDistFilesOverwrite()
             ->hydrate('prod');
     
-        $expectedFiles = array('b.php', 'h.php-dist', 'a.php', 'c.php-dis', 'd.php-distt', 'e.php-dist.dist', 'f.dist', 'g-dist.php', 'z');
+        $expectedFiles = array(
+            'b.php', 'h.php-dist', 'a.php', 'c.php-dis', 'd.php-distt', 'e.php-dist.dist', 'f.dist', 'g-dist.php', 'z'
+        );
         
         // check there is no extra generated file
-        $this->assertSame(count($expectedFiles), count($this->targetFs->keys()));
+        $this->assertTargetNbFiles(count($expectedFiles));
 
         foreach($expectedFiles as $file)
         {
-            $this->assertTrue($this->targetFs->has($file), "File $file should be created");
+            $this->assertTargetHas($file, "File $file should be created");
         }
     }
     
@@ -213,13 +292,14 @@ class HydratorTest extends \PHPUnit_Framework_TestCase
 
         // check there is no extra generated file
         $expectedFiles = array('test.php', 'test2.php');
-        $this->assertSame(count($expectedFiles), count($this->targetFs->keys()));
+        $this->assertTargetNbFiles(count($expectedFiles));
 
         foreach($expectedFiles as $file)
         {
-            $this->assertTrue($this->targetFs->has($file), "File $file should be created");
+            $this->assertTargetHas($file, "File $file should be created");
         }
-        $this->assertSame('newValue', $this->targetFs->read('test.php'), "File test.php shoud have been updated");
+        
+        $this->assertTargetContent('newValue', 'test.php', "File test.php shoud have been updated");
     }
 
     private function write($name, $content = null)
@@ -238,25 +318,25 @@ class HydratorTest extends \PHPUnit_Framework_TestCase
             ->enableBackup()
             ->hydrate('dev');
 
-        $this->assertTrue($this->targetFs->has('a.php'));
-        $this->assertFalse($this->targetFs->has('a.php~'));
+        $this->assertTargetHas('a.php');
+        $this->assertTargetHasNot('a.php~');
 
-        $this->assertTrue($this->targetFs->has('b.php'));
-        $this->assertTrue($this->targetFs->has('b.php~'));
+        $this->assertTargetHas('b.php');
+        $this->assertTargetHas('b.php~');
 
-        $this->assertTrue($this->targetFs->has('c.php'));
-        $this->assertFalse($this->targetFs->has('c.php~'));
+        $this->assertTargetHas('c.php');
+        $this->assertTargetHasNot('c.php~');
 
-        $this->assertSame('42', $this->targetFs->read('b.php'));
-        $this->assertSame('oldValue', $this->targetFs->read('b.php~'));
+        $this->assertTargetContent('42', 'b.php');
+        $this->assertTargetContent('oldValue', 'b.php~');
 
         $this->hydrator->hydrate('dev');
 
-        $this->assertTrue($this->targetFs->has('a.php~'));
-        $this->assertTrue($this->targetFs->has('b.php~'));
-        $this->assertTrue($this->targetFs->has('c.php~'));
+        $this->assertTargetHas('a.php~');
+        $this->assertTargetHas('b.php~');
+        $this->assertTargetHas('c.php~');
 
-        $this->assertSame('42', $this->targetFs->read('b.php~'));
+        $this->assertTargetContent('42', 'b.php~');
     }
 
     public function testFormatter()
@@ -282,13 +362,13 @@ class HydratorTest extends \PHPUnit_Framework_TestCase
         $this->write('list-dist', "<%list%>\n<%karma:formatter=YeLl     %>   \n");
 
         $this->hydrator->hydrate('dev');
-        $this->assertSame('string_true', $this->targetFs->read('a'));
-        $this->assertSame('TRUE', $this->targetFs->read('b'));
-        $this->assertSame(implode("\n", array("str", 2, "TRUE", null)). "\n", $this->targetFs->read('list'));
+        $this->assertTargetContent('string_true', 'a');
+        $this->assertTargetContent('TRUE', 'b');
+        $this->assertTargetContent(implode("\n", array("str", 2, "TRUE", null)). "\n", 'list');
 
         $this->hydrator->hydrate('prod');
-        $this->assertSame('0', $this->targetFs->read('a'));
-        $this->assertSame('FALSE', $this->targetFs->read('b'));
+        $this->assertTargetContent('0', 'a');
+        $this->assertTargetContent('FALSE', 'b');
     }
 
     public function testFormatterByFileExtension()
@@ -330,11 +410,11 @@ class HydratorTest extends \PHPUnit_Framework_TestCase
         $this->write('e.yml-dist', "<% karma:formatter = int %>\n<%bool%>");
 
         $this->hydrator->hydrate('dev');
-        $this->assertSame('1', $this->targetFs->read('a.ini'));
-        $this->assertSame('TRUE', $this->targetFs->read('b.yml'));
-        $this->assertSame('string_true', $this->targetFs->read('c.txt'));
-        $this->assertSame('TRUE', $this->targetFs->read('d.cfg')); // default
-        $this->assertSame('1', $this->targetFs->read('e.yml'));
+        $this->assertTargetContent('1', 'a.ini');
+        $this->assertTargetContent('TRUE', 'b.yml');
+        $this->assertTargetContent('string_true', 'c.txt');
+        $this->assertTargetContent('TRUE', 'd.cfg'); // default
+        $this->assertTargetContent('1', 'e.yml');
     }
 
     /**
@@ -398,7 +478,7 @@ YAML
         );
 
         $this->hydrator->hydrate($env);
-        $this->assertSame($expected, $this->targetFs->read('a.yml'));
+        $this->assertTargetContent($expected, 'a.yml');
     }
 
     public function providerTestList()
@@ -461,8 +541,8 @@ list[]=69
 INI;
 
         $this->hydrator->hydrate('dev');
-        $this->assertSame($expectedPhp, $this->targetFs->read('a.php'));
-        $this->assertSame($expectedIni, $this->targetFs->read('b.ini'));
+        $this->assertTargetContent($expectedPhp, 'a.php');
+        $this->assertTargetContent($expectedIni, 'b.ini');
     }
 
     public function testListEdgeCases()
@@ -500,7 +580,7 @@ baz = 1001 1001 1001
 TXT;
 
         $this->hydrator->hydrate('dev');
-        $this->assertSame($expected, $this->targetFs->read('a.txt'));
+        $this->assertTargetContent($expected, 'a.txt');
     }
 
     /**
@@ -517,7 +597,7 @@ TXT;
         $this->write('a.txt-dist', $content);
 
         $this->hydrator->hydrate('dev');
-        $this->assertSame($expected, $this->targetFs->read('a.txt'));
+        $this->assertTargetContent($expected, 'a.txt');
     }
 
     public function providerTestListEndOfLine()
@@ -548,7 +628,7 @@ TXT;
         $this->write('a-dist', $content);
 
         $this->hydrator->hydrate($env);
-        $this->assertSame($expected, $this->targetFs->read('a'));
+        $this->assertTargetContent($expected, 'a');
     }
 
     public function providerTestListDirective()
@@ -740,11 +820,11 @@ FILE
         );
 
         $this->hydrator->hydrate('dev');
-        $this->assertSame( <<< FILE
+        $this->assertTargetContent( <<< FILE
 42@51@69@"someString"
 "a"_"b"_"c"
 FILE
-        , $this->targetFs->read('a'));
+        , 'a');
     }
 
     public function testDashesInVariableNameAreAllowed()
@@ -756,10 +836,10 @@ FILE
 
         $this->hydrator = new Hydrator($this->sourceFs, $this->targetFs, $reader, new Finder($this->sourceFs));
 
-        $this->sourceFs->write('a-dist', '<%var-with-dashes%> = <%dash-dash-dash%>');
+        $this->write('a-dist', '<%var-with-dashes%> = <%dash-dash-dash%>');
 
         $this->hydrator->hydrate('dev');
-        $this->assertSame('poney = licorne', $this->targetFs->read('a'));
+        $this->assertTargetContent('poney = licorne', 'a');
     }
 
     /**
@@ -779,17 +859,17 @@ FILE
         ));
 
         $this->hydrator = new Hydrator($this->sourceFs, $this->targetFs, $reader, new Finder($this->sourceFs));
-        $this->sourceFs->write('a-dist', '<%poney%> = <%licorne%>');
-        $this->sourceFs->write('list-dist', "<%dsn%>\n<%env%>");
-        $this->sourceFs->write('directive-dist', '<% karma:list var=dsn delimiter="" %> = <% karma:list var=env delimiter="" %>');
+        $this->write('a-dist', '<%poney%> = <%licorne%>');
+        $this->write('list-dist', "<%dsn%>\n<%env%>");
+        $this->write('directive-dist', '<% karma:list var=dsn delimiter="" %> = <% karma:list var=env delimiter="" %>');
 
         $this->hydrator
             ->setSystemEnvironment($systemEnv)
             ->hydrate($env);
 
-        $this->assertSame($expectedA, $this->targetFs->read('a'));
-        $this->assertSame($expectedList, $this->targetFs->read('list'));
-        $this->assertSame($expectedDirective, $this->targetFs->read('directive'));
+        $this->assertTargetContent($expectedA, 'a');
+        $this->assertTargetContent($expectedList, 'list');
+        $this->assertTargetContent($expectedDirective, 'directive');
     }
 
     public function providerTestHydrateWithADifferentSystemEnvironment()
