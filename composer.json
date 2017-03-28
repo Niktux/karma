@@ -16,11 +16,11 @@
         "MIT"
     ],
     "require" : {
-        "symfony/console" : "~2.4",
-        "pimple/pimple" : "~1.1",
+        "symfony/console" : "~3.2",
+        "pimple/pimple" : "~3.0",
         "php" : ">=5.4",
-        "symfony/yaml" : "~2.4",
-        "knplabs/gaufrette" : "~0.1",
+        "symfony/yaml" : "~3.2",
+        "knplabs/gaufrette" : "~0.2",
         "cpliakas/git-wrapper" : "~1.2",
         "psr/log" : "~1"
     },

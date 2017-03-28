@@ -16,8 +16,9 @@ use Karma\Generator\VariableProvider;
 use Karma\Generator\ConfigurationFileGenerators\YamlGenerator;
 use Karma\Filesystem\Adapters\MultipleAdapter;
 use Karma\Filesystem\Adapters\SingleLocalFile;
+use Pimple\Container;
 
-class Application extends \Pimple
+class Application extends Container
 {
     const
         VERSION = '5.5.3',
@@ -58,15 +59,15 @@ class Application extends \Pimple
 
     private function initializeConfiguration()
     {
-        $this['configuration.fileSystem.adapter'] = function($c) {
+        $this['configuration.fileSystem.adapter'] = $this->factory(function($c) {
             return new Local($c['configuration.path']);
-        };
+        });
 
-        $this['configuration.fileSystem'] = function($c) {
+        $this['configuration.fileSystem'] = $this->factory(function($c) {
             return new Filesystem($c['configuration.fileSystem.adapter']);
-        };
+        });
 
-        $this['parser'] = $this->share(function($c) {
+        $this['parser'] = function($c) {
             $parser = new Parser($c['configuration.fileSystem']);
 
             $parser->enableIncludeSupport()
@@ -76,9 +77,9 @@ class Application extends \Pimple
                 ->parse($c['configuration.masterFile']);
 
             return $parser;
-        });
+        };
 
-        $this['configuration'] = $this->share(function($c) {
+        $this['configuration'] = function($c) {
             $parser = $c['parser'];
 
             return new Reader(
@@ -87,27 +88,27 @@ class Application extends \Pimple
                 $parser->getGroups(),
                 $parser->getDefaultEnvironmentsForGroups()
             );
-        });
+        };
     }
 
     private function initializeProfile()
     {
-        $this['profile.fileSystem.adapter'] = function($c) {
+        $this['profile.fileSystem.adapter'] = $this->factory(function($c) {
             return new Local(getcwd());
-        };
-
-        $this['profile.fileSystem'] = function($c) {
-            return new Filesystem($c['profile.fileSystem.adapter']);
-        };
-
-        $this['profile'] = $this->share(function($c) {
-            return new ProfileReader($c['profile.fileSystem']);
         });
+
+        $this['profile.fileSystem'] = $this->factory(function($c) {
+            return new Filesystem($c['profile.fileSystem.adapter']);
+        });
+
+        $this['profile'] = function($c) {
+            return new ProfileReader($c['profile.fileSystem']);
+        };
     }
 
     private function initializeSourceFileSystem()
     {
-        $this['sources.fileSystem.adapter'] = function($c) {
+        $this['sources.fileSystem.adapter'] = $this->factory(function($c) {
 
             $paths = $c['sources.path'];
 
@@ -133,9 +134,9 @@ class Application extends \Pimple
             }
 
             return $adapter;
-        };
+        });
 
-        $this['target.fileSystem.adapter'] = function($c) {
+            $this['target.fileSystem.adapter'] = $this->factory(function($c) {
 
             if(! empty($c['target.path']))
             {
@@ -145,21 +146,21 @@ class Application extends \Pimple
             }
 
             return $this['sources.fileSystem.adapter'];
-        };
+        });
 
-        $this['target.fileSystem'] = function($c) {
+        $this['target.fileSystem'] = $this->factory(function($c) {
             return new Filesystem($c['target.fileSystem.adapter']);
-        };
+        });
 
-        $this['sources.fileSystem'] = function($c) {
+        $this['sources.fileSystem'] = $this->factory(function($c) {
             return new Filesystem($c['sources.fileSystem.adapter']);
-        };
+        });
 
-        $this['sources.fileSystem.finder'] = function($c) {
+        $this['sources.fileSystem.finder'] = $this->factory(function($c) {
             return $c['sources.fileSystem'];
-        };
+        });
 
-        $this['sources.fileSystem.cached'] = function($c) {
+        $this['sources.fileSystem.cached'] = $this->factory(function($c) {
             $cache = $c['finder.cache.adapter'];
             $adapter = new Cache(
                 $c['sources.fileSystem.adapter'],
@@ -169,7 +170,7 @@ class Application extends \Pimple
             );
 
             return new Filesystem($adapter);
-        };
+        });
     }
 
     private function initializeFinder()
@@ -177,37 +178,37 @@ class Application extends \Pimple
         $this['finder.cache.path'] = self::FINDER_CACHE_DIRECTORY;
         $this['finder.cache.duration'] = self::FINDER_CACHE_DURATION;
 
-        $this['finder'] = function($c) {
+        $this['finder'] = $this->factory(function($c) {
             return new Finder($this['sources.fileSystem.finder']);
-        };
+        });
 
-        $this['finder.cache.adapter'] = function($c) {
+        $this['finder.cache.adapter'] = $this->factory(function($c) {
             return new Local($c['finder.cache.path'], true);
-        };
+        });
     }
 
     private function initializeVcs()
     {
         $this['rootPath'] = getcwd();
 
-        $this['vcs.fileSystem.adapter'] = function($c) {
+        $this['vcs.fileSystem.adapter'] = $this->factory(function($c) {
             return new Local($c['rootPath']);
-        };
+        });
 
-        $this['vcs.fileSystem'] = function($c) {
+        $this['vcs.fileSystem'] = $this->factory(function($c) {
             return new Filesystem($c['vcs.fileSystem.adapter']);
-        };
+        });
 
-        $this['git.command'] = function($c) {
+        $this['git.command'] = $this->factory(function($c) {
             return new GitWrapperAdapter();
-        };
+        });
 
         $git = function($c) {
             return new Git($this['vcs.fileSystem'], $this['rootPath'], $this['git.command']);
         };
 
-        $this['git'] = $git;
-        $this['vcs'] = $git;
+        $this['git'] = $this->factory($git);
+        $this['vcs'] = $this->factory($git);
 
         $this['vcsHandler'] = $this->protect(function (Vcs $vcs) {
             $handler = new VcsHandler($vcs, $this['finder']);
@@ -221,15 +222,15 @@ class Application extends \Pimple
 
     private function initializeServices()
     {
-        $this['logger'] = $this->share(function($c) {
+        $this['logger'] = $this->factory(function($c) {
             return new \Psr\Log\NullLogger();
         });
 
-        $this['formatter.provider'] = $this->share(function ($c) {
+        $this['formatter.provider'] = function ($c) {
             return new ProfileProvider($c['profile']);
-        });
+        };
 
-        $this['hydrator'] = function($c) {
+        $this['hydrator'] = $this->factory(function($c) {
             $hydrator = new Hydrator($c['sources.fileSystem'], $c['target.fileSystem'], $c['configuration'], $c['finder'], $c['formatter.provider']);
             $hydrator->allowNonDistFilesOverwrite($c['hydrator.allowNonDistFilesOverwrite']);
 
@@ -237,16 +238,16 @@ class Application extends \Pimple
                 ->setSuffix($c['distFiles.suffix']);
 
             return $hydrator;
-        };
+        });
 
-        $this['generator.nameTranslator'] = $this->share(function ($c) {
+        $this['generator.nameTranslator'] = function ($c) {
             $translator = new FilePrefixTranslator();
             $translator->changeMasterFile($c['configuration.masterFile']);
 
             return $translator;
-        });
+        };
 
-        $this['generator.variableProvider'] = function ($c) {
+        $this['generator.variableProvider'] = $this->factory(function ($c) {
             $provider = new VariableProvider($c['parser'], $c['configuration.masterFile']);
 
             $profile = $c['profile'];
@@ -257,10 +258,10 @@ class Application extends \Pimple
             }
 
             return $provider;
-        };
-
-        $this['configurationFilesGenerator'] = $this->share(function ($c) {
-            return new YamlGenerator($c['sources.fileSystem'], $c['configuration'], $c['generator.variableProvider']);
         });
+
+        $this['configurationFilesGenerator'] = function ($c) {
+            return new YamlGenerator($c['sources.fileSystem'], $c['configuration'], $c['generator.variableProvider']);
+        };
     }
 }
