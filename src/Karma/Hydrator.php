@@ -111,6 +111,11 @@ class Hydrator implements ConfigurableProcessor
             $this->hydrateFile($file, $environment);
         }
 
+        if($this->nonDistFilesOverwriteAllowed === true)
+        {
+            $this->copyNonDistFiles();
+        }
+
         $this->info(sprintf(
            '%d files generated',
             count($files)
@@ -120,13 +125,27 @@ class Hydrator implements ConfigurableProcessor
     private function collectFiles()
     {
         $pattern = sprintf('.*%s$', preg_quote($this->suffix));
-        if($this->nonDistFilesOverwriteAllowed === true)
-        {
-            $pattern = '.*';
-        }
         
         return $this->finder->findFiles(sprintf('~%s~', $pattern));
     }
+    
+    private function copyNonDistFiles()
+    {
+        $filesToCopy = $this->collectNonDistFiles();
+
+        foreach($filesToCopy as $file)
+        {
+            $this->target->write($file, $this->sources->read($file));
+        }
+    }
+    
+    private function collectNonDistFiles()
+    {
+        $pattern = sprintf('(?<!%s)$', preg_quote($this->suffix));
+        
+        return $this->finder->findFiles(sprintf('~%s~', $pattern));
+    }
+    
 
     private function hydrateFile($file, $environment)
     {
