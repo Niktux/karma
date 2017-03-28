@@ -364,7 +364,7 @@ class Hydrator implements ConfigurableProcessor
             $lines = explode($eol, $content);
             $result = array();
 
-            foreach($lines as $line)
+            foreach($lines as $lineNumber => $line)
             {
                 if(preg_match(self::VARIABLE_REGEX, $line, $matches))
                 {
@@ -376,7 +376,7 @@ class Hydrator implements ConfigurableProcessor
                             "Nested variable detected [%s] while writing %s at line %d",
                             $matches['variableName'],
                             $this->currentTargetFile,
-                            $line
+                            $lineNumber
                         ));
                     }
                     
