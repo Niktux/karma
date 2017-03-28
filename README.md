@@ -19,7 +19,7 @@ Installation
 ------------
 Download latest phar:
 ```
-  wget https://github.com/Niktux/karma/releases/download/5.5.2/karma.phar
+  wget https://github.com/Niktux/karma/releases/download/5.5.3/karma.phar
 ```
 
 Or use composer (but you could experiment illegitimate dependencies conflict with your project) :
