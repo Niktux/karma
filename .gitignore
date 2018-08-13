@@ -1,7 +1,8 @@
-# Eclipse files
+# IDE files
 .settings/
 .buildpath
 .project
+.idea/
 
 # Composer files
 vendor/
@@ -13,6 +14,10 @@ php_errors.log
 
 # Code coverage report
 report/
+
+# Generated file
+docker/images/phpunit/Dockerfile
+docker/images/phpunit/php.ini
 
 # Test data
 env/
@@ -29,3 +34,4 @@ cache/
 php-composer.phar
 box.phar
 karma.phar
+whalephant

@@ -5,10 +5,11 @@ namespace Karma\Configuration;
 use Gaufrette\Filesystem;
 use Gaufrette\Adapter\InMemory;
 use Karma\Logging\OutputInterfaceAdapter;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 
-abstract class ParserTestCase extends \PHPUnit_Framework_TestCase
+abstract class ParserTestCase extends TestCase
 {
     const
         MASTERFILE_PATH = 'master.conf';

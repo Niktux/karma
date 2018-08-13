@@ -2,10 +2,11 @@
 
 namespace Karma\Logging;
 
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class OutputAwareTest extends \PHPUnit_Framework_TestCase
+class OutputAwareTest extends TestCase
 {
     use \Xpmock\TestCaseTrait;
 

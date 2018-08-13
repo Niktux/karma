@@ -4,8 +4,9 @@ namespace Karma;
 
 use Gaufrette\Filesystem;
 use Gaufrette\Adapter\InMemory;
+use PHPUnit\Framework\TestCase;
 
-class ProfileReaderTest extends \PHPUnit_Framework_TestCase
+class ProfileReaderTest extends TestCase
 {
     private function buildReader($profileContent = null, $filename = Application::PROFILE_FILENAME)
     {

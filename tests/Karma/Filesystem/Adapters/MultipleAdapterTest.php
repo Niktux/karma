@@ -4,8 +4,9 @@ namespace Karma\Filesystem\Adapters;
 
 use Gaufrette\Adapter;
 use Gaufrette\Adapter\InMemory;
+use PHPUnit\Framework\TestCase;
 
-class MultipleAdapterTest extends \PHPUnit_Framework_TestCase
+class MultipleAdapterTest extends TestCase
 {
     private
         $multiple,

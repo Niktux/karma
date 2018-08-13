@@ -10,8 +10,9 @@ use Karma\Configuration\Parser;
 use Karma\Generator\VariableProvider;
 use Karma\Generator\NameTranslators\FilePrefixTranslator;
 use Karma\Generator\NameTranslators\NullTranslator;
+use PHPUnit\Framework\TestCase;
 
-class YamlGeneratorTest extends \PHPUnit_Framework_TestCase
+class YamlGeneratorTest extends TestCase
 {
     private
         $fs,

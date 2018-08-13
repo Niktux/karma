@@ -4,8 +4,9 @@ namespace Karma\VCS;
 
 use Gaufrette\Filesystem;
 use Gaufrette\Adapter\InMemory;
+use PHPUnit\Framework\TestCase;
 
-class GitTest extends \PHPUnit_Framework_TestCase
+class GitTest extends TestCase
 {
     use \Xpmock\TestCaseTrait;
 

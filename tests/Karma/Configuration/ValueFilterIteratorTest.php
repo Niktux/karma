@@ -2,7 +2,9 @@
 
 namespace Karma\Configuration;
 
-class ValueFilterIteratorTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class ValueFilterIteratorTest extends TestCase
 {
     private
         $values;

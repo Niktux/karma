@@ -2,7 +2,9 @@
 
 namespace Karma\Generator\NameTranslators;
 
-class NullTranslatorTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class NullTranslatorTest extends TestCase
 {
     /**
      * @dataProvider providerTestTranslate

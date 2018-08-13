@@ -3,8 +3,9 @@
 namespace Karma;
 
 use Gaufrette\Adapter\InMemory;
+use PHPUnit\Framework\TestCase;
 
-class ApplicationTest extends \PHPUnit_Framework_TestCase
+class ApplicationTest extends TestCase
 {
     /**
      * @dataProvider providerTestContainer

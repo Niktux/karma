@@ -6,8 +6,9 @@ use Karma\ProfileReader;
 use Gaufrette\Filesystem;
 use Gaufrette\Adapter\InMemory;
 use Karma\Application;
+use PHPUnit\Framework\TestCase;
 
-class ProfileProviderTest extends \PHPUnit_Framework_TestCase
+class ProfileProviderTest extends TestCase
 {
     private function buildProvider($profileContent = null, $filename = Application::PROFILE_FILENAME)
     {

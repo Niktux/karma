@@ -8,8 +8,9 @@ use Gaufrette\Adapter\InMemory;
 use Karma\Application;
 use Karma\Generator\NameTranslators\NullTranslator;
 use Karma\Generator\NameTranslators\FilePrefixTranslator;
+use PHPUnit\Framework\TestCase;
 
-class VariableProviderTest extends \PHPUnit_Framework_TestCase
+class VariableProviderTest extends TestCase
 {
     private
         $provider;

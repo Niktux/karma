@@ -122,7 +122,10 @@ class CliTable
 
         foreach($this->rows as $row)
         {
-            $this->nbColumns = max($this->nbColumns, count($row));
+            if(is_array($row) ||$row instanceof \Countable)
+            {
+                $this->nbColumns = max($this->nbColumns, count($row));
+            }
         }
 
         $this->nbColumns = max($this->nbColumns, count($this->headers));

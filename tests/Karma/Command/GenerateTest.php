@@ -5,8 +5,8 @@ namespace Karma\Command;
 require_once __DIR__ . '/CommandTestCase.php';
 
 use Gaufrette\Adapter\InMemory;
-use Gaufrette\Filesystem;
 use Karma\Application;
+use Karma\Generator\ConfigurationFileGenerators\YamlGenerator;
 
 class GenerateTest extends CommandTestCase
 {
@@ -31,11 +31,7 @@ class GenerateTest extends CommandTestCase
      */
     public function testOptions($option, $expectedMethodCall)
     {
-        $mock = $this->getMock(
-            'Karma\Generator\ConfigurationFileGenerators\YamlGenerator',
-            array(),
-            array($this->app['sources.fileSystem'], $this->app['configuration'], $this->app['generator.variableProvider'])
-        );
+        $mock = $this->createMock(YamlGenerator::class);
 
         $mock->expects($this->once())
             ->method($expectedMethodCall);

@@ -7,8 +7,9 @@ require_once __DIR__ . '/CommandTestCase.php';
 use Gaufrette\Adapter\InMemory;
 use Gaufrette\Filesystem;
 use Karma\Application;
+use Karma\Hydrator;
 
-class RollbackCommandTest extends CommandTestCase
+class RollbackTest extends CommandTestCase
 {
     protected function setUp()
     {
@@ -24,11 +25,8 @@ class RollbackCommandTest extends CommandTestCase
      */
     public function testOptions($option, $expectedMethodCall)
     {
-        $mock = $this->getMock(
-            'Karma\Hydrator',
-            array(),
-            array($this->app['sources.fileSystem'], $this->app['target.fileSystem'], $this->app['configuration'], $this->app['finder'])
-        );
+        $mock = $this->createMock(Hydrator::class);
+
         $mock->expects($this->once())
             ->method($expectedMethodCall);
 

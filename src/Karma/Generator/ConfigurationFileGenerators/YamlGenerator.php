@@ -21,7 +21,6 @@ class YamlGenerator extends AbstractFileGenerator implements ConfigurationFileGe
         $this->files = array();
     }
 
-
     protected function generateVariable($variableName, $value)
     {
         if(stripos($variableName, self::DELIMITER) === false)

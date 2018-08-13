@@ -12,7 +12,7 @@
     "finder": [
         {
             "name": "*.*",
-            "exclude": ["Tests"],
+            "exclude": ["Tests", "docker", "makefiles"],
             "in": "vendor"
         }
     ],

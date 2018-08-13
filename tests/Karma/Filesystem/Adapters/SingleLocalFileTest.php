@@ -3,8 +3,9 @@
 namespace Karma\Filesystem\Adapters;
 
 use Gaufrette\Adapter\InMemory;
+use PHPUnit\Framework\TestCase;
 
-class SingleLocalFileTest extends \PHPUnit_Framework_TestCase
+class SingleLocalFileTest extends TestCase
 {
     const
         FILENAME = 'toto.yml-dist',

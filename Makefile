@@ -1,16 +1,38 @@
-BOX_VERSION=2.7.4
+###############################################################################
+# ONYX Main Makefile
+###############################################################################
 
-test-phar: prepare-env phar restore-env
+HOST_SOURCE_PATH=$(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 
-prepare-env:
-	php composer.phar install --no-dev
-	
-restore-env:
-	php composer.phar install
+USER_ID=$(shell id -u)
+GROUP_ID=$(shell id -g)
 
-phar: box.phar
-	php -d phar.readonly=off box.phar build
+export USER_ID
+export GROUP_ID
 
-box.phar:
-	wget -q https://github.com/box-project/box2/releases/download/2.7.4/box-${BOX_VERSION}.phar
-	mv box-${BOX_VERSION}.phar box.phar
+#------------------------------------------------------------------------------
+
+include makefiles/executables.mk
+include makefiles/composer.mk
+include makefiles/phar.mk
+include makefiles/phpunit.mk
+include makefiles/whalephant.mk
+
+#------------------------------------------------------------------------------
+
+.DEFAULT_GOAL := help
+
+help:
+	@echo "========================================"
+	@echo "Karma Makefile"
+	@echo "========================================"
+	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "\033[36m%-15s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
+	@echo "========================================"
+
+#------------------------------------------------------------------------------
+
+clean: clean-composer clean-phar clean-phpunit clean-whalephant ##Clean dev environment
+
+#------------------------------------------------------------------------------
+
+.PHONY: help clean

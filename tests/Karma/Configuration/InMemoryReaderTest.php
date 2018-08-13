@@ -4,8 +4,9 @@ namespace Karma\Configuration;
 
 use Karma\Configuration\InMemoryReader;
 use Karma\Configuration;
+use PHPUnit\Framework\TestCase;
 
-class InMemoryReaderTest extends \PHPUnit_Framework_TestCase
+class InMemoryReaderTest extends TestCase
 {
     private
         $reader;

@@ -4,8 +4,9 @@ namespace Karma;
 
 use Gaufrette\Filesystem;
 use Gaufrette\Adapter\InMemory;
+use PHPUnit\Framework\TestCase;
 
-class VcsHandlerTest extends \PHPUnit_Framework_TestCase
+class VcsHandlerTest extends TestCase
 {
     private
         $fs,

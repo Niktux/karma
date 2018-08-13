@@ -2,7 +2,9 @@
 
 namespace Karma\Formatters;
 
-class RulesTests extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class RulesTests extends TestCase
 {
     private
         $formatter;

@@ -8,8 +8,9 @@ use Karma\Configuration\InMemoryReader;
 use Karma\FormatterProviders\NullProvider;
 use Karma\FormatterProviders\CallbackProvider;
 use Karma\Formatters\Rules;
+use PHPUnit\Framework\TestCase;
 
-class HydratorTest extends \PHPUnit_Framework_TestCase
+class HydratorTest extends TestCase
 {
     private
         $sourceFs,

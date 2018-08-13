@@ -5,8 +5,9 @@ namespace Karma;
 use Gaufrette\Filesystem;
 use Gaufrette\Adapter\InMemory;
 use Karma\Configuration\Reader;
+use PHPUnit\Framework\TestCase;
 
-class RollbackTest extends \PHPUnit_Framework_TestCase
+class RollbackTest extends TestCase
 {
     private
         $sourceFs,
