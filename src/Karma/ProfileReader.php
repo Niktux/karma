@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Karma;
 
 use Gaufrette\Filesystem;
@@ -126,7 +128,7 @@ class ProfileReader implements FormattersDefinition
         return $this->get(self::TARGET_PATH_INDEX);
     }
 
-    public function getDefaultFormatterName()
+    public function getDefaultFormatterName(): ?string
     {
         return $this->getString(self::DEFAULT_FORMATTER_INDEX);
     }
@@ -146,17 +148,17 @@ class ProfileReader implements FormattersDefinition
         return $this->get(self::GENERATOR_INDEX);
     }
 
-    private function has($attributeName)
+    private function has(string $attributeName): bool
     {
         return isset($this->attributes[$attributeName]);
     }
 
-    private function hasString($attributeName)
+    private function hasString(string $attributeName): bool
     {
         return isset($this->attributes[$attributeName]) && is_string($this->attributes[$attributeName]);
     }
 
-    private function get($attributeName)
+    private function get(string $attributeName)
     {
         $value = null;
 
@@ -168,7 +170,7 @@ class ProfileReader implements FormattersDefinition
         return $value;
     }
 
-    private function getString($attributeName)
+    private function getString(string $attributeName): ?string
     {
         $value = null;
 

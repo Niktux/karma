@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Karma;
 
 use Karma\Configuration\Reader;
@@ -7,9 +9,6 @@ use Karma\Configuration\Parser;
 use Gaufrette\Filesystem;
 use Gaufrette\Adapter\Local;
 use Gaufrette\Adapter\Cache;
-use Karma\VCS\Vcs;
-use Karma\VCS\Git;
-use Karma\VCS\Git\GitWrapperAdapter;
 use Karma\FormatterProviders\ProfileProvider;
 use Karma\Generator\NameTranslators\FilePrefixTranslator;
 use Karma\Generator\VariableProvider;
@@ -21,7 +20,7 @@ use Pimple\Container;
 class Application extends Container
 {
     const
-        VERSION = '5.6.0',
+        VERSION = '7.0.0',
         DEFAULT_DISTFILE_SUFFIX = '-dist',
         DEFAULT_CONF_DIRECTORY = 'env',
         DEFAULT_MASTER_FILE = 'master.conf',
@@ -40,12 +39,11 @@ class Application extends Container
         $this->initializeProfile();
         $this->initializeFinder();
         $this->initializeSourceFileSystem();
-        $this->initializeVcs();
 
         $this->initializeServices();
     }
 
-    private function initializeParameters()
+    private function initializeParameters(): void
     {
         $this['configuration.path'] = 'conf';
         $this['configuration.masterFile'] = 'master.conf';
@@ -57,17 +55,17 @@ class Application extends Container
         $this['distFiles.suffix'] = '-dist';
     }
 
-    private function initializeConfiguration()
+    private function initializeConfiguration(): void
     {
-        $this['configuration.fileSystem.adapter'] = $this->factory(function($c) {
+        $this['configuration.fileSystem.adapter'] = $this->factory(function(Container $c) {
             return new Local($c['configuration.path']);
         });
 
-        $this['configuration.fileSystem'] = $this->factory(function($c) {
+        $this['configuration.fileSystem'] = $this->factory(function(Container $c) {
             return new Filesystem($c['configuration.fileSystem.adapter']);
         });
 
-        $this['parser'] = function($c) {
+        $this['parser'] = function(Container $c) {
             $parser = new Parser($c['configuration.fileSystem']);
 
             $parser->enableIncludeSupport()
@@ -79,7 +77,7 @@ class Application extends Container
             return $parser;
         };
 
-        $this['configuration'] = function($c) {
+        $this['configuration'] = function(Container $c) {
             $parser = $c['parser'];
 
             return new Reader(
@@ -91,24 +89,24 @@ class Application extends Container
         };
     }
 
-    private function initializeProfile()
+    private function initializeProfile(): void
     {
-        $this['profile.fileSystem.adapter'] = $this->factory(function($c) {
+        $this['profile.fileSystem.adapter'] = $this->factory(function(Container $c) {
             return new Local(getcwd());
         });
 
-        $this['profile.fileSystem'] = $this->factory(function($c) {
+        $this['profile.fileSystem'] = $this->factory(function(Container $c) {
             return new Filesystem($c['profile.fileSystem.adapter']);
         });
 
-        $this['profile'] = function($c) {
+        $this['profile'] = function(Container $c) {
             return new ProfileReader($c['profile.fileSystem']);
         };
     }
 
-    private function initializeSourceFileSystem()
+    private function initializeSourceFileSystem(): void
     {
-        $this['sources.fileSystem.adapter'] = $this->factory(function($c) {
+        $this['sources.fileSystem.adapter'] = $this->factory(function(Container $c) {
 
             $paths = $c['sources.path'];
 
@@ -136,7 +134,7 @@ class Application extends Container
             return $adapter;
         });
 
-            $this['target.fileSystem.adapter'] = $this->factory(function($c) {
+        $this['target.fileSystem.adapter'] = $this->factory(function(Container $c) {
 
             if(! empty($c['target.path']))
             {
@@ -148,19 +146,19 @@ class Application extends Container
             return $this['sources.fileSystem.adapter'];
         });
 
-        $this['target.fileSystem'] = $this->factory(function($c) {
+        $this['target.fileSystem'] = $this->factory(function(Container $c) {
             return new Filesystem($c['target.fileSystem.adapter']);
         });
 
-        $this['sources.fileSystem'] = $this->factory(function($c) {
+        $this['sources.fileSystem'] = $this->factory(function(Container $c) {
             return new Filesystem($c['sources.fileSystem.adapter']);
         });
 
-        $this['sources.fileSystem.finder'] = $this->factory(function($c) {
+        $this['sources.fileSystem.finder'] = $this->factory(function(Container $c) {
             return $c['sources.fileSystem'];
         });
 
-        $this['sources.fileSystem.cached'] = $this->factory(function($c) {
+        $this['sources.fileSystem.cached'] = $this->factory(function(Container $c) {
             $cache = $c['finder.cache.adapter'];
             $adapter = new Cache(
                 $c['sources.fileSystem.adapter'],
@@ -173,64 +171,31 @@ class Application extends Container
         });
     }
 
-    private function initializeFinder()
+    private function initializeFinder(): void
     {
         $this['finder.cache.path'] = self::FINDER_CACHE_DIRECTORY;
         $this['finder.cache.duration'] = self::FINDER_CACHE_DURATION;
 
-        $this['finder'] = $this->factory(function($c) {
+        $this['finder'] = $this->factory(function(Container $c) {
             return new Finder($this['sources.fileSystem.finder']);
         });
 
-        $this['finder.cache.adapter'] = $this->factory(function($c) {
+        $this['finder.cache.adapter'] = $this->factory(function(Container $c) {
             return new Local($c['finder.cache.path'], true);
         });
     }
 
-    private function initializeVcs()
+    private function initializeServices(): void
     {
-        $this['rootPath'] = getcwd();
-
-        $this['vcs.fileSystem.adapter'] = $this->factory(function($c) {
-            return new Local($c['rootPath']);
-        });
-
-        $this['vcs.fileSystem'] = $this->factory(function($c) {
-            return new Filesystem($c['vcs.fileSystem.adapter']);
-        });
-
-        $this['git.command'] = $this->factory(function($c) {
-            return new GitWrapperAdapter();
-        });
-
-        $git = function($c) {
-            return new Git($this['vcs.fileSystem'], $this['rootPath'], $this['git.command']);
-        };
-
-        $this['git'] = $this->factory($git);
-        $this['vcs'] = $this->factory($git);
-
-        $this['vcsHandler'] = $this->protect(function (Vcs $vcs) {
-            $handler = new VcsHandler($vcs, $this['finder']);
-
-            $handler->setLogger($this['logger'])
-                ->setSuffix($this['distFiles.suffix']);
-
-            return $handler;
-        });
-    }
-
-    private function initializeServices()
-    {
-        $this['logger'] = $this->factory(function($c) {
+        $this['logger'] = $this->factory(function(Container $c) {
             return new \Psr\Log\NullLogger();
         });
 
-        $this['formatter.provider'] = function ($c) {
+        $this['formatter.provider'] = function (Container $c) {
             return new ProfileProvider($c['profile']);
         };
 
-        $this['hydrator'] = $this->factory(function($c) {
+        $this['hydrator'] = $this->factory(function(Container $c) {
             $hydrator = new Hydrator($c['sources.fileSystem'], $c['target.fileSystem'], $c['configuration'], $c['finder'], $c['formatter.provider']);
             $hydrator->allowNonDistFilesOverwrite($c['hydrator.allowNonDistFilesOverwrite']);
 
@@ -240,15 +205,15 @@ class Application extends Container
             return $hydrator;
         });
 
-        $this['generator.nameTranslator'] = function ($c) {
+        $this['generator.nameTranslator'] = function (Container $c) {
             $translator = new FilePrefixTranslator();
             $translator->changeMasterFile($c['configuration.masterFile']);
 
             return $translator;
         };
 
-        $this['generator.variableProvider'] = $this->factory(function ($c) {
-            $provider = new VariableProvider($c['parser'], $c['configuration.masterFile']);
+        $this['generator.variableProvider'] = $this->factory(function (Container $c) {
+            $provider = new VariableProvider($c['parser']);
 
             $profile = $c['profile'];
             $options = $profile->getGeneratorOptions();
@@ -260,7 +225,7 @@ class Application extends Container
             return $provider;
         });
 
-        $this['configurationFilesGenerator'] = function ($c) {
+        $this['configurationFilesGenerator'] = function (Container $c) {
             return new YamlGenerator($c['sources.fileSystem'], $c['configuration'], $c['generator.variableProvider']);
         };
     }

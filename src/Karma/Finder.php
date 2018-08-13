@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Karma;
 
 use Gaufrette\Filesystem;
@@ -15,7 +17,7 @@ class Finder
         $this->fs = $fs;
     }
 
-    public function findFiles($regex)
+    public function findFiles($regex): iterable
     {
         return new FileFilterIterator(
             new \ArrayIterator($this->fs->keys()),

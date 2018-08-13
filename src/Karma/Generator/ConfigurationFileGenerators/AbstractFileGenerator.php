@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Karma\Generator\ConfigurationFileGenerators;
 
+use Karma\ConfigurableProcessor;
 use Karma\Generator\ConfigurationFileGenerator;
 use Gaufrette\Filesystem;
 use Karma\Configuration;
@@ -41,7 +44,7 @@ abstract class AbstractFileGenerator implements ConfigurationFileGenerator
         return $this;
     }
 
-    public function generate($environment)
+    public function generate(string $environment): void
     {
         $this->preGenerate();
 
@@ -66,7 +69,7 @@ abstract class AbstractFileGenerator implements ConfigurationFileGenerator
         return $this->reader->read($variable, $environment);
     }
 
-    public function setSystemEnvironment($environment)
+    public function setSystemEnvironment(string $environment): ConfigurableProcessor
     {
         $this->systemEnvironment = $environment;
 

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Karma\Generator\ConfigurationFileGenerators;
 
 use Karma\Generator\ConfigurationFileGenerator;

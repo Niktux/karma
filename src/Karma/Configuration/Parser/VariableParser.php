@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Karma\Configuration\Parser;
 
 use Karma\Configuration;
@@ -136,7 +138,7 @@ class VariableParser extends AbstractSectionParser
         $this->valueFound = true;
     }
 
-    public function getVariables()
+    public function getVariables(): array
     {
         return $this->variables;
     }

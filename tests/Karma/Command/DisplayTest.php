@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Karma\Command;
 
 require_once __DIR__ . '/CommandTestCase.php';

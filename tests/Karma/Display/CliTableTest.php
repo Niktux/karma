@@ -1,8 +1,9 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Karma\Display;
 
-use Karma\Display\CliTable;
 use PHPUnit\Framework\TestCase;
 
 /**

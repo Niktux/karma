@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Karma\Configuration;
 
 class ValueFilterIterator extends \FilterIterator
@@ -21,7 +23,7 @@ class ValueFilterIterator extends \FilterIterator
         $filter = $this->filterValue($filter);
 
         $this->isRegex = false;
-        if(stripos($filter, self::FILTER_WILDCARD) !== false)
+        if(stripos((string) $filter, self::FILTER_WILDCARD) !== false)
         {
             $this->isRegex = true;
             $filter = $this->convertToRegex($filter);
@@ -30,14 +32,14 @@ class ValueFilterIterator extends \FilterIterator
         $this->filter = $filter;
     }
 
-    public function accept()
+    public function accept(): bool
     {
         $value = $this->getInnerIterator()->current();
 
         return $this->acceptValue($value);
     }
 
-    private function acceptValue($value)
+    private function acceptValue($value): bool
     {
         if(is_array($value))
         {
@@ -46,13 +48,13 @@ class ValueFilterIterator extends \FilterIterator
 
         if($this->isRegex === true)
         {
-            return preg_match($this->filter, $value);
+            return (bool) preg_match($this->filter, (string) $value);
         }
 
         return $value === $this->filter;
     }
 
-    private function acceptArray($value)
+    private function acceptArray($value): bool
     {
         foreach($value as $oneValue)
         {
@@ -65,7 +67,7 @@ class ValueFilterIterator extends \FilterIterator
         return false;
     }
 
-    private function convertToRegex($filter)
+    private function convertToRegex(string $filter): string
     {
         $filter = $this->escapeRegexSpecialCharacters($filter);
 
@@ -78,7 +80,7 @@ class ValueFilterIterator extends \FilterIterator
         return "~^$filter$~";
     }
 
-    private function escapeRegexSpecialCharacters($filter)
+    private function escapeRegexSpecialCharacters($filter): string
     {
         return strtr($filter, array(
             '.' => '\.',

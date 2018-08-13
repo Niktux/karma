@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Karma;
 
 use Symfony\Component\Console\Input\InputInterface;
@@ -65,7 +67,7 @@ class Command extends \Symfony\Component\Console\Command\Command
         }
     }
 
-    private function configureOutputInterface(OutputInterface $output)
+    private function configureOutputInterface(OutputInterface $output): void
     {
         $style = new OutputFormatterStyle('cyan', null, array('bold'));
         $output->getFormatter()->setStyle('important', $style);
@@ -73,7 +75,7 @@ class Command extends \Symfony\Component\Console\Command\Command
         $this->setOutput($output);
     }
 
-    private function enableFinderCache()
+    private function enableFinderCache(): void
     {
         $this->app['sources.fileSystem.finder'] = $this->app['sources.fileSystem.cached'];
     }

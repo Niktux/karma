@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Karma\Configuration\Parser;
 
 use Karma\Configuration\Parser;
@@ -42,7 +44,7 @@ class ExternalParser extends AbstractSectionParser
         );
     }
 
-    public function getExternalVariables()
+    public function getExternalVariables(): array
     {
         return $this->variables;
     }

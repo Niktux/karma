@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Karma;
 
 use Gaufrette\Filesystem;
@@ -352,8 +354,8 @@ class HydratorTest extends TestCase
             '<false>' => 0,
         ));
 
-        $provider = new CallbackProvider(function ($fileExtension, $index) use($yellFormatter, $otherFormatter) {
-            return strtolower($index) === 'yell' ? $yellFormatter : $otherFormatter;
+        $provider = new CallbackProvider(function ($fileExtension, ?string $index) use($yellFormatter, $otherFormatter) {
+            return strtolower($index ?? '') === 'yell' ? $yellFormatter : $otherFormatter;
         });
 
         $this->hydrator->setFormatterProvider($provider);

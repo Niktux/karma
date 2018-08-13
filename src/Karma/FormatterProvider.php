@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Karma;
 
 interface FormatterProvider
 {
-    public function hasFormatter($index);
+    public function hasFormatter(?string $index): bool;
 
-    public function getFormatter($fileExtension, $index = null);
+    public function getFormatter(?string $fileExtension, ?string $index = null): Formatter;
 }

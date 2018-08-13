@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Karma\Configuration\Parser;
 
 class GroupParser extends AbstractSectionParser
@@ -111,7 +113,7 @@ class GroupParser extends AbstractSectionParser
         return empty($duplicatedValues) === false;
     }
 
-    public function getCollectedGroups()
+    public function getCollectedGroups(): array
     {
         return $this->groups;
     }
@@ -159,7 +161,7 @@ class GroupParser extends AbstractSectionParser
         }
     }
 
-    public function getDefaultEnvironmentsForGroups()
+    public function getDefaultEnvironmentsForGroups(): array
     {
         return $this->defaultEnvironments;
     }

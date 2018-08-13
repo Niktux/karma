@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Karma\Configuration;
 
 use Gaufrette\Filesystem;
@@ -40,14 +42,14 @@ class Parser implements FileParser
         $this->eol = "\n";
     }
 
-    public function setEOL($eol)
+    public function setEOL(string $eol): self
     {
         $this->eol = $eol;
 
         return $this;
     }
 
-    public function enableIncludeSupport()
+    public function enableIncludeSupport(): self
     {
         if(! isset($this->parsers[self::INCLUDES]))
         {
@@ -57,7 +59,7 @@ class Parser implements FileParser
         return $this;
     }
 
-    public function enableExternalSupport()
+    public function enableExternalSupport(): self
     {
         if(! isset($this->parsers[self::EXTERNALS]))
         {
@@ -67,7 +69,7 @@ class Parser implements FileParser
         return $this;
     }
 
-    public function enableGroupSupport()
+    public function enableGroupSupport(): self
     {
         if(! isset($this->parsers[self::GROUPS]))
         {
@@ -77,7 +79,7 @@ class Parser implements FileParser
         return $this;
     }
 
-    public function parse($masterFilePath)
+    public function parse(string $masterFilePath): array
     {
         try
         {
@@ -93,11 +95,12 @@ class Parser implements FileParser
         catch(\RuntimeException $e)
         {
             $this->error($e->getMessage());
+
             throw $e;
         }
     }
 
-    private function parseFromMasterFile($masterFilePath)
+    private function parseFromMasterFile(string $masterFilePath): void
     {
         $files = array($masterFilePath);
 
@@ -119,7 +122,7 @@ class Parser implements FileParser
         }
     }
 
-    private function readFile($filePath)
+    private function readFile(string $filePath): void
     {
         $lines = $this->extractLines($filePath);
         $this->changeCurrentFile($filePath);
@@ -140,6 +143,7 @@ class Parser implements FileParser
             if($sectionName !== null)
             {
                 $this->switchSectionParser($sectionName);
+
                 continue;
             }
 
@@ -149,7 +153,7 @@ class Parser implements FileParser
         $this->parsers[self::VARIABLES]->endOfFileCheck();
     }
 
-    private function extractLines($filePath)
+    private function extractLines(string $filePath): array
     {
         if(! $this->fs->has($filePath))
         {
@@ -158,7 +162,7 @@ class Parser implements FileParser
 
         $content = $this->fs->read($filePath);
 
-        $lines = explode($this->eol, $content);
+        $lines = explode($this->eol, $content ?? '');
         $lines = $this->trimLines($lines);
 
         $this->parsedFiles[] = $filePath;
@@ -171,12 +175,12 @@ class Parser implements FileParser
         return $lines;
     }
 
-    private function trimLines(array $lines)
+    private function trimLines(array $lines): array
     {
         return array_map('trim', $lines);
     }
 
-    private function changeCurrentFile($filePath)
+    private function changeCurrentFile(string $filePath): void
     {
         $this->info("Reading $filePath");
 
@@ -186,7 +190,7 @@ class Parser implements FileParser
         }
     }
 
-    private function extractSectionName($line)
+    private function extractSectionName(string $line): ?string
     {
         $sectionName = null;
 
@@ -199,7 +203,7 @@ class Parser implements FileParser
         return $sectionName;
     }
 
-    private function switchSectionParser($sectionName)
+    private function switchSectionParser(string $sectionName): void
     {
         if(! isset($this->parsers[$sectionName]))
         {
@@ -209,19 +213,19 @@ class Parser implements FileParser
         $this->currentParser = $this->parsers[$sectionName];
     }
 
-    public function getVariables()
+    public function getVariables(): array
     {
         return $this->parsers[self::VARIABLES]->getVariables();
     }
 
-    public function getFileSystem()
+    public function getFileSystem(): Filesystem
     {
         return $this->fs;
     }
 
-    public function getExternalVariables()
+    public function getExternalVariables(): array
     {
-        $variables = array();
+        $variables = [];
 
         if(isset($this->parsers[self::EXTERNALS]))
         {
@@ -231,7 +235,7 @@ class Parser implements FileParser
         return $variables;
     }
 
-    private function printExternalFilesStatus()
+    private function printExternalFilesStatus(): void
     {
         $files = $this->getExternalFilesStatus();
 
@@ -247,9 +251,9 @@ class Parser implements FileParser
         }
     }
 
-    private function getExternalFilesStatus()
+    private function getExternalFilesStatus(): array
     {
-        $files = array();
+        $files = [];
 
         if(isset($this->parsers[self::EXTERNALS]))
         {
@@ -259,9 +263,9 @@ class Parser implements FileParser
         return $files;
     }
 
-    public function getGroups()
+    public function getGroups(): array
     {
-        $groups = array();
+        $groups = [];
 
         if(isset($this->parsers[self::GROUPS]))
         {
@@ -271,7 +275,7 @@ class Parser implements FileParser
         return $groups;
     }
 
-    private function postParse()
+    private function postParse(): void
     {
         foreach($this->parsers as $parser)
         {
@@ -279,7 +283,7 @@ class Parser implements FileParser
         }
     }
 
-    public function isSystem($variableName)
+    public function isSystem(string $variableName): bool
     {
         $system = false;
 
@@ -292,9 +296,9 @@ class Parser implements FileParser
         return $system;
     }
 
-    public function getDefaultEnvironmentsForGroups()
+    public function getDefaultEnvironmentsForGroups(): array
     {
-         $defaultEnvironments = array();
+         $defaultEnvironments = [];
 
         if(isset($this->parsers[self::GROUPS]))
         {

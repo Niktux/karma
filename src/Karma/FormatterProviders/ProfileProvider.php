@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Karma\FormatterProviders;
 
+use Karma\Formatter;
 use Karma\FormatterProvider;
 use Karma\FormattersDefinition;
 use Karma\Formatters\Raw;
@@ -27,7 +30,7 @@ class ProfileProvider implements FormatterProvider
         $this->fileExtensionFormatters = array_map('trim', $definition->getFileExtensionFormatters());
     }
 
-    private function parseFormatters($content)
+    private function parseFormatters($content): void
     {
         if(! is_array($content))
         {
@@ -45,12 +48,12 @@ class ProfileProvider implements FormatterProvider
         }
     }
 
-    public function hasFormatter($index)
+    public function hasFormatter(?string $index): bool
     {
         return isset($this->formatters[$index]);
     }
 
-    public function getFormatter($fileExtension, $index = null)
+    public function getFormatter(?string $fileExtension, ?string $index = null): Formatter
     {
         $formatter = $this->formatters[$this->getDefaultFormatterName()];
 
@@ -70,7 +73,7 @@ class ProfileProvider implements FormatterProvider
         return $formatter;
     }
 
-    private function getDefaultFormatterName()
+    private function getDefaultFormatterName(): string
     {
         $name = FormattersDefinition::DEFAULT_FORMATTER_NAME;
 

@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Karma\FormatterProviders;
 
+use Karma\Formatter;
 use Karma\FormatterProvider;
 
 class CallbackProvider implements FormatterProvider
@@ -14,12 +17,12 @@ class CallbackProvider implements FormatterProvider
         $this->closure = $closure;
     }
 
-    public function hasFormatter($index)
+    public function hasFormatter(?string $index): bool
     {
         return true;
     }
 
-    public function getFormatter($fileExtension, $index = null)
+    public function getFormatter(?string $fileExtension, ?string $index = null): Formatter
     {
         $closure = $this->closure;
 

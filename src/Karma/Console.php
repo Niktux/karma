@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Karma;
 
 class Console
@@ -16,7 +18,6 @@ class Console
         $this->app->add(new Command\Display($dic));
         $this->app->add(new Command\Diff($dic));
         $this->app->add(new Command\Rollback($dic));
-        $this->app->add(new Command\VCS($dic));
     }
 
     public function run()

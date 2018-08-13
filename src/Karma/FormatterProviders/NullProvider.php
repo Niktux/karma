@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Karma\FormatterProviders;
 
+use Karma\Formatter;
 use Karma\FormatterProvider;
 use Karma\Formatters\Raw;
 
@@ -15,12 +18,12 @@ class NullProvider implements FormatterProvider
         $this->raw = new Raw();
     }
 
-    public function hasFormatter($index)
+    public function hasFormatter(?string $index): bool
     {
         return false;
     }
 
-    public function getFormatter($fileExtension, $index = null)
+    public function getFormatter(?string $fileExtension, ?string $index = null): Formatter
     {
         return $this->raw;
     }

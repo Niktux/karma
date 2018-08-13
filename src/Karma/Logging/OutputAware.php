@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Karma\Logging;
 
 use Symfony\Component\Console\Output\OutputInterface;
