@@ -12,14 +12,14 @@ script:
     - vendor/bin/phpunit -c phpunit.xml
 
 before_deploy:
-    - composer install --no-dev 
+    - composer install --no-dev
     - make phar
 
 deploy:
     provider: releases
     api_key:
-        secure: J6occOPhB/oaOS5hNsJTLHmaN1PeKS19+z5w0sqxNeJ8L0oLaObJmmyJBpn0RBYLaCxpABItC1LNkxj+aQzYPlTZZBx/3XPAlG265bCn/JeA2xnc9F88G13GNhvbSpFUkgllOHmGskmqQHWrjCzQ0ABV1tjkMFas6MNikXeA99A=
+        secure: KUlnR2JrQzRiuoCQw5VARrR9anBeq7DrmURNwStyHHJl7ysV9rGK4G7O6axbU6twcuRjRo+J5thjlWWt+zan6x2mgkVZRCfOSz/zsc6a2cvoGq8klWEXd3jp/1rKstyS2rYDyYNffwZ3Hl6cUmPeM41DbOjIj1xXeBpbfCGMS8Y=
     file: karma.phar
     skip_cleanup: true
     on:
-      tags: true
+        tags: true
