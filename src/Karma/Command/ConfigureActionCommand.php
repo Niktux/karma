@@ -78,7 +78,7 @@ abstract class ConfigureActionCommand extends Command
         $this->launchConfigurationAction($processor);
     }
 
-    private function processInputs(InputInterface $input)
+    private function processInputs(InputInterface $input): void
     {
         $this->environment = $input->getOption('env');
         $this->systemEnvironment = $input->getOption('system');
@@ -109,7 +109,7 @@ abstract class ConfigureActionCommand extends Command
 
         if(! is_array($sourcePath))
         {
-            $sourcePath = array($sourcePath);
+            $sourcePath = [$sourcePath];
         }
 
         $targetPath = $input->getOption('targetPath');
@@ -143,8 +143,8 @@ abstract class ConfigureActionCommand extends Command
         );
     }
 
-    abstract protected function launchConfigurationAction(ConfigurableProcessor $processor);
-    abstract protected function getProcessor();
+    abstract protected function launchConfigurationAction(ConfigurableProcessor $processor): void;
+    abstract protected function getProcessor(): ConfigurableProcessor;
 
     private function configureProcessor(ConfigurableProcessor $processor)
     {
@@ -175,10 +175,10 @@ abstract class ConfigureActionCommand extends Command
 
         if(! is_array($strings))
         {
-            $strings = array($strings);
+            $strings = [$strings];
         }
 
-        $data = array();
+        $data = [];
 
         foreach($strings as $string)
         {
@@ -205,7 +205,7 @@ abstract class ConfigureActionCommand extends Command
         return $data;
     }
 
-    private function processOverridenVariables(array $overrides)
+    private function processOverridenVariables(array $overrides): void
     {
         $reader = $this->app['configuration'];
         $logger = $this->app['logger'];
@@ -224,7 +224,7 @@ abstract class ConfigureActionCommand extends Command
         }
     }
 
-    private function processCustomData(array $data)
+    private function processCustomData(array $data): void
     {
         $reader = $this->app['configuration'];
         $logger = $this->app['logger'];

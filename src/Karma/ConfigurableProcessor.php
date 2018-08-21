@@ -6,7 +6,7 @@ namespace Karma;
 
 interface ConfigurableProcessor
 {
-    public function setDryRun($value = true);
-    public function enableBackup($value = true);
-    public function setSystemEnvironment(string $environment): ConfigurableProcessor;
+    public function setDryRun(bool $value = true): ConfigurableProcessor;
+    public function enableBackup(bool $value = true): ConfigurableProcessor;
+    public function setSystemEnvironment(?string $environment): ConfigurableProcessor;
 }

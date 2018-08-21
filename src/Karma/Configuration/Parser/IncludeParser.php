@@ -11,14 +11,16 @@ class IncludeParser extends AbstractSectionParser
 
     public function __construct()
     {
-        $this->files = array();
+        parent::__construct();
+
+        $this->files = [];
     }
 
-    protected function parseLine($line)
+    protected function parseLine(string $line): void
     {
         if($this->isACommentLine($line))
         {
-            return true;
+            return;
         }
 
         $this->checkFilenameIsValid($line);
@@ -26,7 +28,7 @@ class IncludeParser extends AbstractSectionParser
         $this->files[] = $line;
     }
 
-    private function checkFilenameIsValid($filename)
+    private function checkFilenameIsValid(string $filename): void
     {
         if(! preg_match('~.*\.conf$~', $filename))
         {
@@ -34,7 +36,7 @@ class IncludeParser extends AbstractSectionParser
         }
     }
 
-    public function getCollectedFiles()
+    public function getCollectedFiles(): array
     {
         return $this->files;
     }

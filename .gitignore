@@ -24,6 +24,8 @@ data/
 genEnv/
 genConfig/
 .karma
+.karma-hydrate
+.karma-generate
 src/.solidifier.yml
 
 # Packaging

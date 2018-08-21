@@ -33,11 +33,11 @@ class Parser implements FileParser
     {
         $this->logger = new NullLogger();
 
-        $this->parsers = array(
+        $this->parsers = [
             self::VARIABLES => new VariableParser(),
-        );
+        ];
 
-        $this->parsedFiles = array();
+        $this->parsedFiles = [];
         $this->fs = $fs;
         $this->eol = "\n";
     }
@@ -102,7 +102,7 @@ class Parser implements FileParser
 
     private function parseFromMasterFile(string $masterFilePath): void
     {
-        $files = array($masterFilePath);
+        $files = [$masterFilePath];
 
         while(! empty($files))
         {

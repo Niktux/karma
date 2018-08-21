@@ -20,12 +20,12 @@ class Hydrate extends ConfigureActionCommand
         );
     }
 
-    protected function getProcessor()
+    protected function getProcessor(): ConfigurableProcessor
     {
         return $this->app['hydrator'];
     }
 
-    protected function launchConfigurationAction(ConfigurableProcessor $processor)
+    protected function launchConfigurationAction(ConfigurableProcessor $processor): void
     {
         $processor->hydrate($this->environment);
         $this->warnForUnusedVariables($processor);
@@ -40,7 +40,8 @@ class Hydrate extends ConfigureActionCommand
         {
             $logger = $this->app['logger'];
 
-            $logger->warning('You have unused variables : you should remove them or check if you have not mispelled them').
+            $logger->warning('You have unused variables : you should remove them or check if you have not mispelled them');
+
             $logger->warning(sprintf(
                 'Unused variables : %s',
                 implode(', ', $unusedVariables)
@@ -48,7 +49,7 @@ class Hydrate extends ConfigureActionCommand
         }
     }
 
-    private function warnForUnvaluedVariables(Hydrator $processor)
+    private function warnForUnvaluedVariables(Hydrator $processor): void
     {
         $unvaluedVariables = $processor->getUnvaluedVariables();
 

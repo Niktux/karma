@@ -1,0 +1,16 @@
+confDir: env
+suffix: -dist
+master: toto.conf
+sourcePath: data/
+formatters:
+  yaml:
+    <false>: faux
+    <string>: '"<string>"'
+  espagnol:
+    <false>: falso
+    <true>: verdadero
+defaultFormatter: yaml
+fileExtensionFormatters:
+  ini: espagnol
+generator:
+  translator: prefix

@@ -18,7 +18,7 @@ class Reader extends AbstractReader
         $environmentGroups,
         $defaultEnvironmentsForGroups;
 
-    public function __construct(array $variables, array $externalVariables, array $groups = array(), array $defaultEnvironmentsForGroups = array())
+    public function __construct(array $variables, array $externalVariables, array $groups = [], array $defaultEnvironmentsForGroups = [])
     {
         parent::__construct();
 
@@ -29,16 +29,16 @@ class Reader extends AbstractReader
         $this->externalReader = null;
         if(! empty($externalVariables))
         {
-            $this->externalReader = new Reader($externalVariables, array(), $groups);
+            $this->externalReader = new Reader($externalVariables, [], $groups);
         }
 
         $this->loadGroups($groups);
         $this->defaultEnvironmentsForGroups = $defaultEnvironmentsForGroups;
     }
 
-    private function loadGroups(array $groups)
+    private function loadGroups(array $groups): void
     {
-        $this->environmentGroups = array();
+        $this->environmentGroups = [];
 
         foreach($groups as $group => $environments)
         {
@@ -51,7 +51,7 @@ class Reader extends AbstractReader
         $this->groupNames = array_keys($groups);
     }
 
-    protected function readRaw($variable, $environment = null)
+    protected function readRaw(string $variable, ?string $environment = null)
     {
         if($environment === null)
         {
@@ -74,7 +74,7 @@ class Reader extends AbstractReader
         return $this->readVariable($variable, $environment);
     }
 
-    private function readVariable($variableName, $environment)
+    private function readVariable(string $variableName, string $environment)
     {
         $variable = $this->accessVariable($variableName);
         $envs = $variable['env'];
@@ -101,7 +101,7 @@ class Reader extends AbstractReader
         ));
     }
 
-    private function accessVariable($variableName)
+    private function accessVariable(string $variableName)
     {
         if(! array_key_exists($variableName, $this->variables))
         {
@@ -114,7 +114,7 @@ class Reader extends AbstractReader
         return $this->variables[$variableName];
     }
 
-    private function getEnvironmentEntries($environment)
+    private function getEnvironmentEntries(string $environment): array
     {
         $entries = array($environment);
 
@@ -128,7 +128,7 @@ class Reader extends AbstractReader
         return $entries;
     }
 
-    private function processExternal($variable, $environment)
+    private function processExternal(string $variable, string $environment)
     {
         if(! $this->externalReader instanceof Reader)
         {
@@ -142,17 +142,17 @@ class Reader extends AbstractReader
         return $this->externalReader->read($variable, $environment);
     }
 
-    public function getAllVariables()
+    public function getAllVariables(): array
     {
         return array_keys($this->variables);
     }
 
-    public function compareEnvironments($environment1, $environment2)
+    public function compareEnvironments(string $environment1, string $environment2)
     {
         $values1 = $this->getAllValuesForEnvironment($environment1);
         $values2 = $this->getAllValuesForEnvironment($environment2);
 
-        $diff = array();
+        $diff = [];
 
         foreach($values1 as $name => $value1)
         {
@@ -167,7 +167,7 @@ class Reader extends AbstractReader
         return $diff;
     }
 
-    public function isSystem($variableName)
+    public function isSystem(string $variableName): bool
     {
         $variable = $this->accessVariable($variableName);
 

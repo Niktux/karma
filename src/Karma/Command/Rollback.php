@@ -45,7 +45,7 @@ class Rollback extends Command
         $this->launchRollback();
     }
 
-    private function processInputs(InputInterface $input)
+    private function processInputs(InputInterface $input): void
     {
         $sourcePath = $input->getArgument('sourcePath');
         if($sourcePath === null)
@@ -75,7 +75,7 @@ class Rollback extends Command
         $this->output->writeln('');
     }
 
-    private function launchRollback()
+    private function launchRollback(): void
     {
         $hydrator = $this->app['hydrator'];
 

@@ -11,7 +11,7 @@ class InMemoryReader extends AbstractReader
     private
         $values;
 
-    public function __construct(array $values = array())
+    public function __construct(array $values = [])
     {
         parent::__construct();
 
@@ -25,7 +25,7 @@ class InMemoryReader extends AbstractReader
         }
     }
 
-    protected function readRaw($variable, $environment = null)
+    protected function readRaw(string $variable, ?string $environment = null)
     {
         if($environment === null)
         {
@@ -42,7 +42,7 @@ class InMemoryReader extends AbstractReader
         throw new \RuntimeException("Variable $variable does not exist");
     }
 
-    public function getAllVariables()
+    public function getAllVariables(): array
     {
         $variables = array_map(function($key){
             return $this->extractVariableName($key);
@@ -51,7 +51,7 @@ class InMemoryReader extends AbstractReader
         return array_unique($variables);
     }
 
-    public function isSystem($variableName)
+    public function isSystem(string $variableName): bool
     {
         foreach($this->values as $key => $variable)
         {
@@ -64,12 +64,12 @@ class InMemoryReader extends AbstractReader
         return false;
     }
 
-    private function extractVariableName($key)
+    private function extractVariableName(string $key): string
     {
         return explode(':', $key)[0];
     }
 
-    private function removeSystemFlag($variableName)
+    private function removeSystemFlag(string $variableName): string
     {
         return ltrim($variableName, Configuration::SYSTEM_VARIABLE_FLAG);
     }

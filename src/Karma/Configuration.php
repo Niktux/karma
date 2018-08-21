@@ -10,16 +10,16 @@ interface Configuration
         SYSTEM_VARIABLE_FLAG = '@',
         NOT_FOUND = 'karma-notfound';
 
-    public function read($variable, $environment = null);
+    public function read(string $variable, ?string $environment = null);
 
-    public function setDefaultEnvironment($environment);
+    public function setDefaultEnvironment(string $environment): void;
 
-    public function getAllVariables();
-    public function getAllValuesForEnvironment($environment = null);
+    public function getAllVariables(): array;
+    public function getAllValuesForEnvironment(?string $environment = null);
 
-    public function overrideVariable($variable, $value);
+    public function overrideVariable(string $variable, $value): void;
 
-    public function setCustomData($customDataName, $value);
+    public function setCustomData(string $customDataName, $value): void;
 
-    public function isSystem($variableName);
+    public function isSystem(string $variableName): bool;
 }

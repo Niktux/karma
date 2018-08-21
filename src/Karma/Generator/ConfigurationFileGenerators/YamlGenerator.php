@@ -20,10 +20,10 @@ class YamlGenerator extends AbstractFileGenerator implements ConfigurationFileGe
     {
         parent::__construct($fs, $reader, $variableProvider);
 
-        $this->files = array();
+        $this->files = [];
     }
 
-    protected function generateVariable($variableName, $value)
+    protected function generateVariable(string $variableName, $value): void
     {
         if(stripos($variableName, self::DELIMITER) === false)
         {
@@ -50,7 +50,7 @@ class YamlGenerator extends AbstractFileGenerator implements ConfigurationFileGe
         $current = $value;
     }
 
-    protected function postGenerate()
+    protected function postGenerate(): void
     {
         if($this->dryRun === true)
         {
@@ -66,7 +66,7 @@ class YamlGenerator extends AbstractFileGenerator implements ConfigurationFileGe
         }
     }
 
-    private function backupFile($filename)
+    private function backupFile(string $filename): void
     {
         if($this->enableBackup === true)
         {
@@ -80,12 +80,12 @@ class YamlGenerator extends AbstractFileGenerator implements ConfigurationFileGe
         }
     }
 
-    private function computeFilename($file)
+    private function computeFilename(string $file): string
     {
         return "$file.yml";
     }
 
-    private function formatContent($content)
+    private function formatContent($content): string
     {
         return Yaml::dump($content);
     }

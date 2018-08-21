@@ -69,14 +69,14 @@ class Hydrator implements ConfigurableProcessor
         return $this;
     }
 
-    public function setDryRun($value = true)
+    public function setDryRun(bool $value = true): ConfigurableProcessor
     {
         $this->dryRun = (bool) $value;
 
         return $this;
     }
 
-    public function enableBackup($value = true)
+    public function enableBackup(bool $value = true): ConfigurableProcessor
     {
         $this->enableBackup = (bool) $value;
 
@@ -97,7 +97,7 @@ class Hydrator implements ConfigurableProcessor
         return $this;
     }
 
-    public function setSystemEnvironment(string $environment): ConfigurableProcessor
+    public function setSystemEnvironment(?string $environment): ConfigurableProcessor
     {
         $this->systemEnvironment = $environment;
 

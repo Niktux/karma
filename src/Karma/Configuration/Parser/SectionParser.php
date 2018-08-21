@@ -6,7 +6,7 @@ namespace Karma\Configuration\Parser;
 
 interface SectionParser
 {
-    public function parse($line, $lineNumber);
-    public function setCurrentFile($filePath);
-    public function postParse();
+    public function parse(string $line, int $lineNumber): void;
+    public function setCurrentFile(string $filePath): void;
+    public function postParse(): void;
 }

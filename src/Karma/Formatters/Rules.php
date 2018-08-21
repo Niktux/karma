@@ -16,19 +16,19 @@ class Rules implements Formatter
         $this->convertRules($rules);
     }
 
-    private function getSpecialValuesMappingTable()
+    private function getSpecialValuesMappingTable(): array
     {
-        return array(
+        return [
             '<true>' => true,
             '<false>' => false,
             '<null>' => null,
             '<string>' => function($value) {
                 return is_string($value);
             }
-        );
+        ];
     }
 
-    private function convertRules(array $rules)
+    private function convertRules(array $rules): void
     {
         $this->rules = array();
         $mapping = $this->getSpecialValuesMappingTable();
@@ -47,7 +47,7 @@ class Rules implements Formatter
         }
     }
 
-    private function handleStringFormatting($value, $result)
+    private function handleStringFormatting(string $value, $result)
     {
         if($value === '<string>')
         {
@@ -74,7 +74,7 @@ class Rules implements Formatter
         return $value;
     }
 
-    private function isRuleMatches($condition, $value)
+    private function isRuleMatches($condition, $value): bool
     {
         $hasMatched = ($condition === $value);
 

@@ -19,7 +19,7 @@ class CliTable
     {
         $this->rows = $values;
 
-        $this->headers = array();
+        $this->headers = [];
         $this->nbColumns = 0;
 
         $this->valueRenderFunction = null;
@@ -27,35 +27,35 @@ class CliTable
         $this->displayKeys = false;
     }
 
-    public function setValueRenderingFunction(\Closure $function)
+    public function setValueRenderingFunction(\Closure $function): self
     {
         $this->valueRenderFunction = $function;
 
         return $this;
     }
 
-    public function enableFormattingTags($value = true)
+    public function enableFormattingTags(bool $value = true): self
     {
         $this->enableFormattingTags = (bool) $value;
 
         return $this;
     }
 
-    public function setHeaders(array $headers)
+    public function setHeaders(array $headers): self
     {
         $this->headers = $headers;
 
         return $this;
     }
 
-    public function displayKeys($value = true)
+    public function displayKeys(bool $value = true): self
     {
         $this->displayKeys = (bool) $value;
 
         return $this;
     }
 
-    public function render()
+    public function render(): string
     {
         $this->manageKeys();
         $this->computeColumnsSize();
@@ -85,7 +85,7 @@ class CliTable
         return implode(PHP_EOL, $lines);
     }
 
-    private function manageKeys()
+    private function manageKeys(): void
     {
         if($this->displayKeys !== true)
         {
@@ -104,7 +104,7 @@ class CliTable
         }
     }
 
-    private function computeColumnsSize()
+    private function computeColumnsSize(): void
     {
         $this->computeNbColumns();
 
@@ -118,7 +118,7 @@ class CliTable
         $this->updateColumnsSize($this->rows);
     }
 
-    private function computeNbColumns()
+    private function computeNbColumns(): void
     {
         $this->nbColumns = 0;
 
@@ -133,7 +133,7 @@ class CliTable
         $this->nbColumns = max($this->nbColumns, count($this->headers));
     }
 
-    private function updateColumnsSize(array $newValues)
+    private function updateColumnsSize(array $newValues): void
     {
         foreach($newValues as $row)
         {
@@ -161,7 +161,7 @@ class CliTable
         }
     }
 
-    private function renderValueAsString($value)
+    private function renderValueAsString($value): string
     {
         if($value === false)
         {
@@ -185,12 +185,12 @@ class CliTable
         return (string) $value;
     }
 
-    private function stripTags($value)
+    private function stripTags(string $value): string
     {
         return preg_replace ('/<[^>]*>/', '', $value);
     }
 
-    private function renderLine(array $row)
+    private function renderLine(array $row): string
     {
         $columns = array();
 
@@ -210,7 +210,7 @@ class CliTable
         return implode('', $columns) . '|';
     }
 
-    private function computeRealColumnSizeFor($value, $columnSize)
+    private function computeRealColumnSizeFor(string $value, int $columnSize): int
     {
         $displayedValue = $value;
 

@@ -19,12 +19,12 @@ class Generate extends ConfigureActionCommand
         );
     }
 
-    protected function getProcessor()
+    protected function getProcessor(): ConfigurableProcessor
     {
         return $this->app['configurationFilesGenerator'];
     }
 
-    protected function launchConfigurationAction(ConfigurableProcessor $processor)
+    protected function launchConfigurationAction(ConfigurableProcessor $processor): void
     {
         $processor->generate($this->environment);
     }

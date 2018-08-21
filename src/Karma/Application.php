@@ -48,7 +48,7 @@ class Application extends Container
         $this['configuration.path'] = 'conf';
         $this['configuration.masterFile'] = 'master.conf';
 
-        $this['sources.path'] = 'src';
+        $this['sources.path'] = ['src'];
         $this['target.path'] = null;
         $this['hydrator.allowNonDistFilesOverwrite'] = false;
 
@@ -112,7 +112,7 @@ class Application extends Container
 
             if(! is_array($paths))
             {
-                $paths = array($paths);
+                $paths = [$paths];
             }
 
             $adapter = new MultipleAdapter();
@@ -152,6 +152,24 @@ class Application extends Container
 
         $this['sources.fileSystem'] = $this->factory(function(Container $c) {
             return new Filesystem($c['sources.fileSystem.adapter']);
+        });
+
+        $this['generate.sources.fileSystem.adapter'] = $this->factory(function(Container $c) {
+
+            $sources = $c['sources.path'];
+
+            if(count($sources) > 1)
+            {
+                throw new \InvalidArgumentException("Generate command does not allow multiple source paths");
+            }
+
+            return new Local(
+                array_shift($sources)
+            );
+        });
+
+        $this['generate.sources.fileSystem'] = $this->factory(function(Container $c) {
+            return new Filesystem($c['generate.sources.fileSystem.adapter']);
         });
 
         $this['sources.fileSystem.finder'] = $this->factory(function(Container $c) {
@@ -226,7 +244,7 @@ class Application extends Container
         });
 
         $this['configurationFilesGenerator'] = function (Container $c) {
-            return new YamlGenerator($c['sources.fileSystem'], $c['configuration'], $c['generator.variableProvider']);
+            return new YamlGenerator($c['generate.sources.fileSystem'], $c['configuration'], $c['generator.variableProvider']);
         };
     }
 }

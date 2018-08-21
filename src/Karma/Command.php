@@ -4,6 +4,7 @@ declare(strict_types = 1);
 
 namespace Karma;
 
+use Karma\Logging\OutputAware;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -12,7 +13,7 @@ use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 
 class Command extends \Symfony\Component\Console\Command\Command
 {
-    use \Karma\Logging\OutputAware;
+    use OutputAware;
 
     protected
         $app;
@@ -147,7 +148,7 @@ ASCIIART;
             $logo = str_replace('.', '@', $logo);
         }
 
-        $logo = str_replace(array('%', '*'), array($toText, $toBackground), $logo);
+        $logo = str_replace(['%', '*'], [$toText, $toBackground], $logo);
 
         return sprintf(
             '<%s>%s</%s>',

@@ -54,7 +54,7 @@ class ValueFilterIterator extends \FilterIterator
         return $value === $this->filter;
     }
 
-    private function acceptArray($value): bool
+    private function acceptArray(array $value): bool
     {
         foreach($value as $oneValue)
         {
@@ -80,7 +80,7 @@ class ValueFilterIterator extends \FilterIterator
         return "~^$filter$~";
     }
 
-    private function escapeRegexSpecialCharacters($filter): string
+    private function escapeRegexSpecialCharacters(string $filter): string
     {
         return strtr($filter, array(
             '.' => '\.',

@@ -19,13 +19,13 @@ class GenerateTest extends CommandTestCase
     {
         parent::setUp();
 
-        $this->app['sources.fileSystem.adapter'] = new InMemory(array(
+        $this->app['generate.sources.fileSystem.adapter'] = new InMemory([
             'src/file' => '',
-        ));
+        ]);
 
-        $this->app['profile.fileSystem.adapter'] = new InMemory(array(
+        $this->app['profile.fileSystem.adapter'] = new InMemory([
             Application::PROFILE_FILENAME => "generator:\n  translator: none",
-        ));
+        ]);
     }
 
     /**
@@ -40,27 +40,27 @@ class GenerateTest extends CommandTestCase
 
         $this->app['configurationFilesGenerator'] = $mock;
 
-        $this->runCommand(self::COMMAND_NAME, array(
+        $this->runCommand(self::COMMAND_NAME, [
             $option => true,
             'sourcePath' => 'src/',
-        ));
+        ]);
     }
 
     public function providerTestOptions()
     {
-        return array(
-            array('--dry-run', 'setDryRun'),
-            array('--backup', 'enableBackup'),
-        );
+        return [
+            ['--dry-run', 'setDryRun'],
+            ['--backup', 'enableBackup'],
+        ];
     }
 
     public function testSourcePathFromProfile()
     {
-        $this->app['profile.fileSystem.adapter'] = new InMemory(array(
+        $this->app['profile.fileSystem.adapter'] = new InMemory([
             Application::PROFILE_FILENAME => 'sourcePath: lib/',
-        ));
+        ]);
 
-        $this->runCommand(self::COMMAND_NAME, array());
+        $this->runCommand(self::COMMAND_NAME, []);
         $this->assertDisplay('~Generate configuration files in lib/~');
     }
 
@@ -71,15 +71,15 @@ class GenerateTest extends CommandTestCase
     {
         $this->app['profile.fileSystem.adapter'] = new InMemory();
 
-        $this->runCommand(self::COMMAND_NAME, array());
+        $this->runCommand(self::COMMAND_NAME, []);
     }
 
     public function testOverride()
     {
-        $this->runCommand(self::COMMAND_NAME, array(
-            '--override' => array('db.user=toto', 'api.key=azer=ty'),
+        $this->runCommand(self::COMMAND_NAME, [
+            '--override' => ['db.user=toto', 'api.key=azer=ty'],
             'sourcePath' => 'src/',
-        ));
+        ]);
 
         $this->assertDisplay('~Override db.user with value toto~');
         $this->assertDisplay('~Override api.key with value azer=ty~');
@@ -87,13 +87,13 @@ class GenerateTest extends CommandTestCase
 
     public function testOverrideWithList()
     {
-        $this->app['sources.fileSystem.adapter'] = $adapter = new InMemory(array(
-        ));
+        $this->app['generate.sources.fileSystem.adapter'] = $adapter = new InMemory([
+        ]);
 
-        $this->runCommand(self::COMMAND_NAME, array(
-            '--override' => array('app.foo=[1,2,3]'),
+        $this->runCommand(self::COMMAND_NAME, [
+            '--override' => ['app.foo=[1,2,3]'],
             'sourcePath' => 'src/',
-        ));
+        ]);
 
         $expected = <<<YAML
 foo:
@@ -111,10 +111,10 @@ YAML;
      */
     public function testDuplicatedOverrideOption()
     {
-        $this->runCommand(self::COMMAND_NAME, array(
-            '--override' => array('db.user=toto', 'other=value', 'db.user=tata'),
+        $this->runCommand(self::COMMAND_NAME, [
+            '--override' => ['db.user=toto', 'other=value', 'db.user=tata'],
             'sourcePath' => 'src/',
-        ));
+        ]);
     }
 
     /**
@@ -122,18 +122,18 @@ YAML;
      */
     public function testInvalidOverrideOption()
     {
-        $this->runCommand(self::COMMAND_NAME, array(
+        $this->runCommand(self::COMMAND_NAME, [
             '--override' => 'db.user:tata',
             'sourcePath' => 'src/',
-        ));
+        ]);
     }
 
     public function testCustomData()
     {
-        $this->runCommand(self::COMMAND_NAME, array(
-            '--data' => array('user=jdoe', 'api.key=azer=ty'),
+        $this->runCommand(self::COMMAND_NAME, [
+            '--data' => ['user=jdoe', 'api.key=azer=ty'],
             'sourcePath' => 'src/',
-        ));
+        ]);
 
         $this->assertDisplay('~Set custom data user with value jdoe~');
         $this->assertDisplay('~Set custom data api.key with value azer=ty~');
@@ -144,10 +144,10 @@ YAML;
      */
     public function testDuplicatedCustomData()
     {
-        $this->runCommand(self::COMMAND_NAME, array(
-            '--data' => array('user=toto', 'other=value', 'user=tata'),
+        $this->runCommand(self::COMMAND_NAME, [
+            '--data' => ['user=toto', 'other=value', 'user=tata'],
             'sourcePath' => 'src/',
-        ));
+        ]);
     }
 
     /**
@@ -155,18 +155,18 @@ YAML;
      */
     public function testInvalidCustomData()
     {
-        $this->runCommand(self::COMMAND_NAME, array(
+        $this->runCommand(self::COMMAND_NAME, [
             '--data' => 'db.user:tata',
             'sourcePath' => 'src/',
-        ));
+        ]);
     }
 
     public function testSystemEnvironment()
     {
-        $this->runCommand(self::COMMAND_NAME, array(
+        $this->runCommand(self::COMMAND_NAME, [
             '--system' => 'dev',
             'sourcePath' => 'src/',
-        ));
+        ]);
 
         $this->assertDisplay('~Hydrate system variables with dev values~');
     }

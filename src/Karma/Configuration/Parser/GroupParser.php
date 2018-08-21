@@ -12,28 +12,32 @@ class GroupParser extends AbstractSectionParser
 
     public function __construct()
     {
-        $this->groups = array();
-        $this->defaultEnvironments = array();
+        parent::__construct();
+
+        $this->groups = [];
+        $this->defaultEnvironments = [];
     }
 
-    protected function parseLine($line)
+    protected function parseLine(string $line): void
     {
         if($this->isACommentLine($line))
         {
-            return true;
+            return;
         }
 
         $line = trim($line);
 
         if(preg_match('~(?P<groupName>[^=]+)\s*=\s*\[(?P<envList>[^\[\]]+)\]$~', $line, $matches))
         {
-            return $this->processGroupDefinition($matches['groupName'], $matches['envList']);
+            $this->processGroupDefinition($matches['groupName'], $matches['envList']);
+
+            return;
         }
 
         $this->triggerError($line);
     }
 
-    private function processGroupDefinition($groupName, $envList)
+    private function processGroupDefinition(string $groupName, string $envList): void
     {
         $groupName = trim($groupName);
 
@@ -56,9 +60,9 @@ class GroupParser extends AbstractSectionParser
         }
     }
 
-    private function checkForDefaultMarker($groupName, array $environments)
+    private function checkForDefaultMarker(string $groupName, array $environments): array
     {
-        $environmentNames = array();
+        $environmentNames = [];
         $this->defaultEnvironments[$groupName] = null;
 
         foreach($environments as $envString)
@@ -88,7 +92,7 @@ class GroupParser extends AbstractSectionParser
         return $environmentNames;
     }
 
-    private function checkGroupStillNotExists($groupName)
+    private function checkGroupStillNotExists(string $groupName): void
     {
         if(isset($this->groups[$groupName]))
         {
@@ -96,7 +100,7 @@ class GroupParser extends AbstractSectionParser
         }
     }
 
-    private function checkEnvironmentAreUnique($groupName, array $environments)
+    private function checkEnvironmentAreUnique(string $groupName, array $environments): void
     {
         if($this->hasDuplicatedValues($environments))
         {
@@ -104,7 +108,7 @@ class GroupParser extends AbstractSectionParser
         }
     }
 
-    private function hasDuplicatedValues(array $values)
+    private function hasDuplicatedValues(array $values): bool
     {
         $duplicatedValues = array_filter(array_count_values($values), function ($counter) {
             return $counter !== 1;
@@ -118,13 +122,13 @@ class GroupParser extends AbstractSectionParser
         return $this->groups;
     }
 
-    public function postParse()
+    public function postParse(): void
     {
         $this->checkEnvironmentsBelongToOnlyOneGroup();
         $this->checkGroupsAreNotPartsOfAnotherGroups();
     }
 
-    private function checkEnvironmentsBelongToOnlyOneGroup()
+    private function checkEnvironmentsBelongToOnlyOneGroup(): void
     {
         $allEnvironments = $this->getAllEnvironmentsBelongingToGroups();
 
@@ -134,9 +138,9 @@ class GroupParser extends AbstractSectionParser
         }
     }
 
-    private function getAllEnvironmentsBelongingToGroups()
+    private function getAllEnvironmentsBelongingToGroups(): array
     {
-        $allEnvironments = array();
+        $allEnvironments = [];
 
         foreach($this->groups as $group)
         {
@@ -146,7 +150,7 @@ class GroupParser extends AbstractSectionParser
         return $allEnvironments;
     }
 
-    private function checkGroupsAreNotPartsOfAnotherGroups()
+    private function checkGroupsAreNotPartsOfAnotherGroups(): void
     {
         $allEnvironments = $this->getAllEnvironmentsBelongingToGroups();
 

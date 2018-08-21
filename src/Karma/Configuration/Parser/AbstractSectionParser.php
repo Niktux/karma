@@ -19,26 +19,26 @@ abstract class AbstractSectionParser implements SectionParser
         $this->currentLineNumber = null;
     }
 
-    public function setCurrentFile($filePath)
+    public function setCurrentFile(string $filePath): void
     {
         $this->currentFilePath = $filePath;
     }
 
-    protected function isACommentLine($line)
+    protected function isACommentLine(string $line): bool
     {
         return strpos(trim($line), self::COMMENT_CHARACTER) === 0;
     }
 
-    final public function parse($line, $lineNumber)
+    final public function parse(string $line, int $lineNumber): void
     {
         $this->currentLineNumber = $lineNumber;
 
-        return $this->parseLine($line);
+        $this->parseLine($line);
     }
 
-    abstract protected function parseLine($line);
+    abstract protected function parseLine(string $line): void;
 
-    protected function triggerError($message, $title = 'Syntax error')
+    protected function triggerError(string $message, string $title = 'Syntax error'): void
     {
         throw new \RuntimeException(sprintf(
             '%s in %s line %d : %s',
@@ -49,7 +49,7 @@ abstract class AbstractSectionParser implements SectionParser
         ));
     }
 
-    public function postParse()
+    public function postParse(): void
     {
     }
 }

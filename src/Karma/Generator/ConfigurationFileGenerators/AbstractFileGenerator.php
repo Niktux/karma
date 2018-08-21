@@ -30,14 +30,14 @@ abstract class AbstractFileGenerator implements ConfigurationFileGenerator
         $this->systemEnvironment = null;
     }
 
-    public function setDryRun($value = true)
+    public function setDryRun(bool $value = true): ConfigurableProcessor
     {
         $this->dryRun = (bool) $value;
 
         return $this;
     }
 
-    public function enableBackup($value = true)
+    public function enableBackup(bool $value = true): ConfigurableProcessor
     {
         $this->enableBackup = (bool) $value;
 
@@ -69,21 +69,21 @@ abstract class AbstractFileGenerator implements ConfigurationFileGenerator
         return $this->reader->read($variable, $environment);
     }
 
-    public function setSystemEnvironment(string $environment): ConfigurableProcessor
+    public function setSystemEnvironment(?string $environment): ConfigurableProcessor
     {
         $this->systemEnvironment = $environment;
 
         return $this;
     }
 
-    abstract protected function generateVariable($variableName, $value);
+    abstract protected function generateVariable(string $variableName, $value): void;
 
-    protected function preGenerate()
+    protected function preGenerate(): void
     {
 
     }
 
-    protected function postGenerate()
+    protected function postGenerate(): void
     {
 
     }

@@ -117,7 +117,7 @@ class HydratorTest extends TestCase
         );
     }
     
-    private function assertTargetHas($filename, $message = null)
+    private function assertTargetHas($filename, $message = '')
     {
         if(empty($message))
         {
@@ -127,7 +127,7 @@ class HydratorTest extends TestCase
         $this->assertTrue($this->targetFs->has($filename), $message);
     }
 
-    private function assertTargetHasNot($filename, $message = null)
+    private function assertTargetHasNot($filename, $message = '')
     {
         if(empty($message))
         {
@@ -137,12 +137,12 @@ class HydratorTest extends TestCase
         $this->assertFalse($this->targetFs->has($filename), $message);
     }
     
-    private function assertTargetContent($expectedContent, $filename, $message = null)
+    private function assertTargetContent($expectedContent, $filename, $message = '')
     {
         $this->assertSame($expectedContent, $this->targetFs->read($filename), $message);
     }
     
-    private function assertSourceContent($expectedContent, $filename, $message = null)
+    private function assertSourceContent($expectedContent, $filename, $message = '')
     {
         $this->assertSame($expectedContent, $this->sourceFs->read($filename), $message);
     }

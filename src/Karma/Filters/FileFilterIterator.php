@@ -20,7 +20,7 @@ class FileFilterIterator extends \FilterIterator implements \Countable
         $this->fsAdapter = $fs->getAdapter();
     }
 
-    public function accept()
+    public function accept(): bool
     {
         $filename = $this->getInnerIterator()->current();
 
@@ -29,7 +29,7 @@ class FileFilterIterator extends \FilterIterator implements \Countable
             && preg_match($this->regex, $filename);
     }
 
-    public function count()
+    public function count(): int
     {
         return iterator_count($this);
     }

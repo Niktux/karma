@@ -13,7 +13,7 @@ class MultipleAdapter implements Adapter
     
     public function __construct()
     {
-        $this->mountTable = array();
+        $this->mountTable = [];
     }
     
     public function mount($mountPoint, Adapter $adapter)
@@ -24,7 +24,7 @@ class MultipleAdapter implements Adapter
         $this->mountTable[$mountPoint] = $adapter;
     }
     
-    private function find($key)
+    private function find($key): array
     {
         $mountPoints = array_keys($this->mountTable);
         

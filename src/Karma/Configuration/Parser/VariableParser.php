@@ -8,7 +8,7 @@ use Karma\Configuration;
 
 class VariableParser extends AbstractSectionParser
 {
-    use \Karma\Configuration\FilterInputVariable;
+    use Configuration\FilterInputVariable;
 
     const
         ASSIGNMENT = '=',
@@ -22,29 +22,33 @@ class VariableParser extends AbstractSectionParser
 
     public function __construct()
     {
+        parent::__construct();
+
         $this->currentVariable = null;
-        $this->variables = array();
+        $this->variables = [];
         $this->valueFound = false;
     }
 
-    protected function parseLine($line)
+    protected function parseLine(string $line): void
     {
         if($this->isACommentLine($line))
         {
-            return true;
+            return;
         }
 
         list($variableName, $isSystem) = $this->extractVariableName($line);
 
         if($variableName !== null)
         {
-            return $this->changeCurrentVariable($variableName, $isSystem);
+            $this->changeCurrentVariable($variableName, $isSystem);
+
+            return;
         }
 
         $this->parseEnvironmentValue($line);
     }
 
-    private function extractVariableName($line)
+    private function extractVariableName(string $line): array
     {
         $variableName = null;
         $isSystem = false;
@@ -66,10 +70,10 @@ class VariableParser extends AbstractSectionParser
             }
         }
 
-        return array($variableName, $isSystem);
+        return [$variableName, $isSystem];
     }
 
-    private function checkCurrentVariableState()
+    private function checkCurrentVariableState(): void
     {
         if($this->currentVariable !== null && $this->valueFound === false)
         {
@@ -82,7 +86,7 @@ class VariableParser extends AbstractSectionParser
         }
     }
 
-    private function changeCurrentVariable($variableName, $isSystem)
+    private function changeCurrentVariable(string $variableName, bool $isSystem): void
     {
         $this->checkCurrentVariableState();
         $this->currentVariable = $variableName;
@@ -107,7 +111,7 @@ class VariableParser extends AbstractSectionParser
         $this->valueFound = false;
     }
 
-    private function parseEnvironmentValue($line)
+    private function parseEnvironmentValue(string $line): void
     {
         if($this->currentVariable === null)
         {
@@ -143,14 +147,14 @@ class VariableParser extends AbstractSectionParser
         return $this->variables;
     }
 
-    public function setCurrentFile($filePath)
+    public function setCurrentFile(string $filePath): void
     {
         parent::setCurrentFile($filePath);
 
         $this->currentVariable = null;
     }
 
-    public function endOfFileCheck()
+    public function endOfFileCheck(): void
     {
         $this->checkCurrentVariableState();
     }

@@ -20,8 +20,22 @@ endif
 
 #------------------------------------------------------------------------------
 
-console: create-console-image ## Run karma
+switch-to-hydrate-test-profile:
+	-rm .karma
+	-ln -s .karma-hydrate .karma
+
+switch-to-generate-test-profile:
+	-rm .karma
+	-ln -s .karma-generate .karma
+
+console: switch-to-hydrate-test-profile create-console-image ## Run karma
 	$(call console, )
+
+k-hydrate: switch-to-hydrate-test-profile create-console-image ## Run karma hydrate command
+	$(call console, -vvv hydrate)
+
+k-generate: switch-to-generate-test-profile create-console-image ## Run karma generate command
+	$(call console, -vvv generate)
 
 create-console-image: docker/images/console/Dockerfile
 	docker build -q -t ${CONSOLE_IMAGE_NAME} docker/images/console/
@@ -33,6 +47,6 @@ clean-console:
 
 #------------------------------------------------------------------------------
 
-.PHONY: console create-console-image clean-console
+.PHONY: console create-console-image clean-console switch-to-hydrate-test-profile switch-to-generate-test-profile k-generate
 
 #------------------------------------------------------------------------------

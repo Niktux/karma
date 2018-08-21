@@ -56,22 +56,26 @@ class MultipleAdapterTest extends TestCase
                 $this->multiple->read($testedPath)
             );
         }
+        else
+        {
+            $this->assertSame($expectedPath, 'doesNotExist');
+        }
     }
     
     public function providerAllFiles()
     {
-        return array(
-            array('src', 'wildHorses', 'src/wildHorses'),
-            array('src', 'pony/unicorn.ext', 'src/pony/unicorn.ext'),
-            array('src', 'doesNotExist', 'src/doesNotExist'),
-            
-            array('lib', 'burger', 'var/lib/burger'),
-            array('lib', 'fat/burger', 'var/lib/fat/burger'),
-            array('lib', 'more/fat/burger', 'var/lib/more/fat/burger'),
-            array('lib', 'doesNotExist', 'var/lib/doesNotExist'),
-        );
+        return [
+            ['src', 'wildHorses', 'src/wildHorses'],
+            ['src', 'pony/unicorn.ext', 'src/pony/unicorn.ext'],
+            ['src', 'doesNotExist', 'doesNotExist'],
+
+            ['lib', 'burger', 'var/lib/burger'],
+            ['lib', 'fat/burger', 'var/lib/fat/burger'],
+            ['lib', 'more/fat/burger', 'var/lib/more/fat/burger'],
+            ['lib', 'doesNotExist', 'doesNotExist'],
+        ];
     }
-    
+
     public function testWrite()
     {
         $this->assertFalse($this->multiple->exists('var/lib/reply'));
@@ -132,6 +136,10 @@ class MultipleAdapterTest extends TestCase
                 $this->multiple->mtime($testedPath)
             );
         }
+        else
+        {
+            $this->assertSame($expectedPath, 'doesNotExist');
+        }
     }
     
     public function testDelete()
@@ -166,6 +174,10 @@ class MultipleAdapterTest extends TestCase
                 $adapter->isDirectory($expectedPath),
                 $this->multiple->isDirectory($testedPath)
             );
+        }
+        else
+        {
+            $this->assertSame($expectedPath, 'doesNotExist');
         }
     }
 }

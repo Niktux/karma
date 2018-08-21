@@ -25,12 +25,12 @@ class ApplicationTest extends TestCase
 
     public function providerTestContainer()
     {
-        return array(
-            array('hydrator', 'Karma\\Hydrator'),
-            array('parser', 'Karma\\Configuration\\Parser'),
-            array('configuration', 'Karma\\Configuration'),
-            array('finder', 'Karma\\Finder'),
-            array('configurationFilesGenerator', 'Karma\\Generator\\ConfigurationFileGenerator'),
-        );
+        return [
+            ['hydrator', 'Karma\\Hydrator'],
+            ['parser', 'Karma\\Configuration\\Parser'],
+            ['configuration', 'Karma\\Configuration'],
+            ['finder', 'Karma\\Finder'],
+            ['configurationFilesGenerator', 'Karma\\Generator\\ConfigurationFileGenerator'],
+        ];
     }
 }

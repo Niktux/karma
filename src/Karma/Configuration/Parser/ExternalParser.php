@@ -18,15 +18,15 @@ class ExternalParser extends AbstractSectionParser
         parent::__construct();
 
         $this->parser = $parser;
-        $this->variables = array();
-        $this->filesStatus = array();
+        $this->variables = [];
+        $this->filesStatus = [];
     }
 
-    public function parseLine($line)
+    public function parseLine(string $line): void
     {
         if($this->isACommentLine($line))
         {
-            return true;
+            return;
         }
 
         $file = trim($line);
@@ -38,10 +38,10 @@ class ExternalParser extends AbstractSectionParser
             $this->variables = $this->parser->parse($file);
         }
 
-        $this->filesStatus[$file] = array(
+        $this->filesStatus[$file] = [
             'found' => $found,
             'referencedFrom' => $this->currentFilePath,
-        );
+        ];
     }
 
     public function getExternalVariables(): array
@@ -49,7 +49,7 @@ class ExternalParser extends AbstractSectionParser
         return $this->variables;
     }
 
-    public function getExternalFilesStatus()
+    public function getExternalFilesStatus(): array
     {
         return $this->filesStatus;
     }

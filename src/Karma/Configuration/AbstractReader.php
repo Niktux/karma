@@ -18,11 +18,11 @@ abstract class AbstractReader implements Configuration
     public function __construct()
     {
         $this->defaultEnvironment = 'dev';
-        $this->overridenVariables = array();
-        $this->customData = array();
+        $this->overridenVariables = [];
+        $this->customData = [];
     }
 
-    public function read($variable, $environment = null)
+    public function read(string $variable, ?string $environment = null)
     {
         $value = null;
 
@@ -38,19 +38,17 @@ abstract class AbstractReader implements Configuration
         return $this->handleCustomData($value);
     }
 
-    abstract protected function readRaw($variable, $environment = null);
+    abstract protected function readRaw(string $variable, ?string $environment = null);
 
-    public function setDefaultEnvironment($environment)
+    public function setDefaultEnvironment(string $environment): void
     {
         if(! empty($environment) && is_string($environment))
         {
             $this->defaultEnvironment = $environment;
         }
-
-        return $this;
     }
 
-    public function getAllValuesForEnvironment($environment = null)
+    public function getAllValuesForEnvironment(?string $environment = null)
     {
         $result = array();
 
@@ -73,19 +71,15 @@ abstract class AbstractReader implements Configuration
         return $result;
     }
 
-    public function overrideVariable($variable, $value)
+    public function overrideVariable(string $variable, $value): void
     {
         $this->overridenVariables[$variable] = $value;
-
-        return $this;
     }
 
-    public function setCustomData($customDataName, $value)
+    public function setCustomData(string $customDataName, $value): void
     {
         $key = '${' . $customDataName . '}';
         $this->customData[$key] = $value;
-
-        return $this;
     }
 
     private function handleCustomData($value)
