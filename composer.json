@@ -29,8 +29,8 @@
         "phpunit/phpunit" : "~7.3"
     },
     "autoload" : {
-        "psr-0" : {
-            "Karma" : "src"
+        "psr-4" : {
+            "Karma\\" : "src/"
         }
     },
     "support" : {
