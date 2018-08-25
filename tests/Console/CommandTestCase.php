@@ -17,7 +17,7 @@ abstract class CommandTestCase extends TestCase
         $app,
         $commandTester;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $masterContent = <<< CONFFILE
 [variables]
@@ -38,7 +38,7 @@ CONFFILE;
         };
     }
 
-    protected function runCommand($commandName, array $commandArguments = [])
+    protected function runCommand(string $commandName, array $commandArguments = []): void
     {
         $console = new Console($this->app);
         $command = $console

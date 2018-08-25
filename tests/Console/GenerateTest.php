@@ -15,7 +15,7 @@ class GenerateTest extends CommandTestCase
     private const
         COMMAND_NAME = 'generate';
 
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 

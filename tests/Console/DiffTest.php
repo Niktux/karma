@@ -8,12 +8,12 @@ require_once __DIR__ . '/CommandTestCase.php';
 
 class DiffTest extends CommandTestCase
 {
-    public function testDiff()
+    public function testDiff(): void
     {
-        $this->runCommand('diff', array(
+        $this->runCommand('diff', [
             'env1' => 'dev',
             'env2' => 'prod'
-        ));
+        ]);
 
         $reader = $this->app['configuration'];
         $valueBar = $reader->read('app.bar');

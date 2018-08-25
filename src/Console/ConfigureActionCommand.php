@@ -4,12 +4,12 @@ declare(strict_types = 1);
 
 namespace Karma\Console;
 
+use Karma\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Karma\Application;
-use Karma\Console;
 use Karma\Configuration\FilterInputVariable;
 use Karma\ConfigurableProcessor;
 
@@ -17,7 +17,7 @@ abstract class ConfigureActionCommand extends Command
 {
     use FilterInputVariable;
 
-    const
+    private const
         ENV_DEV = 'dev',
         OPTION_ASSIGNMENT = '=';
 

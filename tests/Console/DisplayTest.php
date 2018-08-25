@@ -11,7 +11,7 @@ class DisplayTest extends CommandTestCase
     /**
      * @dataProvider providerTestDisplay
      */
-    public function testDisplay($env)
+    public function testDisplay(string $env): void
     {
         $this->runCommand('display', array('--env' => $env));
 
@@ -22,15 +22,15 @@ class DisplayTest extends CommandTestCase
         $this->assertDisplay("~$valueFoo~");
     }
 
-    public function providerTestDisplay()
+    public function providerTestDisplay(): array
     {
-        return array(
-            array('dev'),
-            array('prod'),
-        );
+        return [
+            ['dev'],
+            ['prod'],
+        ];
     }
 
-    public function testValueFilter()
+    public function testValueFilter(): void
     {
         $env = 'dev';
 
