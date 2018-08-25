@@ -30,6 +30,7 @@ class Hydrate extends ConfigureActionCommand
         $processor->hydrate($this->environment);
         $this->warnForUnusedVariables($processor);
         $this->warnForUnvaluedVariables($processor);
+    //    $this->hydrationStats($processor);
     }
 
     private function warnForUnusedVariables(Hydrator $processor)
@@ -60,6 +61,20 @@ class Hydrate extends ConfigureActionCommand
             $logger->warning(sprintf(
                 'Missing values for variables : %s (TODO markers found)',
                 implode(', ', $unvaluedVariables)
+            ));
+        }
+    }
+
+    private function hydrationStats(Hydrator $processor): void
+    {
+        foreach($processor->hydratedFiles() as $file => $nbVariables)
+        {
+            $logger = $this->app['logger'];
+
+            $logger->debug(sprintf(
+                '%-30s [%2d]',
+                $file,
+                $nbVariables
             ));
         }
     }

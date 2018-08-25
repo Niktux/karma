@@ -57,12 +57,12 @@ class Hydrator implements ConfigurableProcessor
         $this->currentTargetFile = null;
         $this->systemEnvironment = null;
         $this->unusedVariables = array_flip($reader->getAllVariables());
-        $this->unvaluedVariables = array();
+        $this->unvaluedVariables = [];
         $this->nonDistFilesOverwriteAllowed = false;
         $this->hydratedFiles = [];
     }
 
-    public function setSuffix($suffix)
+    public function setSuffix(string $suffix)
     {
         $this->suffix = $suffix;
 
@@ -71,19 +71,19 @@ class Hydrator implements ConfigurableProcessor
 
     public function setDryRun(bool $value = true): ConfigurableProcessor
     {
-        $this->dryRun = (bool) $value;
+        $this->dryRun = $value;
 
         return $this;
     }
 
     public function enableBackup(bool $value = true): ConfigurableProcessor
     {
-        $this->enableBackup = (bool) $value;
+        $this->enableBackup = $value;
 
         return $this;
     }
     
-    public function allowNonDistFilesOverwrite($nonDistFilesOverwriteAllowed = true)
+    public function allowNonDistFilesOverwrite(bool $nonDistFilesOverwriteAllowed = true)
     {
         $this->nonDistFilesOverwriteAllowed = $nonDistFilesOverwriteAllowed;
 
@@ -126,7 +126,7 @@ class Hydrator implements ConfigurableProcessor
 
     private function collectFiles(): iterable
     {
-        $pattern = sprintf('.*%s$', preg_quote($this->suffix));
+        $pattern = sprintf('.*%s$', preg_quote($this->suffix, '~'));
         
         return $this->finder->findFiles(sprintf('~%s~', $pattern));
     }
@@ -143,7 +143,7 @@ class Hydrator implements ConfigurableProcessor
     
     private function collectNonDistFiles(): iterable
     {
-        $pattern = sprintf('(?<!%s)$', preg_quote($this->suffix));
+        $pattern = sprintf('(?<!%s)$', preg_quote($this->suffix, '~'));
         
         return $this->finder->findFiles(sprintf('~%s~', $pattern));
     }
@@ -151,7 +151,10 @@ class Hydrator implements ConfigurableProcessor
 
     private function hydrateFile(string $file, string $environment): void
     {
-        $this->currentTargetFile = preg_replace(sprintf('~(.*)(%s)$~', preg_quote($this->suffix)), '$1', $file);
+        $this->currentTargetFile = preg_replace(sprintf(
+            '~(.*)(%s)$~',
+            preg_quote($this->suffix, '~')
+        ), '$1', $file);
 
         if($this->nonDistFilesOverwriteAllowed)
         {
@@ -167,7 +170,7 @@ class Hydrator implements ConfigurableProcessor
 
         if($this->dryRun === false)
         {
-            if(in_array($this->currentTargetFile, $this->hydratedFiles) && $this->nonDistFilesOverwriteAllowed)
+            if($this->hasBeenHydrated($this->currentTargetFile) && $this->nonDistFilesOverwriteAllowed)
             {
                 throw new \RuntimeException(sprintf('The fileName "%s" is defined in 2 config folders (not allowed with targetPath config enabled)', $this->currentTargetFile));
             }
@@ -176,7 +179,12 @@ class Hydrator implements ConfigurableProcessor
             $this->target->write($this->currentTargetFile, $targetContent, true);
         }
 
-        $this->hydratedFiles[] = $this->currentTargetFile;
+        $this->hydratedFiles[$this->currentTargetFile] = $replacementCounter;
+    }
+
+    private function hasBeenHydrated(string $file): bool
+    {
+        return array_key_exists($file, $this->hydratedFiles);
     }
 
     private function parseFileDirectives(string $file, string & $fileContent, string $environment): int
@@ -253,14 +261,14 @@ class Hydrator implements ConfigurableProcessor
         }
     }
 
-    private function generateContentForListDirective($variable, $environment, $delimiter, array $wrapper)
+    private function generateContentForListDirective(string $variable, string $environment, string $delimiter, array $wrapper): string
     {
         $values = $this->readValueToInject($variable, $environment);
         $formatter = $this->getFormatterForCurrentTargetFile();
 
         if(! is_array($values))
         {
-            $values = array($values);
+            $values = [$values];
         }
 
         array_walk($values, function (& $value) use ($formatter) {
@@ -281,7 +289,7 @@ class Hydrator implements ConfigurableProcessor
         return preg_replace('~(<%\s*karma:[^%]*%>\s*)~i', '', $fileContent);
     }
 
-    private function injectValues($sourceFile, $content, $environment, $replacementCounter = 0)
+    private function injectValues(string $sourceFile, string $content, string $environment, int & $replacementCounter = 0): string
     {
         $replacementCounter += $this->injectScalarValues($content, $environment);
         $replacementCounter += $this->injectListValues($content, $environment);
@@ -294,7 +302,7 @@ class Hydrator implements ConfigurableProcessor
         return $content;
     }
 
-    private function readValueToInject($variableName, $environment)
+    private function readValueToInject(string $variableName, string $environment)
     {
         if($this->systemEnvironment !== null && $this->reader->isSystem($variableName) === true)
         {
@@ -310,7 +318,7 @@ class Hydrator implements ConfigurableProcessor
         return $value;
     }
 
-    private function checkValueIsAllowed($variableName, $environment, $value)
+    private function checkValueIsAllowed(string $variableName, string $environment, $value): void
     {
         if($value === self::FIXME_VALUE)
         {
@@ -320,13 +328,14 @@ class Hydrator implements ConfigurableProcessor
                 $environment
             ));
         }
-        elseif($value === self::TODO_VALUE)
+
+        if($value === self::TODO_VALUE)
         {
             $this->unvaluedVariables[] = $variableName;
         }
     }
 
-    private function getFormatterForCurrentTargetFile()
+    private function getFormatterForCurrentTargetFile(): Formatter
     {
         $fileExtension = pathinfo($this->currentTargetFile, PATHINFO_EXTENSION);
 
@@ -364,7 +373,7 @@ class Hydrator implements ConfigurableProcessor
         while(preg_match(self::VARIABLE_REGEX, $content))
         {
             $lines = explode($eol, $content);
-            $result = array();
+            $result = [];
 
             foreach($lines as $lineNumber => $line)
             {
@@ -472,5 +481,10 @@ class Hydrator implements ConfigurableProcessor
     public function getUnvaluedVariables(): array
     {
         return $this->unvaluedVariables;
+    }
+
+    public function hydratedFiles(): array
+    {
+        return $this->hydratedFiles;
     }
 }
