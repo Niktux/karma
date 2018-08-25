@@ -8,6 +8,7 @@ use Karma\Application;
 use Gaufrette\Adapter\InMemory;
 use Karma\Console;
 use PHPUnit\Framework\TestCase;
+use Pimple\Container;
 use Symfony\Component\Console\Tester\CommandTester;
 
 abstract class CommandTestCase extends TestCase
@@ -28,16 +29,16 @@ app.bar:
 CONFFILE;
 
         $this->app = new Application();
-        $this->app['configuration.fileSystem.adapter'] = new InMemory(array(
+        $this->app['configuration.fileSystem.adapter'] = new InMemory([
             Application::DEFAULT_MASTER_FILE => $masterContent,
-        ));
+        ]);
 
-        $this->app['profile.fileSystem.adapter'] = function($c) {
+        $this->app['profile.fileSystem.adapter'] = function(Container $c) {
             return new InMemory();
         };
     }
 
-    protected function runCommand($commandName, array $commandArguments = array())
+    protected function runCommand($commandName, array $commandArguments = [])
     {
         $console = new Console($this->app);
         $command = $console
@@ -47,19 +48,19 @@ CONFFILE;
         $this->commandTester = new CommandTester($command);
 
         $commandArguments = array_merge(
-            array('command' => $command->getName()),
+            ['command' => $command->getName()],
             $commandArguments
         );
 
         $this->commandTester->execute($commandArguments);
     }
 
-    protected function assertDisplay($regex)
+    protected function assertDisplay(string $regex): void
     {
         $this->assertRegExp($regex, $this->commandTester->getDisplay());
     }
 
-    protected function assertNotDisplay($regex)
+    protected function assertNotDisplay(string $regex): void
     {
         $this->assertNotRegExp($regex, $this->commandTester->getDisplay());
     }

@@ -12,7 +12,7 @@ use Karma\Generator\ConfigurationFileGenerators\YamlGenerator;
 
 class GenerateTest extends CommandTestCase
 {
-    const
+    private const
         COMMAND_NAME = 'generate';
 
     protected function setUp()
@@ -31,7 +31,7 @@ class GenerateTest extends CommandTestCase
     /**
      * @dataProvider providerTestOptions
      */
-    public function testOptions($option, $expectedMethodCall)
+    public function testOptions(string $option, string $expectedMethodCall): void
     {
         $mock = $this->createMock(YamlGenerator::class);
 
@@ -46,7 +46,7 @@ class GenerateTest extends CommandTestCase
         ]);
     }
 
-    public function providerTestOptions()
+    public function providerTestOptions(): array
     {
         return [
             ['--dry-run', 'setDryRun'],
@@ -54,7 +54,7 @@ class GenerateTest extends CommandTestCase
         ];
     }
 
-    public function testSourcePathFromProfile()
+    public function testSourcePathFromProfile(): void
     {
         $this->app['profile.fileSystem.adapter'] = new InMemory([
             Application::PROFILE_FILENAME => 'sourcePath: lib/',
@@ -67,14 +67,14 @@ class GenerateTest extends CommandTestCase
     /**
      * @expectedException \RuntimeException
      */
-    public function testNoSourcePathProvided()
+    public function testNoSourcePathProvided(): void
     {
         $this->app['profile.fileSystem.adapter'] = new InMemory();
 
         $this->runCommand(self::COMMAND_NAME, []);
     }
 
-    public function testOverride()
+    public function testOverride(): void
     {
         $this->runCommand(self::COMMAND_NAME, [
             '--override' => ['db.user=toto', 'api.key=azer=ty'],
@@ -85,7 +85,7 @@ class GenerateTest extends CommandTestCase
         $this->assertDisplay('~Override api.key with value azer=ty~');
     }
 
-    public function testOverrideWithList()
+    public function testOverrideWithList(): void
     {
         $this->app['generate.sources.fileSystem.adapter'] = $adapter = new InMemory([
         ]);
@@ -103,13 +103,13 @@ foo:
 bar: valueAll
 
 YAML;
-        $this->assertSame($expected, $adapter->read(('app.yml')));
+        $this->assertSame($expected, $adapter->read('app.yml'));
     }
 
     /**
      * @expectedException \InvalidArgumentException
      */
-    public function testDuplicatedOverrideOption()
+    public function testDuplicatedOverrideOption(): void
     {
         $this->runCommand(self::COMMAND_NAME, [
             '--override' => ['db.user=toto', 'other=value', 'db.user=tata'],
@@ -120,7 +120,7 @@ YAML;
     /**
      * @expectedException \InvalidArgumentException
      */
-    public function testInvalidOverrideOption()
+    public function testInvalidOverrideOption(): void
     {
         $this->runCommand(self::COMMAND_NAME, [
             '--override' => 'db.user:tata',
@@ -128,7 +128,7 @@ YAML;
         ]);
     }
 
-    public function testCustomData()
+    public function testCustomData(): void
     {
         $this->runCommand(self::COMMAND_NAME, [
             '--data' => ['user=jdoe', 'api.key=azer=ty'],
@@ -142,7 +142,7 @@ YAML;
     /**
      * @expectedException \InvalidArgumentException
      */
-    public function testDuplicatedCustomData()
+    public function testDuplicatedCustomData(): void
     {
         $this->runCommand(self::COMMAND_NAME, [
             '--data' => ['user=toto', 'other=value', 'user=tata'],
@@ -153,7 +153,7 @@ YAML;
     /**
      * @expectedException \InvalidArgumentException
      */
-    public function testInvalidCustomData()
+    public function testInvalidCustomData(): void
     {
         $this->runCommand(self::COMMAND_NAME, [
             '--data' => 'db.user:tata',
@@ -161,7 +161,7 @@ YAML;
         ]);
     }
 
-    public function testSystemEnvironment()
+    public function testSystemEnvironment(): void
     {
         $this->runCommand(self::COMMAND_NAME, [
             '--system' => 'dev',
