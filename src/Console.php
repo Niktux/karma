@@ -13,11 +13,11 @@ class Console
     {
         $this->app = new \Symfony\Component\Console\Application('Karma', Application::VERSION);
 
-        $this->app->add(new Command\Hydrate($dic));
-        $this->app->add(new Command\Generate($dic));
-        $this->app->add(new Command\Display($dic));
-        $this->app->add(new Command\Diff($dic));
-        $this->app->add(new Command\Rollback($dic));
+        $this->app->add(new Console\Hydrate($dic));
+        $this->app->add(new Console\Generate($dic));
+        $this->app->add(new Console\Display($dic));
+        $this->app->add(new Console\Diff($dic));
+        $this->app->add(new Console\Rollback($dic));
     }
 
     public function run()

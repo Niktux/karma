@@ -2,13 +2,13 @@
 
 declare(strict_types = 1);
 
-namespace Karma\Command;
+namespace Karma\Console;
 
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Karma\Configuration;
-use Karma\Command;
+use Karma\Console;
 use Karma\Configuration\ValueFilterIterator;
 
 class Display extends Command

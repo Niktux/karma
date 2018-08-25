@@ -2,7 +2,7 @@
 
 declare(strict_types = 1);
 
-namespace Karma\Command;
+namespace Karma\Console;
 
 use Karma\Application;
 use Gaufrette\Adapter\InMemory;

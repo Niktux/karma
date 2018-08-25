@@ -2,7 +2,7 @@
 
 declare(strict_types = 1);
 
-namespace Karma\Command;
+namespace Karma\Console;
 
 require_once __DIR__ . '/CommandTestCase.php';
 

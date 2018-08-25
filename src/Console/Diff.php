@@ -2,13 +2,13 @@
 
 declare(strict_types = 1);
 
-namespace Karma\Command;
+namespace Karma\Console;
 
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Karma\Display\CliTable;
-use Karma\Command;
+use Karma\Console;
 
 class Diff extends Command
 {
