@@ -33,6 +33,11 @@ abstract class AbstractSectionParser implements SectionParser
     {
         $this->currentLineNumber = $lineNumber;
 
+        if($this->isACommentLine($line))
+        {
+            return;
+        }
+
         $this->parseLine($line);
     }
 

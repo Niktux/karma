@@ -571,4 +571,25 @@ CONFFILE;
             ->enableGroupSupport()
             ->parse(self::MASTERFILE_PATH);
     }
+
+    public function testFileStartsWithComment(): void
+    {
+        $masterContent = <<<CONFFILE
+
+# This is a comment
+# like for those whose put copyright headers
+# or love to tell about their lifes
+
+[vArIaBlEs]
+toto:
+    default = tata
+
+CONFFILE;
+
+        $parser = new Parser(new Filesystem(new InMemory([self::MASTERFILE_PATH => $masterContent])));
+
+        $variables = $parser->parse(self::MASTERFILE_PATH);
+
+        $this->assertArrayHasKey('toto', $variables);
+    }
 }

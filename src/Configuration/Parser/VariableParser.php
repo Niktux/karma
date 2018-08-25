@@ -30,12 +30,7 @@ class VariableParser extends AbstractSectionParser
 
     protected function parseLine(string $line): void
     {
-        if($this->isACommentLine($line))
-        {
-            return;
-        }
-
-        list($variableName, $isSystem) = $this->extractVariableName($line);
+        [$variableName, $isSystem] = $this->extractVariableName($line);
 
         if($variableName !== null)
         {

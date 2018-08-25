@@ -18,11 +18,6 @@ class IncludeParser extends AbstractSectionParser
 
     protected function parseLine(string $line): void
     {
-        if($this->isACommentLine($line))
-        {
-            return;
-        }
-
         $this->checkFilenameIsValid($line);
 
         $this->files[] = $line;

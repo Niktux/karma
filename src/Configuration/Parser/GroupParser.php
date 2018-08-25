@@ -20,11 +20,6 @@ class GroupParser extends AbstractSectionParser
 
     protected function parseLine(string $line): void
     {
-        if($this->isACommentLine($line))
-        {
-            return;
-        }
-
         $line = trim($line);
 
         if(preg_match('~(?P<groupName>[^=]+)\s*=\s*\[(?P<envList>[^\[\]]+)\]$~', $line, $matches))

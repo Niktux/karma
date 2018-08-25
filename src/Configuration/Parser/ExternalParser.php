@@ -24,11 +24,6 @@ class ExternalParser extends AbstractSectionParser
 
     public function parseLine(string $line): void
     {
-        if($this->isACommentLine($line))
-        {
-            return;
-        }
-
         $file = trim($line);
 
         $found = false;
