@@ -5,22 +5,13 @@ declare(strict_types = 1);
 namespace Karma\Configuration;
 
 use Gaufrette\Filesystem;
+use Karma\Configuration\Collections\SectionParserCollection;
 use Karma\Configuration\Parser\NullParser;
-use Karma\Configuration\Parser\IncludeParser;
-use Karma\Configuration\Parser\VariableParser;
-use Karma\Configuration\Parser\ExternalParser;
 use Psr\Log\NullLogger;
-use Karma\Configuration\Parser\GroupParser;
 
 class Parser implements FileParser
 {
     use \Karma\Logging\LoggerAware;
-
-    private const
-        INCLUDES = 'includes',
-        VARIABLES = 'variables',
-        EXTERNALS = 'externals',
-        GROUPS = 'groups';
 
     private
         $parsers,
@@ -32,10 +23,7 @@ class Parser implements FileParser
     public function __construct(Filesystem $fs)
     {
         $this->logger = new NullLogger();
-
-        $this->parsers = [
-            self::VARIABLES => new VariableParser(),
-        ];
+        $this->parsers = new SectionParserCollection();
 
         $this->parsedFiles = [];
         $this->fs = $fs;
@@ -51,30 +39,21 @@ class Parser implements FileParser
 
     public function enableIncludeSupport(): self
     {
-        if(! isset($this->parsers[self::INCLUDES]))
-        {
-            $this->parsers[self::INCLUDES] = new IncludeParser();
-        }
+        $this->parsers->enableIncludeSupport();
 
         return $this;
     }
 
     public function enableExternalSupport(): self
     {
-        if(! isset($this->parsers[self::EXTERNALS]))
-        {
-            $this->parsers[self::EXTERNALS] = new ExternalParser(new Parser($this->fs));
-        }
+       $this->parsers->enableExternalSupport($this->fs);
 
         return $this;
     }
 
     public function enableGroupSupport(): self
     {
-        if(! isset($this->parsers[self::GROUPS]))
-        {
-            $this->parsers[self::GROUPS] = new GroupParser();
-        }
+        $this->parsers->enableGroupSupport();
 
         return $this;
     }
@@ -108,13 +87,13 @@ class Parser implements FileParser
         {
             foreach($files as $file)
             {
-                $this->readFile($file);
+                $this->parseFile($file);
             }
 
-            if(isset($this->parsers[self::INCLUDES]))
+            $parser = $this->parsers->includes();
+            if($parser !== null)
             {
-                $includeParser = $this->parsers[self::INCLUDES];
-                $files = $includeParser->getCollectedFiles();
+                $files = $parser->getCollectedFiles();
             }
 
             // Avoid loop
@@ -122,8 +101,9 @@ class Parser implements FileParser
         }
     }
 
-    private function readFile(string $filePath): void
+    private function parseFile(string $filePath): void
     {
+        $this->parsedFiles[] = $filePath;
         $lines = $this->extractLines($filePath);
         $this->changeCurrentFile($filePath);
 
@@ -150,7 +130,7 @@ class Parser implements FileParser
             $this->currentParser->parse($line, $currentLineNumber);
         }
 
-        $this->parsers[self::VARIABLES]->endOfFileCheck();
+        $this->parsers->variables()->endOfFileCheck();
     }
 
     private function extractLines(string $filePath): array
@@ -164,8 +144,6 @@ class Parser implements FileParser
 
         $lines = explode($this->eol, $content ?? '');
         $lines = $this->trimLines($lines);
-
-        $this->parsedFiles[] = $filePath;
 
         if(empty($lines))
         {
@@ -195,9 +173,9 @@ class Parser implements FileParser
         $sectionName = null;
 
         // [.*]
-        if(preg_match('~^\[(?P<groupName>[^\]]+)\]$~', $line, $matches))
+        if(preg_match('~^\[(?P<sectionName>[^\]]+)\]$~', $line, $matches))
         {
-            $sectionName = strtolower(trim($matches['groupName']));
+            $sectionName = strtolower(trim($matches['sectionName']));
         }
 
         return $sectionName;
@@ -205,17 +183,12 @@ class Parser implements FileParser
 
     private function switchSectionParser(string $sectionName): void
     {
-        if(! isset($this->parsers[$sectionName]))
-        {
-            throw new \RuntimeException('Unknown section name ' . $sectionName);
-        }
-
-        $this->currentParser = $this->parsers[$sectionName];
+        $this->currentParser = $this->parsers->get($sectionName);
     }
 
     public function getVariables(): array
     {
-        return $this->parsers[self::VARIABLES]->getVariables();
+        return $this->parsers->variables()->getVariables();
     }
 
     public function getFileSystem(): Filesystem
@@ -227,9 +200,10 @@ class Parser implements FileParser
     {
         $variables = [];
 
-        if(isset($this->parsers[self::EXTERNALS]))
+        $parser = $this->parsers->externals();
+        if($parser !== null)
         {
-            $variables = $this->parsers[self::EXTERNALS]->getExternalVariables();
+            $variables = $parser->getExternalVariables();
         }
 
         return $variables;
@@ -255,9 +229,10 @@ class Parser implements FileParser
     {
         $files = [];
 
-        if(isset($this->parsers[self::EXTERNALS]))
+        $parser = $this->parsers->externals();
+        if($parser !== null)
         {
-            $files = $this->parsers[self::EXTERNALS]->getExternalFilesStatus();
+            $files = $parser->getExternalFilesStatus();
         }
 
         return $files;
@@ -267,9 +242,10 @@ class Parser implements FileParser
     {
         $groups = [];
 
-        if(isset($this->parsers[self::GROUPS]))
+        $parser = $this->parsers->groups();
+        if($parser !== null)
         {
-            $groups = $this->parsers[self::GROUPS]->getCollectedGroups();
+            $groups = $parser->getCollectedGroups();
         }
 
         return $groups;
@@ -298,11 +274,12 @@ class Parser implements FileParser
 
     public function getDefaultEnvironmentsForGroups(): array
     {
-         $defaultEnvironments = [];
+        $defaultEnvironments = [];
 
-        if(isset($this->parsers[self::GROUPS]))
+        $parser = $this->parsers->groups();
+        if($parser !== null)
         {
-            $defaultEnvironments = $this->parsers[self::GROUPS]->getDefaultEnvironmentsForGroups();
+            $defaultEnvironments = $parser->getDefaultEnvironmentsForGroups();
         }
 
         return $defaultEnvironments;

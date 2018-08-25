@@ -14,7 +14,7 @@ class ParserTest extends ParserTestCase
     /**
      * @dataProvider providerTestRead
      */
-    public function testRead($variable, $environment, $expectedValue)
+    public function testRead(string $variable, string $environment, $expectedValue): void
     {
         $this->variables = $this->parser->setEOL("\n")->parse(self::MASTERFILE_PATH);
 
@@ -24,83 +24,83 @@ class ParserTest extends ParserTestCase
         $this->assertSame($expectedValue, $this->variables[$variable]['env'][$environment]);
     }
 
-    public function providerTestRead()
+    public function providerTestRead(): array
     {
-        return array(
+        return [
             // master.conf
-            array('print_errors', 'prod', false),
-            array('print_errors', 'preprod', false),
-            array('print_errors', 'default', true),
+            ['print_errors', 'prod', false],
+            ['print_errors', 'preprod', false],
+            ['print_errors', 'default', true],
 
-            array('debug', 'dev', true),
-            array('debug', 'default', false),
+            ['debug', 'dev', true],
+            ['debug', 'default', false],
 
-            array('gourdin', 'prod', 0),
-            array('gourdin', 'preprod', 1),
-            array('gourdin', 'recette', 1),
-            array('gourdin', 'qualif', 1),
-            array('gourdin', 'integration', null),
-            array('gourdin', 'dev', 2),
-            array('gourdin', 'staging', 'string with blanks'),
+            ['gourdin', 'prod', 0],
+            ['gourdin', 'preprod', 1],
+            ['gourdin', 'recette', 1],
+            ['gourdin', 'qualif', 1],
+            ['gourdin', 'integration', null],
+            ['gourdin', 'dev', 2],
+            ['gourdin', 'staging', 'string with blanks'],
 
-            array('server', 'prod', 'sql21'),
-            array('server', 'preprod', 'prod21'),
-            array('server', 'recette', 'rec21'),
-            array('server', 'qualif', 'rec21'),
+            ['server', 'prod', 'sql21'],
+            ['server', 'preprod', 'prod21'],
+            ['server', 'recette', 'rec21'],
+            ['server', 'qualif', 'rec21'],
 
-            array('tva', 'dev', 19.0),
-            array('tva', 'preprod', 20.5),
-            array('tva', 'default', 19.6),
+            ['tva', 'dev', 19.0],
+            ['tva', 'preprod', 20.5],
+            ['tva', 'default', 19.6],
 
-            array('apiKey', 'dev', '=2'),
-            array('apiKey', 'recette', ''),
-            array('apiKey', 'default', 'qd4#qs64d6q6=fgh4f6ùftgg==sdr'),
+            ['apiKey', 'dev', '=2'],
+            ['apiKey', 'recette', ''],
+            ['apiKey', 'default', 'qd4#qs64d6q6=fgh4f6ùftgg==sdr'],
 
-            array('my.var.with.subnames', 'default', 21),
+            ['my.var.with.subnames', 'default', 21],
 
-            array('param', 'dev', '${param}'),
-            array('param', 'staging', 'Some${nested}param'),
-            array('param', 'demo', array('none', 'nest${param}ed', '${nested}', 'double_${param}_${param}', '${nested}${param}')),
+            ['param', 'dev', '${param}'],
+            ['param', 'staging', 'Some${nested}param'],
+            ['param', 'demo', ['none', 'nest${param}ed', '${nested}', 'double_${param}_${param}', '${nested}${param}']],
 
             // db.conf
-            array('user', 'default', 'root'),
+            ['user', 'default', 'root'],
 
             // lists
-            array('list.ok', 'dev', array('one', 'two', 'three')),
-            array('list.ok', 'staging', array('one', 'two')),
-            array('list.ok', 'prod', array('alone')),
-            array('list.ok', 'preprod', 'not_a_list'),
-            array('list.ok', 'default', array('single value with blanks')),
-            array('list.ok', 'other', array(2, 0, 'third', false, null)),
-            array('list.ok', 'staging2', array()),
-            array('list.ok', 'staging3', array()),
+            ['list.ok', 'dev', ['one', 'two', 'three']],
+            ['list.ok', 'staging', ['one', 'two']],
+            ['list.ok', 'prod', ['alone']],
+            ['list.ok', 'preprod', 'not_a_list'],
+            ['list.ok', 'default', ['single value with blanks']],
+            ['list.ok', 'other', [2, 0, 'third', false, null]],
+            ['list.ok', 'staging2', []],
+            ['list.ok', 'staging3', []],
 
-            array('list.notlist', 'dev', 'string[weird'),
-            array('list.notlist', 'staging', 'string]weird'),
-            array('list.notlist', 'prod', '[string[weird'),
-            array('list.notlist', 'default', '[string'),
-            array('list.notlist', 'preprod', 'string]'),
-            array('list.notlist', 'other', 'arr[]'),
-            array('list.notlist', 'staging2', 'arr[tung]'),
-            array('list.notlist', 'staging3', '[1,2,3]4'),
+            ['list.notlist', 'dev', 'string[weird'],
+            ['list.notlist', 'staging', 'string]weird'],
+            ['list.notlist', 'prod', '[string[weird'],
+            ['list.notlist', 'default', '[string'],
+            ['list.notlist', 'preprod', 'string]'],
+            ['list.notlist', 'other', 'arr[]'],
+            ['list.notlist', 'staging2', 'arr[tung]'],
+            ['list.notlist', 'staging3', '[1,2,3]4'],
 
-            array('list.notlist', 'string1', '[]]'),
-            array('list.notlist', 'string2', '[[]'),
-            array('list.notlist', 'string3', '[[]]'),
-            array('list.notlist', 'string4', '[][]'),
+            ['list.notlist', 'string1', '[]]'],
+            ['list.notlist', 'string2', '[[]'],
+            ['list.notlist', 'string3', '[[]]'],
+            ['list.notlist', 'string4', '[][]'],
 
-            array('variable-name-with-dashes', 'default', 'poney'),
-            array('redis_prefix', 'default', 'prefix:ending:with:semi:colon:'),
-        );
+            ['variable-name-with-dashes', 'default', 'poney'],
+            ['redis_prefix', 'default', 'prefix:ending:with:semi:colon:'],
+        ];
     }
 
     /**
      * @dataProvider providerTestSyntaxError
      * @expectedException \RuntimeException
      */
-    public function testSyntaxError($contentMaster)
+    public function testSyntaxError(string $contentMaster): void
     {
-        $this->parser = new Parser(new Filesystem(new InMemory(array(
+        $this->parser = new Parser(new Filesystem(new InMemory([
             self::MASTERFILE_PATH => $contentMaster,
             'empty.conf' => '',
             'vicious.conf' => <<<CONFFILE
@@ -115,7 +115,7 @@ var2:
         default= 0
 
 CONFFILE
-        ))));
+        ])));
 
         $this->parser
             ->enableIncludeSupport()
@@ -124,98 +124,98 @@ CONFFILE
             ->parse(self::MASTERFILE_PATH);
     }
 
-    public function providerTestSyntaxError()
+    public function providerTestSyntaxError(): array
     {
-        return array(
-            'missing =' => array(<<<CONFFILE
+        return [
+            'missing =' => [<<<CONFFILE
 [variables]
 print_errors:
     default:true
 CONFFILE
-            ),
-            'missing variables' => array(<<<CONFFILE
+            ],
+            'missing variables' => [<<<CONFFILE
 print_errors:
     default:true
 CONFFILE
-            ),
-            'include not found' => array(<<<CONFFILE
+            ],
+            'include not found' => [<<<CONFFILE
 [includes]
 empty.conf
 notfound.conf
 CONFFILE
-            ),
-            'variables mispelled' => array(<<<CONFFILE
+            ],
+            'variables mispelled' => [<<<CONFFILE
 [variable]
 toto:
     tata = titi
 CONFFILE
-            ),
-            'missing variable name' => array(<<<CONFFILE
+            ],
+            'missing variable name' => [<<<CONFFILE
 [variables]
 prod = value
 CONFFILE
-            ),
-            'duplicated variables' => array(<<<CONFFILE
+            ],
+            'duplicated variables' => [<<<CONFFILE
 [variables]
 toto:
     prod = tata
 toto:
     dev = titi
 CONFFILE
-            ),
-            'duplicated variables with some spaces before' => array(<<<CONFFILE
+            ],
+            'duplicated variables with some spaces before' => [<<<CONFFILE
 [variables]
  toto:
     prod = tata
 toto:
     dev = titi
 CONFFILE
-            ),
-            'duplicated variables with some spaces after' => array(<<<CONFFILE
+            ],
+            'duplicated variables with some spaces after' => [<<<CONFFILE
 [variables]
 toto :
     prod = tata
 toto:
     dev = titi
 CONFFILE
-            ),
-            'duplicated variables with some spaces both' => array(<<<CONFFILE
+            ],
+            'duplicated variables with some spaces both' => [<<<CONFFILE
 [variables]
 toto :
     prod = tata
  toto:
     dev = titi
 CONFFILE
-            ),
-            'duplicated variables in different files' => array(<<<CONFFILE
+            ],
+            'duplicated variables in different files' => [<<<CONFFILE
 [includes]
 vicious.conf
 [variables]
 viciousDuplicatedVariable:
     prod = tata
 CONFFILE
-            ),
-            'duplicated environment' => array(<<<CONFFILE
+            ],
+            'duplicated environment' => [<<<CONFFILE
 [variables]
 toto:
     prod = tata
     preprod, recette = titi
     dev, prod, qualif = tutu
 CONFFILE
-            ),
-            'missing : after variable name' => array(<<<CONFFILE
+            ],
+            'missing : after variable name' => [<<<CONFFILE
 [variables]
 toto
     prod = 2
 CONFFILE
-            ),
-            'variable name syntax error' => array(<<<CONFFILE
+            ],
+            'variable name syntax error' => [<<<CONFFILE
 [variables]
 toto =
     prod = 2
 CONFFILE
-            ),
-            'variable without value' => array(<<<CONFFILE
+            ],
+            'variable without value' => [<<<CONFFILE
 [variables]
 toto :
     prod = 2
@@ -223,8 +223,8 @@ tata :
 titi :
     dev = 3
 CONFFILE
-            ),
-            'last variable without value' => array(<<<CONFFILE
+            ],
+            'last variable without value' => [<<<CONFFILE
 [variables]
 toto :
     prod = 2
@@ -232,116 +232,116 @@ tata :
     dev = 3
 titi :
 CONFFILE
-            ),
-            'invalid name format for include file' => array(<<<CONFFILE
+            ],
+            'invalid name format for include file' => [<<<CONFFILE
 [includes]
 notADotConfFile
 CONFFILE
-            ),
-            'comments not on its own line' => array(<<<CONFFILE
+            ],
+            'comments not on its own line' => [<<<CONFFILE
 [variables]  # illegal comment
 toto:
     foo = bar
 CONFFILE
-            ),
-            'groups syntax error : missing [] #1' => array(<<<CONFFILE
+            ],
+            'groups syntax error : missing [] #1' => [<<<CONFFILE
 [groups]
 name = foobar
 CONFFILE
-            ),
-            'groups syntax error : missing [] #2' => array(<<<CONFFILE
+            ],
+            'groups syntax error : missing [] #2' => [<<<CONFFILE
 [groups]
 name = [foobar
 CONFFILE
-            ),
-            'groups syntax error : missing [] #3' => array(<<<CONFFILE
+            ],
+            'groups syntax error : missing [] #3' => [<<<CONFFILE
 [groups]
 name = foobar]
 CONFFILE
-            ),
-            'groups syntax error : missing [] #4' => array(<<<CONFFILE
+            ],
+            'groups syntax error : missing [] #4' => [<<<CONFFILE
 [groups]
 name = [foob]ar
 CONFFILE
-            ),
-            'groups syntax error : missing [] #5' => array(<<<CONFFILE
+            ],
+            'groups syntax error : missing [] #5' => [<<<CONFFILE
 [groups]
 name = fo[obar]
 CONFFILE
-            ),
-            'groups syntax error : missing [] #6' => array(<<<CONFFILE
+            ],
+            'groups syntax error : missing [] #6' => [<<<CONFFILE
 [groups]
 name = fo[ob]ar
 CONFFILE
-            ),
-            'groups syntax error : not a single list' => array(<<<CONFFILE
+            ],
+            'groups syntax error : not a single list' => [<<<CONFFILE
 [groups]
 name = [a,b,c][d,e,f]
 CONFFILE
-            ),
-            'groups syntax error : empty env #1' => array(<<<CONFFILE
+            ],
+            'groups syntax error : empty env #1' => [<<<CONFFILE
 [groups]
 name = []
 CONFFILE
-            ),
-            'groups syntax error : empty env #2' => array(<<<CONFFILE
+            ],
+            'groups syntax error : empty env #2' => [<<<CONFFILE
 [groups]
 name = [dev,staging,]
 CONFFILE
-            ),
-            'groups syntax error : empty env #3' => array(<<<CONFFILE
+            ],
+            'groups syntax error : empty env #3' => [<<<CONFFILE
 [groups]
 name = [,dev,staging]
 CONFFILE
-            ),
-            'groups syntax error : empty env #4' => array(<<<CONFFILE
+            ],
+            'groups syntax error : empty env #4' => [<<<CONFFILE
 [groups]
 name = [dev,,staging]
 CONFFILE
-            ),
-            'groups syntax error : duplicated group name' => array(<<<CONFFILE
+            ],
+            'groups syntax error : duplicated group name' => [<<<CONFFILE
 [groups]
 prod = [dev,staging]
 prod = [preprod]
 CONFFILE
-            ),
-            'groups syntax error : duplicated environment in same group' => array(<<<CONFFILE
+            ],
+            'groups syntax error : duplicated environment in same group' => [<<<CONFFILE
 [groups]
 prod = [dev,staging, dev]
 CONFFILE
-            ),
-            'groups syntax error : circular reference' => array(<<<CONFFILE
+            ],
+            'groups syntax error : circular reference' => [<<<CONFFILE
 [groups]
 foo = [bar]
 bar = [baz]
 CONFFILE
-            ),
-            'groups syntax error : env in many groups' => array(<<<CONFFILE
+            ],
+            'groups syntax error : env in many groups' => [<<<CONFFILE
 [groups]
 foo = [baz]
 bar = [baz]
 CONFFILE
-            ),
-            'spaces in variable name' => array(<<<CONFFILE
+            ],
+            'spaces in variable name' => [<<<CONFFILE
 [variables]
 var with spaces:
     default = false
 CONFFILE
-            ),
-            '= in variable name' => array(<<<CONFFILE
+            ],
+            '= in variable name' => [<<<CONFFILE
 [variables]
 invalid=varname:
     default = false
 CONFFILE
-            ),
-        );
+            ],
+        ];
     }
 
-    public function testEmptyFile()
+    public function testEmptyFile(): void
     {
         $masterContent = '';
 
-        $parser = new Parser(new Filesystem(new InMemory(array(self::MASTERFILE_PATH => $masterContent))));
+        $parser = new Parser(new Filesystem(new InMemory([self::MASTERFILE_PATH => $masterContent])));
 
         $variables = $parser->enableIncludeSupport()
             ->enableExternalSupport()
@@ -351,7 +351,7 @@ CONFFILE
         $this->assertEmpty($variables);
     }
 
-    public function testExternal()
+    public function testExternal(): void
     {
         $masterContent = <<<CONFFILE
 [externals]
@@ -380,11 +380,11 @@ db.user:
     staging = someUser
 CONFFILE;
 
-        $files = array(
+        $files = [
             self::MASTERFILE_PATH => $masterContent,
             'external1.conf' => $externalContent1,
             'external2.conf' => $externalContent2,
-        );
+        ];
 
         $parser = new Parser(new Filesystem(new InMemory($files)));
 
@@ -393,17 +393,17 @@ CONFFILE;
 
         $variables = $parser->parse(self::MASTERFILE_PATH);
 
-        $expected = array(
-            'db.pass' => array(
+        $expected = [
+            'db.pass' => [
                 'dev' => 1234,
                 'prod' => '<external>',
                 'default' => 'root',
-            ),
-            'db.user' => array(
+            ],
+            'db.user' => [
                 'staging' => '<external>',
                 'default' => 'root',
-            ),
-        );
+            ],
+        ];
 
         foreach($expected as $variable => $info)
         {
@@ -417,7 +417,7 @@ CONFFILE;
         }
     }
 
-    public function testGroups()
+    public function testGroups(): void
     {
         $masterContent = <<<CONFFILE
 [groups]
@@ -442,7 +442,7 @@ db.cache:
     default = false
 CONFFILE;
 
-        $parser = new Parser(new Filesystem(new InMemory(array(self::MASTERFILE_PATH => $masterContent))));
+        $parser = new Parser(new Filesystem(new InMemory([self::MASTERFILE_PATH => $masterContent])));
 
         $parser->enableIncludeSupport()
             ->enableExternalSupport()
@@ -450,23 +450,23 @@ CONFFILE;
 
         $variables = $parser->parse(self::MASTERFILE_PATH);
 
-        $expected = array(
-            'db.pass' => array(
+        $expected = [
+            'db.pass' => [
                 'dev' => 1234,
                 'qa' => 'password',
                 'prod' => '<external>',
-            ),
-            'db.user' => array(
+            ],
+            'db.user' => [
                 'dev1' => 'devuser1',
                 'dev2' => 'devuser2',
                 'dev3' => 'devuser3',
                 'qa' => 'qauser',
-            ),
-            'db.cache' => array(
+            ],
+            'db.cache' => [
                 'preprod' => true,
                 'default' => false,
-            ),
-        );
+            ],
+        ];
 
         foreach($expected as $variable => $info)
         {
@@ -481,11 +481,11 @@ CONFFILE;
 
         $groups = $parser->getGroups();
 
-        $expected = array(
-        	'dev' => array('dev1', 'dev2', 'dev3'),
-        	'qa' => array('staging', 'preprod'),
-            'production' => array('prod'),
-        );
+        $expected = [
+            'dev' => ['dev1', 'dev2', 'dev3'],
+            'qa' => ['staging', 'preprod'],
+            'production' => ['prod'],
+        ];
 
         $this->assertSameArraysExceptOrder($expected, $groups);
     }
@@ -493,23 +493,23 @@ CONFFILE;
     /**
      * @dataProvider providerTestIsSystem
      */
-    public function testIsSystem($variable, $expected)
+    public function testIsSystem(string $variable, bool $expected): void
     {
         $this->parser->parse(self::MASTERFILE_PATH);
         $this->assertSame($expected, $this->parser->isSystem($variable));
     }
 
-    public function providerTestIsSystem()
+    public function providerTestIsSystem(): array
     {
-        return array(
-            array('gourdin', true),
-            array('tva', true),
-            array('debug', false),
-            array('list.ok', false),
-        );
+        return [
+            ['gourdin', true],
+            ['tva', true],
+            ['debug', false],
+            ['list.ok', false],
+        ];
     }
 
-    public function testDefaultEnvironmentForGroups()
+    public function testDefaultEnvironmentForGroups(): void
     {
         $masterContent = <<<CONFFILE
 [groups]
@@ -520,7 +520,7 @@ dev = [ dev1,  *  dev2,dev3]
 production=[prod]
 CONFFILE;
 
-        $parser = new Parser(new Filesystem(new InMemory(array(self::MASTERFILE_PATH => $masterContent))));
+        $parser = new Parser(new Filesystem(new InMemory([self::MASTERFILE_PATH => $masterContent])));
 
         $parser->enableIncludeSupport()
             ->enableExternalSupport()
@@ -528,25 +528,25 @@ CONFFILE;
             ->parse(self::MASTERFILE_PATH);
 
         $groups = $parser->getGroups();
-        $expected = array(
-            'dev' => array('dev1', 'dev2', 'dev3'),
-        	'qa' => array('staging', 'preprod'),
-            'production' => array('prod'),
-        );
+        $expected = [
+            'dev' => ['dev1', 'dev2', 'dev3'],
+            'qa' => ['staging', 'preprod'],
+            'production' => ['prod'],
+        ];
 
         $this->assertSameArraysExceptOrder($expected, $groups);
 
         $envs = $parser->getDefaultEnvironmentsForGroups();
-        $expected = array(
+        $expected = [
             'dev' => 'dev2',
             'qa' => 'staging',
             'production' => null,
-        );
+        ];
 
         $this->assertSameArraysExceptOrder($expected, $envs);
     }
 
-    private function assertSameArraysExceptOrder($expected, $result)
+    private function assertSameArraysExceptOrder(array $expected, array $result): void
     {
         ksort($result);
         ksort($expected);
@@ -557,14 +557,14 @@ CONFFILE;
     /**
      * @expectedException \RuntimeException
      */
-    public function testMultipleDefaultEnvironmentForASameGroup()
+    public function testMultipleDefaultEnvironmentForASameGroup(): void
     {
         $masterContent = <<<CONFFILE
 [groups]
 dev = [ dev1, *dev2,*dev3]
 CONFFILE;
 
-        $parser = new Parser(new Filesystem(new InMemory(array(self::MASTERFILE_PATH => $masterContent))));
+        $parser = new Parser(new Filesystem(new InMemory([self::MASTERFILE_PATH => $masterContent])));
 
         $parser->enableIncludeSupport()
             ->enableExternalSupport()

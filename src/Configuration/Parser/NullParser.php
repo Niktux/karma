@@ -8,6 +8,6 @@ class NullParser extends AbstractSectionParser
 {
     protected function parseLine(string $line): void
     {
-        throw new \RuntimeException('File must start with a group name');
+        throw new \RuntimeException('File must start with a section name');
     }
 }
