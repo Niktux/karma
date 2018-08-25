@@ -16,7 +16,7 @@ class Parser implements FileParser
 {
     use \Karma\Logging\LoggerAware;
 
-    const
+    private const
         INCLUDES = 'includes',
         VARIABLES = 'variables',
         EXTERNALS = 'externals',
@@ -197,7 +197,7 @@ class Parser implements FileParser
         // [.*]
         if(preg_match('~^\[(?P<groupName>[^\]]+)\]$~', $line, $matches))
         {
-            $sectionName = trim(strtolower($matches['groupName']));
+            $sectionName = strtolower(trim($matches['groupName']));
         }
 
         return $sectionName;

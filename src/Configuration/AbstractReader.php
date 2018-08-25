@@ -48,9 +48,9 @@ abstract class AbstractReader implements Configuration
         }
     }
 
-    public function getAllValuesForEnvironment(?string $environment = null)
+    public function getAllValuesForEnvironment(?string $environment = null): array
     {
-        $result = array();
+        $result = [];
 
         $variables = $this->getAllVariables();
 

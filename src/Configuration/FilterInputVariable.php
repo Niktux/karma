@@ -27,11 +27,11 @@ trait FilterInputVariable
 
         $value = trim($value);
 
-        $knowValues = array(
+        $knowValues = [
             'true' => true,
             'false' => false,
             'null' => null
-        );
+        ];
 
         if(array_key_exists(strtolower($value), $knowValues))
         {
@@ -40,18 +40,18 @@ trait FilterInputVariable
 
         if(is_numeric($value))
         {
-            if(stripos($value, '.') !== false && floatval($value) == $value)
+            if(strpos($value, '.') !== false && (float) $value == $value)
             {
-                return floatval($value);
+                return (float) $value;
             }
 
-            return intval($value);
+            return (int) $value;
         }
 
         return $value;
     }
 
-    public function parseList($value)
+    public function parseList(string $value)
     {
         $value = trim($value);
 

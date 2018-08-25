@@ -10,10 +10,9 @@ class VariableParser extends AbstractSectionParser
 {
     use Configuration\FilterInputVariable;
 
-    const
+    private const
         ASSIGNMENT = '=',
-        ENV_SEPARATOR = ',',
-        DEFAULT_ENV = 'default';
+        ENV_SEPARATOR = ',';
 
     private
         $currentVariable,
@@ -101,12 +100,12 @@ class VariableParser extends AbstractSectionParser
             ));
         }
 
-        $this->variables[$this->currentVariable] = array(
-            'env' => array(),
+        $this->variables[$this->currentVariable] = [
+            'env' => [],
             'file' => $this->currentFilePath,
             'line' => $this->currentLineNumber,
             'system' => $isSystem,
-        );
+        ];
 
         $this->valueFound = false;
     }

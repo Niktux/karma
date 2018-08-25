@@ -6,7 +6,7 @@ namespace Karma\Configuration;
 
 class Reader extends AbstractReader
 {
-    const
+    private const
         DEFAULT_ENVIRONMENT = 'default',
         DEFAULT_VALUE_FOR_ENVIRONMENT_PARAMETER = 'prod',
         EXTERNAL = '<external>';
@@ -130,7 +130,7 @@ class Reader extends AbstractReader
 
     private function processExternal(string $variable, string $environment)
     {
-        if(! $this->externalReader instanceof Reader)
+        if(! $this->externalReader instanceof self)
         {
             throw new \RuntimeException(sprintf(
                 'There is no external variables. %s can not be resolve for environment %s',
@@ -147,7 +147,7 @@ class Reader extends AbstractReader
         return array_keys($this->variables);
     }
 
-    public function compareEnvironments(string $environment1, string $environment2)
+    public function compareEnvironments(string $environment1, string $environment2): array
     {
         $values1 = $this->getAllValuesForEnvironment($environment1);
         $values2 = $this->getAllValuesForEnvironment($environment2);
@@ -160,7 +160,7 @@ class Reader extends AbstractReader
 
             if($value1 !== $value2)
             {
-                $diff[$name] = array($value1, $value2);
+                $diff[$name] = [$value1, $value2];
             }
         }
 

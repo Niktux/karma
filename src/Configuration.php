@@ -6,7 +6,7 @@ namespace Karma;
 
 interface Configuration
 {
-    const
+    public const
         SYSTEM_VARIABLE_FLAG = '@',
         NOT_FOUND = 'karma-notfound';
 

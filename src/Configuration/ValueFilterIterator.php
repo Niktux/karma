@@ -6,9 +6,9 @@ namespace Karma\Configuration;
 
 class ValueFilterIterator extends \FilterIterator
 {
-    use \Karma\Configuration\FilterInputVariable;
+    use FilterInputVariable;
 
-    const
+    private const
         FILTER_WILDCARD = '*',
         ESCAPED_WILDCARD = '**';
 
@@ -82,7 +82,7 @@ class ValueFilterIterator extends \FilterIterator
 
     private function escapeRegexSpecialCharacters(string $filter): string
     {
-        return strtr($filter, array(
+        return strtr($filter, [
             '.' => '\.',
             '?' => '\?',
             '+' => '\+',
@@ -92,6 +92,6 @@ class ValueFilterIterator extends \FilterIterator
             ')' => '\)',
             '{' => '\{',
             '}' => '\}',
-        ));
+        ]);
     }
 }

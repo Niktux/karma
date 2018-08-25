@@ -15,13 +15,13 @@ class InMemoryReader extends AbstractReader
     {
         parent::__construct();
 
-        $this->values = array();
+        $this->values = [];
         foreach($values as $key => $value)
         {
-            $this->values[$this->removeSystemFlag($key)] = array(
+            $this->values[$this->removeSystemFlag($key)] = [
                 'value' => $value,
-                'system' => substr($key, 0, 1) === Configuration::SYSTEM_VARIABLE_FLAG,
-            );
+                'system' => stripos($key, Configuration::SYSTEM_VARIABLE_FLAG) === 0,
+            ];
         }
     }
 

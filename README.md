@@ -3,6 +3,8 @@ Karma
 
 PHP CLI tool to hydrate source code with environment dependent values 
 
+**:warning: _PHP5 users, please use Karma 5.x_**
+
 
 QA
 --

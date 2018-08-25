@@ -47,7 +47,7 @@ class GroupParser extends AbstractSectionParser
         $environments = $this->checkForDefaultMarker($groupName, $environments);
         $this->checkEnvironmentAreUnique($groupName, $environments);
 
-        $this->groups[$groupName] = array();
+        $this->groups[$groupName] = [];
 
         foreach($environments as $env)
         {
