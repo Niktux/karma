@@ -10,7 +10,6 @@ class ExternalParser extends AbstractSectionParser
 {
     private Parser
         $parser;
-
     private array
         $variables,
         $filesStatus;

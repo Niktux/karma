@@ -9,7 +9,7 @@ use Karma\FormatterProvider;
 
 class CallbackProvider implements FormatterProvider
 {
-    private
+    private \Closure
         $closure;
 
     public function __construct(\Closure $closure)

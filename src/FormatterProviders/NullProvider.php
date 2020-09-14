@@ -10,7 +10,7 @@ use Karma\Formatters\Raw;
 
 class NullProvider implements FormatterProvider
 {
-    private
+    private Raw
         $raw;
 
     public function __construct()

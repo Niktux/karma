@@ -12,12 +12,16 @@ use Karma\Generator\VariableProvider;
 
 abstract class AbstractFileGenerator implements ConfigurationFileGenerator
 {
-    protected
-        $fs,
-        $reader,
-        $variableProvider,
+    protected Filesystem
+        $fs;
+    protected Configuration
+        $reader;
+    protected VariableProvider
+        $variableProvider;
+    protected bool
         $dryRun,
-        $enableBackup,
+        $enableBackup;
+    protected ?string
         $systemEnvironment;
 
     public function __construct(Filesystem $fs, Configuration $reader, VariableProvider $variableProvider)

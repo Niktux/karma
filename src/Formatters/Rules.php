@@ -8,7 +8,7 @@ use Karma\Formatter;
 
 class Rules implements Formatter
 {
-    private
+    private array
         $rules;
 
     public function __construct(array $rules)
@@ -30,7 +30,7 @@ class Rules implements Formatter
 
     private function convertRules(array $rules): void
     {
-        $this->rules = array();
+        $this->rules = [];
         $mapping = $this->getSpecialValuesMappingTable();
 
         foreach($rules as $value => $result)
@@ -43,7 +43,7 @@ class Rules implements Formatter
                 $value = $mapping[$value];
             }
 
-            $this->rules[] = array($value, $result);
+            $this->rules[] = [$value, $result];
         }
     }
 

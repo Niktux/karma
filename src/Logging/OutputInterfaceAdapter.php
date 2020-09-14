@@ -5,6 +5,7 @@ declare(strict_types = 1);
 namespace Karma\Logging;
 
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Console\Output\Output;
 use Symfony\Component\Console\Output\OutputInterface;
 use Psr\Log\LogLevel;
 
@@ -12,23 +13,24 @@ class OutputInterfaceAdapter implements LoggerInterface
 {
     use \Psr\Log\LoggerTrait;
 
-    private
-        $output,
+    private OutputInterface
+        $output;
+    private array
         $levelConversionTable;
 
     public function __construct(OutputInterface $output)
     {
         $this->output = $output;
 
-        $this->levelConversionTable = array(
+        $this->levelConversionTable = [
             LogLevel::DEBUG => OutputInterface::VERBOSITY_VERBOSE,
             LogLevel::INFO => OutputInterface::VERBOSITY_NORMAL,
             LogLevel::WARNING => OutputInterface::VERBOSITY_NORMAL,
             LogLevel::ERROR => OutputInterface::VERBOSITY_NORMAL
-        );
+        ];
     }
 
-    public function log($level, $message, array $context = array())
+    public function log($level, $message, array $context = [])
     {
         if($this->convertLevel($level) <= $this->output->getVerbosity())
         {
@@ -61,10 +63,10 @@ class OutputInterfaceAdapter implements LoggerInterface
 
     private function colorizeMessage($level, $message)
     {
-        $colors = array(
+        $colors = [
             LogLevel::ERROR => 'red',
             LogLevel::WARNING => 'yellow',
-        );
+        ];
 
         if(isset($colors[$level]))
         {

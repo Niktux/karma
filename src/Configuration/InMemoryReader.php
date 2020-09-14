@@ -8,7 +8,7 @@ use Karma\Configuration;
 
 class InMemoryReader extends AbstractReader
 {
-    private
+    private array
         $values;
 
     public function __construct(array $values = [])

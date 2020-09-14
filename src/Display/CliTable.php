@@ -6,12 +6,15 @@ namespace Karma\Display;
 
 class CliTable
 {
-    private
+    private array
         $headers,
         $rows,
-        $nbColumns,
-        $columnsSize,
-        $valueRenderFunction,
+        $columnsSize;
+    private int
+        $nbColumns;
+    private ?\Closure
+        $valueRenderFunction;
+    private bool
         $enableFormattingTags,
         $displayKeys;
 

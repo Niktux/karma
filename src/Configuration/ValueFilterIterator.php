@@ -12,8 +12,10 @@ class ValueFilterIterator extends \FilterIterator
         FILTER_WILDCARD = '*',
         ESCAPED_WILDCARD = '**';
 
+    private bool
+        $isRegex;
+
     private
-        $isRegex,
         $filter;
 
     public function __construct($filter, \Iterator $iterator)

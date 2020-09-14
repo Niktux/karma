@@ -13,13 +13,10 @@ class VariableParser extends AbstractSectionParser
     private const
         ASSIGNMENT = '=',
         ENV_SEPARATOR = ',';
-
     private ?string
         $currentVariable;
-
     private array
         $variables;
-
     private bool
         $valueFound;
 

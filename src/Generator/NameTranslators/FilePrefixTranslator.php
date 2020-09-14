@@ -10,21 +10,22 @@ use Karma\Generator\ConfigurationFileGenerator;
 
 class FilePrefixTranslator implements NameTranslator
 {
-    private
-        $masterFilename,
+    private string
+        $masterFilename;
+    private ?string
         $prefixForMasterFile;
 
     public function __construct()
     {
         $this->masterFilename = Application::DEFAULT_MASTER_FILE;
-        $this->prefixForMasterFile = false;
+        $this->prefixForMasterFile = null;
     }
 
     public function translate($file, $variable)
     {
         $prefix = $this->computePrefix($file);
 
-        if($prefix !== false)
+        if($prefix !== null)
         {
             $variable = $prefix . ConfigurationFileGenerator::DELIMITER . $variable;
         }
@@ -32,7 +33,7 @@ class FilePrefixTranslator implements NameTranslator
         return $variable;
     }
 
-    private function computePrefix($file)
+    private function computePrefix($file): ?string
     {
         $prefix = $this->prefixForMasterFile;
 
@@ -44,17 +45,13 @@ class FilePrefixTranslator implements NameTranslator
         return $prefix;
     }
 
-    public function changeMasterFile($masterFilename)
+    public function changeMasterFile(string $masterFilename): void
     {
         $this->masterFilename = $masterFilename;
-
-        return $this;
     }
 
-    public function setPrefixForMasterFile($prefix)
+    public function setPrefixForMasterFile(string $prefix): void
     {
         $this->prefixForMasterFile = $prefix;
-
-        return $this;
     }
 }

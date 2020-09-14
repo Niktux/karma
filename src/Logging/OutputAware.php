@@ -8,7 +8,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 trait OutputAware
 {
-    protected
+    protected ?OutputInterface
         $output = null;
 
     public function setOutput(OutputInterface $output)
@@ -18,27 +18,27 @@ trait OutputAware
         return $this;
     }
 
-    protected function error($messages, $newline = false, $type = OutputInterface::OUTPUT_NORMAL)
+    protected function error($messages, $newline = false, $type = OutputInterface::OUTPUT_NORMAL): void
     {
-        return $this->write($messages, $newline, $type, OutputInterface::VERBOSITY_NORMAL, 'red');
+        $this->write($messages, $newline, $type, OutputInterface::VERBOSITY_NORMAL, 'red');
     }
 
-    protected function warning($messages, $newline = false, $type = OutputInterface::OUTPUT_NORMAL)
+    protected function warning($messages, $newline = false, $type = OutputInterface::OUTPUT_NORMAL): void
     {
-        return $this->write($messages, $newline, $type, OutputInterface::VERBOSITY_NORMAL, 'yellow');
+        $this->write($messages, $newline, $type, OutputInterface::VERBOSITY_NORMAL, 'yellow');
     }
 
-    protected function info($messages, $newline = false, $type = OutputInterface::OUTPUT_NORMAL)
+    protected function info($messages, $newline = false, $type = OutputInterface::OUTPUT_NORMAL): void
     {
-        return $this->write($messages, $newline, $type, OutputInterface::VERBOSITY_NORMAL, 'white');
+        $this->write($messages, $newline, $type, OutputInterface::VERBOSITY_NORMAL, 'white');
     }
 
-    protected function debug($messages, $newline = false, $type = OutputInterface::OUTPUT_NORMAL)
+    protected function debug($messages, $newline = false, $type = OutputInterface::OUTPUT_NORMAL): void
     {
-        return $this->write($messages, $newline, $type, OutputInterface::VERBOSITY_VERBOSE, 'white');
+        $this->write($messages, $newline, $type, OutputInterface::VERBOSITY_VERBOSE, 'white');
     }
 
-    private function write($messages, $newline, $type, $verbosity, $textColor)
+    private function write($messages, $newline, $type, $verbosity, $textColor): void
     {
         if($this->output instanceof OutputInterface)
         {

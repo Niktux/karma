@@ -13,7 +13,7 @@ use Karma\Application;
 
 class YamlGenerator extends AbstractFileGenerator implements ConfigurationFileGenerator
 {
-    private
+    private array
         $files;
 
     public function __construct(Filesystem $fs, Configuration $reader, VariableProvider $variableProvider)

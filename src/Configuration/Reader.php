@@ -11,12 +11,13 @@ class Reader extends AbstractReader
         DEFAULT_VALUE_FOR_ENVIRONMENT_PARAMETER = 'prod',
         EXTERNAL = '<external>';
 
-    private
+    private array
         $variables,
-        $externalReader,
         $groupNames,
         $environmentGroups,
         $defaultEnvironmentsForGroups;
+    private ?Reader
+        $externalReader;
 
     public function __construct(array $variables, array $externalVariables, array $groups = [], array $defaultEnvironmentsForGroups = [])
     {

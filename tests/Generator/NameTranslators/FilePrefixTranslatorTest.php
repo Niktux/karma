@@ -48,7 +48,7 @@ class FilePrefixTranslatorTest extends TestCase
         $t = new FilePrefixTranslator();
         $t->changeMasterFile('db.conf');
 
-        $this->assertSame($expected, $t->translate($file, $variable));
+        self::assertSame($expected, $t->translate($file, $variable));
     }
 
     public function providerTestTranslateWithDifferentMasterFile()

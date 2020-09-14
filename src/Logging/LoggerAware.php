@@ -8,7 +8,7 @@ use Psr\Log\LoggerInterface;
 
 trait LoggerAware
 {
-    private
+    private LoggerInterface
         $logger;
 
     public function setLogger(LoggerInterface $logger)

@@ -8,11 +8,12 @@ use Gaufrette\Adapter;
 
 class SingleLocalFile implements Adapter
 {
-    private
-        $filename,
+    private string
+        $filename;
+    private Adapter
         $adapter;
 
-    public function __construct($filename, Adapter $adapter)
+    public function __construct(string $filename, Adapter $adapter)
     {
         $this->filename = $filename;
         $this->adapter = $adapter;
@@ -33,7 +34,7 @@ class SingleLocalFile implements Adapter
         return $this->adapter->write($key, $content);
     }
 
-    public function exists($key)
+    public function exists($key): bool
     {
         return $key === $this->filename;
     }
@@ -63,7 +64,7 @@ class SingleLocalFile implements Adapter
         throw new \RuntimeException('Not implemented yet : ' . __METHOD__);
     }
 
-    public function isDirectory($key)
+    public function isDirectory($key): bool
     {
         return false;
     }

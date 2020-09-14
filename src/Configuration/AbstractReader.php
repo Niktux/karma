@@ -8,12 +8,12 @@ use Karma\Configuration;
 
 abstract class AbstractReader implements Configuration
 {
-    protected
-        $defaultEnvironment;
-
-    private
+    private array
         $overridenVariables,
         $customData;
+
+    protected string
+        $defaultEnvironment;
 
     public function __construct()
     {

@@ -12,18 +12,19 @@ use Karma\Formatters\Rules;
 
 class ProfileProvider implements FormatterProvider
 {
-    private
-        $defaultFormatterName,
+    private ?string
+        $defaultFormatterName;
+    private array
         $formatters,
         $fileExtensionFormatters;
 
     public function __construct(FormattersDefinition $definition)
     {
-        $this->formatters = array(
+        $this->formatters = [
             FormattersDefinition::DEFAULT_FORMATTER_NAME => new Raw(),
-        );
+        ];
 
-        $this->fileExtensionFormatters = array();
+        $this->fileExtensionFormatters = [];
 
         $this->defaultFormatterName = $definition->getDefaultFormatterName();
         $this->parseFormatters($definition->getFormatters());

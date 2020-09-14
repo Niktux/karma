@@ -7,17 +7,22 @@ namespace Karma\Configuration;
 use Gaufrette\Filesystem;
 use Karma\Configuration\Collections\SectionParserCollection;
 use Karma\Configuration\Parser\NullParser;
+use Karma\Configuration\Parser\SectionParser;
 use Psr\Log\NullLogger;
 
 class Parser implements FileParser
 {
     use \Karma\Logging\LoggerAware;
 
-    private
-        $parsers,
-        $currentParser,
-        $parsedFiles,
-        $fs,
+    private SectionParserCollection
+        $parsers;
+    private ?SectionParser
+        $currentParser;
+    private array
+        $parsedFiles;
+    private Filesystem
+        $fs;
+    private string
         $eol;
 
     public function __construct(Filesystem $fs)

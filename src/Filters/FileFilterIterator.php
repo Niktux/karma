@@ -4,15 +4,17 @@ declare(strict_types = 1);
 
 namespace Karma\Filters;
 
+use Gaufrette\Adapter;
 use Gaufrette\Filesystem;
 
 class FileFilterIterator extends \FilterIterator implements \Countable
 {
-    private
-        $fsAdapter,
+    private Adapter
+        $fsAdapter;
+    private string
         $regex;
 
-    public function __construct(\Iterator $iterator, $regex, Filesystem $fs)
+    public function __construct(\Iterator $iterator, string $regex, Filesystem $fs)
     {
         parent::__construct($iterator);
 

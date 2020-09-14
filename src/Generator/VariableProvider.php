@@ -9,8 +9,9 @@ use Karma\Generator\NameTranslators\NullTranslator;
 
 class VariableProvider
 {
-    private
-        $parser,
+    private FileParser
+        $parser;
+    private NameTranslator
         $nameTranslator;
 
     public function __construct(FileParser $parser)

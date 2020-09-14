@@ -8,7 +8,7 @@ use Gaufrette\Adapter;
 
 class MultipleAdapter implements Adapter
 {
-    private
+    private array
         $mountTable;
     
     public function __construct()
@@ -16,7 +16,7 @@ class MultipleAdapter implements Adapter
         $this->mountTable = [];
     }
     
-    public function mount($mountPoint, Adapter $adapter)
+    public function mount(string $mountPoint, Adapter $adapter)
     {
         $directorySeparator = '/';
         $mountPoint = rtrim($mountPoint, $directorySeparator) . $directorySeparator;
@@ -55,7 +55,7 @@ class MultipleAdapter implements Adapter
         return $adapter->write($relativeKey, $content);
     }
     
-    public function exists($key)
+    public function exists($key): bool
     {
         try
         {
@@ -106,7 +106,7 @@ class MultipleAdapter implements Adapter
         throw new \RuntimeException('Not implemented yet : ' . __METHOD__);
     }
     
-    public function isDirectory($key)
+    public function isDirectory($key): bool
     {
         list($adapter, $relativeKey) = $this->find($key);
         

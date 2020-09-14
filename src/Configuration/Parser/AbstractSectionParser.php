@@ -11,7 +11,6 @@ abstract class AbstractSectionParser implements SectionParser
 
     protected ?string
         $currentFilePath;
-
     protected ?int
         $currentLineNumber;
 
