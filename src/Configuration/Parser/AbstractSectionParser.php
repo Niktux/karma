@@ -9,8 +9,10 @@ abstract class AbstractSectionParser implements SectionParser
     private const
         COMMENT_CHARACTER = '#';
 
-    protected
-        $currentFilePath,
+    protected ?string
+        $currentFilePath;
+
+    protected ?int
         $currentLineNumber;
 
     public function __construct()

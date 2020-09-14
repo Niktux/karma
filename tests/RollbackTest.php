@@ -16,7 +16,7 @@ class RollbackTest extends TestCase
         $targetFs,
         $rollback;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->sourceFs = new Filesystem(new InMemory());
         $this->targetFs = new Filesystem(new InMemory());

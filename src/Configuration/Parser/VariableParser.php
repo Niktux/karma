@@ -14,9 +14,13 @@ class VariableParser extends AbstractSectionParser
         ASSIGNMENT = '=',
         ENV_SEPARATOR = ',';
 
-    private
-        $currentVariable,
-        $variables,
+    private ?string
+        $currentVariable;
+
+    private array
+        $variables;
+
+    private bool
         $valueFound;
 
     public function __construct()

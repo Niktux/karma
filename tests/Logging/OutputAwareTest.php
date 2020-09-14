@@ -16,7 +16,7 @@ class OutputAwareTest extends TestCase
         $buffer,
         $output;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->output = $this->getObjectForTrait('\Karma\Logging\OutputAware');
 

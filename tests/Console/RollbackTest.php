@@ -81,11 +81,10 @@ class RollbackTest extends CommandTestCase
         $this->assertDisplay('~Rollback lib/~');
     }
 
-    /**
-     * @expectedException \RuntimeException
-     */
     public function testNoSourcePathProvided(): void
     {
+        $this->expectException(\RuntimeException::class);
+
         $this->app['profile.fileSystem.adapter'] = new InMemory();
 
         $this->runCommand('rollback', []);

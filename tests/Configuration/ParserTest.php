@@ -96,10 +96,11 @@ class ParserTest extends ParserTestCase
 
     /**
      * @dataProvider providerTestSyntaxError
-     * @expectedException \RuntimeException
      */
     public function testSyntaxError(string $contentMaster): void
     {
+        $this->expectException(\RuntimeException::class);
+
         $this->parser = new Parser(new Filesystem(new InMemory([
             self::MASTERFILE_PATH => $contentMaster,
             'empty.conf' => '',
@@ -554,11 +555,10 @@ CONFFILE;
         $this->assertSame($expected, $result);
     }
 
-    /**
-     * @expectedException \RuntimeException
-     */
     public function testMultipleDefaultEnvironmentForASameGroup(): void
     {
+        $this->expectException(\RuntimeException::class);
+
         $masterContent = <<<CONFFILE
 [groups]
 dev = [ dev1, *dev2,*dev3]

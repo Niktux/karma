@@ -20,7 +20,7 @@ abstract class ParserTestCase extends TestCase
         $parser,
         $variables;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $contentMaster = <<<CONFFILE
 [includes]

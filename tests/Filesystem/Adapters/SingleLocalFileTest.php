@@ -19,7 +19,7 @@ class SingleLocalFileTest extends TestCase
         $src,
         $singleLocalFile;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->src = new InMemory([
             self::FILENAME => self::CONTENT,
@@ -109,18 +109,18 @@ class SingleLocalFileTest extends TestCase
 
     /**
      * @dataProvider providerFileList
-     * @expectedException \RuntimeException
      */
     public function testDelete($key)
     {
+        $this->expectException(\RuntimeException::class);
+
         $this->singleLocalFile->delete($key);
     }
 
-    /**
-     * @expectedException \RuntimeException
-     */
     public function testRename()
     {
+        $this->expectException(\RuntimeException::class);
+
         $this->singleLocalFile->rename(self::FILENAME, 'renamed');
     }
 

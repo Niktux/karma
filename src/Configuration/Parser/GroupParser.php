@@ -6,7 +6,7 @@ namespace Karma\Configuration\Parser;
 
 class GroupParser extends AbstractSectionParser
 {
-    private
+    private array
         $groups,
         $defaultEnvironments;
 

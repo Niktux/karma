@@ -6,7 +6,7 @@ namespace Karma\Configuration\Parser;
 
 class IncludeParser extends AbstractSectionParser
 {
-    private
+    private array
         $files;
 
     public function __construct()

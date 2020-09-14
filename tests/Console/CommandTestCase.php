@@ -57,11 +57,11 @@ CONFFILE;
 
     protected function assertDisplay(string $regex): void
     {
-        $this->assertRegExp($regex, $this->commandTester->getDisplay());
+        self::assertMatchesRegularExpression($regex, $this->commandTester->getDisplay());
     }
 
     protected function assertNotDisplay(string $regex): void
     {
-        $this->assertNotRegExp($regex, $this->commandTester->getDisplay());
+        self::assertDoesNotMatchRegularExpression($regex, $this->commandTester->getDisplay());
     }
 }

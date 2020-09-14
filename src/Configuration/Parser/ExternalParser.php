@@ -8,8 +8,10 @@ use Karma\Configuration\Parser;
 
 class ExternalParser extends AbstractSectionParser
 {
-    private
-        $parser,
+    private Parser
+        $parser;
+
+    private array
         $variables,
         $filesStatus;
 

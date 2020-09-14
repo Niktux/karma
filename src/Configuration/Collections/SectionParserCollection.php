@@ -20,7 +20,7 @@ class SectionParserCollection implements \IteratorAggregate
         EXTERNALS = 'externals',
         GROUPS = 'groups';
 
-    private
+    private array
         $parsers;
 
     public function __construct()

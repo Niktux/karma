@@ -20,7 +20,7 @@ class HydratorTest extends TestCase
         $reader,
         $hydrator;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->sourceFs = new Filesystem(new InMemory());
         $this->targetFs = new Filesystem(new InMemory());
@@ -262,11 +262,10 @@ class HydratorTest extends TestCase
         }
     }
     
-    /**
-     * @expectedException \RuntimeException
-     */
     public function testDuplicatedFilenamesToTarget()
     {
+        $this->expectException(\RuntimeException::class);
+
         $existingFiles = array('dist-1/test.php-dist', 'dist-2/test.php-dist');
 
         foreach($existingFiles as $file)
@@ -420,11 +419,10 @@ class HydratorTest extends TestCase
         $this->assertTargetContent('1', 'e.yml');
     }
 
-    /**
-     * @expectedException \RuntimeException
-     */
     public function testFormatterError()
     {
+        $this->expectException(\RuntimeException::class);
+
         $this->write('a-dist', <<< FILE
 <% karma:formatter = a %>
 <% karma:formatter = b %>
@@ -448,11 +446,10 @@ FILE
         $this->assertContains('todo', $unvaluedVariables);
     }
 
-    /**
-     * @expectedException \RuntimeException
-     */
     public function testFixMe()
     {
+        $this->expectException(\RuntimeException::class);
+
         $this->write('a-dist', <<< FILE
 <%fixme%>
 FILE
@@ -772,10 +769,11 @@ TXT;
 
     /**
      * @dataProvider providerTestListDirectiveSyntaxError
-     * @expectedException \RuntimeException
      */
     public function testListDirectiveSyntaxError($content)
     {
+        $this->expectException(\RuntimeException::class);
+
         $this->write('a-dist', $content);
         $this->hydrator->hydrate('dev');
     }
@@ -890,11 +888,12 @@ FILE
     }
     
     /**
-     * @expectedException \RuntimeException
      * @group nested
      */
     public function testNestedVariables()
     {
+        $this->expectException(\RuntimeException::class);
+
         $reader = new InMemoryReader(array(
             'meat:dev' => 'pony',
             'burger:dev' => "<%meat%> with sparkles",

@@ -15,7 +15,7 @@ class MultipleAdapterTest extends TestCase
         $src,
         $lib;
         
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->src = new InMemory([
             'wildHorses' => 'Jolly Jumper',
@@ -153,11 +153,10 @@ class MultipleAdapterTest extends TestCase
         $this->assertFalse($this->lib->exists('fat/burger'));
     }
     
-    /**
-     * @expectedException \RuntimeException
-     */
     public function testRename()
     {
+        $this->expectException(\RuntimeException::class);
+
         $this->multiple->rename('a', 'b');
     }
     

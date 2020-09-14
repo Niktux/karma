@@ -11,7 +11,7 @@ class RulesTests extends TestCase
     private
         $formatter;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $rules = array(
             ' <true>' => 'string true',

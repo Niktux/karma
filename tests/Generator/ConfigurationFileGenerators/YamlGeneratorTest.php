@@ -21,7 +21,7 @@ class YamlGeneratorTest extends TestCase
         $variableProvider,
         $generator;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->fs = new Filesystem(new InMemory());
 
@@ -245,11 +245,10 @@ YAML
         $this->assertSame($content, $this->fs->read($filename), "Unexpected content for file $filename");
     }
 
-    /**
-     * @expectedException \RuntimeException
-     */
     public function testVariableNameTooShort()
     {
+        $this->expectException(\RuntimeException::class);
+
         $this->variableProvider->setNameTranslator(new NullTranslator());
 
         // Throw exception because of variable "pass"

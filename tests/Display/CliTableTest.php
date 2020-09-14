@@ -133,10 +133,11 @@ RESULT;
 
     /**
      * @dataProvider providerTestSanityChecks
-     * @expectedException \InvalidArgumentException
      */
     public function testSanityChecks(array $values)
     {
+        $this->expectException(\InvalidArgumentException::class);
+
         $table = new CliTable($values);
         $table->render();
     }

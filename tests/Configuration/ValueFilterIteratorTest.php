@@ -11,7 +11,7 @@ class ValueFilterIteratorTest extends TestCase
     private
         $values;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->values = new \ArrayIterator(array(
             'db.user' => 'root',

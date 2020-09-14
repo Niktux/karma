@@ -52,10 +52,11 @@ YAML;
 
     /**
      * @dataProvider providerTestFormatterSyntaxError
-     * @expectedException \InvalidArgumentException
      */
     public function testFormatterSyntaxError($yaml)
     {
+        $this->expectException(\InvalidArgumentException::class);
+
         $provider = $this->buildProvider($yaml);
     }
 

@@ -79,11 +79,10 @@ YAML;
         $this->assertDisplay('~Hydrate lib/ settings/~');
     }
 
-    /**
-     * @expectedException \RuntimeException
-     */
     public function testNoSourcePathProvided(): void
     {
+        $this->expectException(\RuntimeException::class);
+
         $this->app['profile.fileSystem.adapter'] = new InMemory();
 
         $this->runCommand(self::COMMAND_NAME, []);
@@ -141,22 +140,20 @@ YAML;
         $this->assertSame($expected, $adapter->read(('src/file')));
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testDuplicatedOverrideOption(): void
     {
+        $this->expectException(\InvalidArgumentException::class);
+
         $this->runCommand(self::COMMAND_NAME, [
             '--override' => ['db.user=toto', 'other=value', 'db.user=tata'],
             'sourcePath' => 'src/',
         ]);
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testInvalidOverrideOption(): void
     {
+        $this->expectException(\InvalidArgumentException::class);
+
         $this->runCommand(self::COMMAND_NAME, [
             '--override' => 'db.user:tata',
             'sourcePath' => 'src/',
@@ -174,22 +171,20 @@ YAML;
         $this->assertDisplay('~Set custom data api.key with value azer=ty~');
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testDuplicatedCustomData(): void
     {
+        $this->expectException(\InvalidArgumentException::class);
+
         $this->runCommand(self::COMMAND_NAME, [
             '--data' => ['user=toto', 'other=value', 'user=tata'],
             'sourcePath' => 'src/',
         ]);
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testInvalidCustomData(): void
     {
+        $this->expectException(\InvalidArgumentException::class);
+
         $this->runCommand(self::COMMAND_NAME, [
             '--data' => 'db.user:tata',
             'sourcePath' => 'src/',
