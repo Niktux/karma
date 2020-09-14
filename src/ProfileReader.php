@@ -10,7 +10,7 @@ use Symfony\Component\Yaml\Exception\ParseException;
 
 class ProfileReader implements FormattersDefinition
 {
-    const
+    private const
         TEMPLATE_SUFFIX_INDEX = 'suffix',
         MASTER_FILENAME_INDEX = 'master',
         CONFIGURATION_DIRECTORY_INDEX = 'confDir',
@@ -21,12 +21,12 @@ class ProfileReader implements FormattersDefinition
         FILE_EXTENSION_FORMATTERS_INDEX = 'fileExtensionFormatters',
         GENERATOR_INDEX = 'generator';
 
-    private
+    private array
         $attributes;
 
     public function __construct(Filesystem $fs)
     {
-        $this->attributes = array(
+        $this->attributes = [
             self::TEMPLATE_SUFFIX_INDEX => null,
             self::MASTER_FILENAME_INDEX => null,
             self::CONFIGURATION_DIRECTORY_INDEX => null,
@@ -36,7 +36,7 @@ class ProfileReader implements FormattersDefinition
             self::FORMATTERS_INDEX => array(),
             self::FILE_EXTENSION_FORMATTERS_INDEX => array(),
             self::GENERATOR_INDEX => array(),
-        );
+        ];
 
         $this->read($fs);
     }
@@ -51,7 +51,7 @@ class ProfileReader implements FormattersDefinition
         }
     }
 
-    private function processProfileContent($content)
+    private function processProfileContent($content): void
     {
         try
         {
@@ -78,7 +78,7 @@ class ProfileReader implements FormattersDefinition
         }
     }
 
-    public function hasTemplatesSuffix()
+    public function hasTemplatesSuffix(): bool
     {
         return $this->hasString(self::TEMPLATE_SUFFIX_INDEX);
     }
@@ -88,7 +88,7 @@ class ProfileReader implements FormattersDefinition
         return $this->getString(self::TEMPLATE_SUFFIX_INDEX);
     }
 
-    public function hasMasterFilename()
+    public function hasMasterFilename(): bool
     {
         return $this->hasString(self::MASTER_FILENAME_INDEX);
     }
@@ -98,7 +98,7 @@ class ProfileReader implements FormattersDefinition
         return $this->getString(self::MASTER_FILENAME_INDEX);
     }
 
-    public function hasConfigurationDirectory()
+    public function hasConfigurationDirectory(): bool
     {
         return $this->hasString(self::CONFIGURATION_DIRECTORY_INDEX);
     }
@@ -108,7 +108,7 @@ class ProfileReader implements FormattersDefinition
         return $this->getString(self::CONFIGURATION_DIRECTORY_INDEX);
     }
 
-    public function hasSourcePath()
+    public function hasSourcePath(): bool
     {
         return $this->has(self::SOURCE_PATH_INDEX);
     }
@@ -118,7 +118,7 @@ class ProfileReader implements FormattersDefinition
         return $this->get(self::SOURCE_PATH_INDEX);
     }
 
-    public function hasTargetPath()
+    public function hasTargetPath(): bool
     {
         return $this->has(self::TARGET_PATH_INDEX);
     }
@@ -182,20 +182,20 @@ class ProfileReader implements FormattersDefinition
         return $value;
     }
 
-    private function ensureParameterFormatIsValid($parameter, $value)
+    private function ensureParameterFormatIsValid($parameter, $value): void
     {
-        $parameterValidators = array(
+        $parameterValidators = [
             'targetPath' => function($value) {
                 return is_string($value);
             }
-        );
+        ];
 
         if(
             ! array_key_exists($parameter, $parameterValidators)
             || ! $parameterValidators[$parameter] instanceof \Closure
         )
         {
-            return true;
+            return;
         }
 
         if(! $parameterValidators[$parameter]($value))

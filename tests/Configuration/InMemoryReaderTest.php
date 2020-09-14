@@ -10,7 +10,7 @@ use PHPUnit\Framework\TestCase;
 
 class InMemoryReaderTest extends TestCase
 {
-    private
+    private InMemoryReader
         $reader;
 
     protected function setUp(): void

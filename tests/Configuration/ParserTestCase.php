@@ -16,9 +16,8 @@ abstract class ParserTestCase extends TestCase
     const
         MASTERFILE_PATH = 'master.conf';
 
-    protected
-        $parser,
-        $variables;
+    protected Parser
+        $parser;
 
     protected function setUp(): void
     {

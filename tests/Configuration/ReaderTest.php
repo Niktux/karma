@@ -12,7 +12,7 @@ require_once __DIR__ . '/ParserTestCase.php';
 
 class ReaderTest extends ParserTestCase
 {
-    private
+    private Reader
         $reader;
 
     protected function setUp(): void
@@ -25,84 +25,84 @@ class ReaderTest extends ParserTestCase
 
     public function providerTestRead()
     {
-        return array(
+        return [
             // master.conf
-            array('print_errors', 'prod', false),
-            array('print_errors', 'preprod', false),
-            array('print_errors', 'recette', true),
-            array('print_errors', 'qualif', true),
-            array('print_errors', 'integration', true),
-            array('print_errors', 'dev', true),
+            ['print_errors', 'prod', false],
+            ['print_errors', 'preprod', false],
+            ['print_errors', 'recette', true],
+            ['print_errors', 'qualif', true],
+            ['print_errors', 'integration', true],
+            ['print_errors', 'dev', true],
 
-            array('debug', 'prod', false),
-            array('debug', 'preprod', false),
-            array('debug', 'recette', false),
-            array('debug', 'qualif', false),
-            array('debug', 'integration', false),
-            array('debug', 'dev', true),
+            ['debug', 'prod', false],
+            ['debug', 'preprod', false],
+            ['debug', 'recette', false],
+            ['debug', 'qualif', false],
+            ['debug', 'integration', false],
+            ['debug', 'dev', true],
 
-            array('gourdin', 'prod', 0),
-            array('gourdin', 'preprod', 1),
-            array('gourdin', 'recette', 1),
-            array('gourdin', 'qualif', 1),
-            array('gourdin', 'integration', null),
-            array('gourdin', 'dev', 2),
-            array('gourdin', 'staging', 'string with blanks'),
+            ['gourdin', 'prod', 0],
+            ['gourdin', 'preprod', 1],
+            ['gourdin', 'recette', 1],
+            ['gourdin', 'qualif', 1],
+            ['gourdin', 'integration', null],
+            ['gourdin', 'dev', 2],
+            ['gourdin', 'staging', 'string with blanks'],
 
-            array('server', 'prod', 'sql21'),
-            array('server', 'preprod', 'prod21'),
-            array('server', 'recette', 'rec21'),
-            array('server', 'qualif', 'rec21'),
+            ['server', 'prod', 'sql21'],
+            ['server', 'preprod', 'prod21'],
+            ['server', 'recette', 'rec21'],
+            ['server', 'qualif', 'rec21'],
 
-            array('tva', 'dev', 19.0),
-            array('tva', 'preprod', 20.5),
-            array('tva', 'default', 19.6),
+            ['tva', 'dev', 19.0],
+            ['tva', 'preprod', 20.5],
+            ['tva', 'default', 19.6],
 
-            array('apiKey', 'dev', '=2'),
-            array('apiKey', 'recette', ''),
-            array('apiKey', 'prod', 'qd4#qs64d6q6=fgh4f6ùftgg==sdr'),
-            array('apiKey', 'default', 'qd4#qs64d6q6=fgh4f6ùftgg==sdr'),
+            ['apiKey', 'dev', '=2'],
+            ['apiKey', 'recette', ''],
+            ['apiKey', 'prod', 'qd4#qs64d6q6=fgh4f6ùftgg==sdr'],
+            ['apiKey', 'default', 'qd4#qs64d6q6=fgh4f6ùftgg==sdr'],
 
-            array('my.var.with.subnames', 'dev', 21),
-            array('my.var.with.subnames', 'default', 21),
+            ['my.var.with.subnames', 'dev', 21],
+            ['my.var.with.subnames', 'default', 21],
 
-            array('param', 'dev', '${param}'),
-            array('param', 'staging', 'Some${nested}param'),
-            array('param', 'demo', array('none', 'nest${param}ed', '${nested}', 'double_${param}_${param}', '${nested}${param}')),
+            ['param', 'dev', '${param}'],
+            ['param', 'staging', 'Some${nested}param'],
+            ['param', 'demo', ['none', 'nest${param}ed', '${nested}', 'double_${param}_${param}', '${nested}${param}']],
 
             // db.conf
-            array('user', 'default', 'root'),
+            ['user', 'default', 'root'],
 
             // lists
-            array('list.ok', 'dev', array('one', 'two', 'three')),
-            array('list.ok', 'staging', array('one', 'two')),
-            array('list.ok', 'prod', array('alone')),
-            array('list.ok', 'preprod', 'not_a_list'),
-            array('list.ok', 'other', array(2, 0, 'third', false, null)),
-            array('list.ok', 'staging2', array()),
-            array('list.ok', 'staging3', array()),
-            array('list.ok', 'staging_default', array('single value with blanks')),
-            array('list.ok', 'prod_default', array('single value with blanks')),
+            ['list.ok', 'dev', ['one', 'two', 'three']],
+            ['list.ok', 'staging', ['one', 'two']],
+            ['list.ok', 'prod', ['alone']],
+            ['list.ok', 'preprod', 'not_a_list'],
+            ['list.ok', 'other', [2, 0, 'third', false, null]],
+            ['list.ok', 'staging2', []],
+            ['list.ok', 'staging3', []],
+            ['list.ok', 'staging_default', ['single value with blanks']],
+            ['list.ok', 'prod_default', ['single value with blanks']],
 
-            array('list.notlist', 'dev', 'string[weird'),
-            array('list.notlist', 'staging', 'string]weird'),
-            array('list.notlist', 'prod', '[string[weird'),
-            array('list.notlist', 'preprod', 'string]'),
-            array('list.notlist', 'other', 'arr[]'),
-            array('list.notlist', 'staging2', 'arr[tung]'),
-            array('list.notlist', 'staging3', '[1,2,3]4'),
-            array('list.notlist', 'staging_default', '[string'),
-            array('list.notlist', 'prod_default', '[string'),
+            ['list.notlist', 'dev', 'string[weird'],
+            ['list.notlist', 'staging', 'string]weird'],
+            ['list.notlist', 'prod', '[string[weird'],
+            ['list.notlist', 'preprod', 'string]'],
+            ['list.notlist', 'other', 'arr[]'],
+            ['list.notlist', 'staging2', 'arr[tung]'],
+            ['list.notlist', 'staging3', '[1,2,3]4'],
+            ['list.notlist', 'staging_default', '[string'],
+            ['list.notlist', 'prod_default', '[string'],
 
-            array('list.notlist', 'string1', '[]]'),
-            array('list.notlist', 'string2', '[[]'),
-            array('list.notlist', 'string3', '[[]]'),
-            array('list.notlist', 'string4', '[][]'),
+            ['list.notlist', 'string1', '[]]'],
+            ['list.notlist', 'string2', '[[]'],
+            ['list.notlist', 'string3', '[[]]'],
+            ['list.notlist', 'string4', '[][]'],
 
-            array('variable-name-with-dashes', 'default', 'poney'),
+            ['variable-name-with-dashes', 'default', 'poney'],
 
-            array('redis_prefix', 'default', 'prefix:ending:with:semi:colon:'),
-        );
+            ['redis_prefix', 'default', 'prefix:ending:with:semi:colon:'],
+        ];
     }
 
     /**
@@ -135,10 +135,10 @@ class ReaderTest extends ParserTestCase
 
     public function providerTestReadNotFoundValue()
     {
-        return array(
-            array('thisvariabledoesnotexist', 'dev'),
-            array('server', 'dev'),
-        );
+        return [
+            ['thisvariabledoesnotexist', 'dev'],
+            ['server', 'dev'],
+        ];
     }
 
     public function testGetAllVariables()
@@ -146,7 +146,7 @@ class ReaderTest extends ParserTestCase
         $variables = $this->reader->getAllVariables();
         sort($variables);
 
-        $expected = array('print_errors', 'debug', 'gourdin', 'server', 'tva', 'apiKey', 'my.var.with.subnames', 'param', 'user', 'list.ok', 'list.notlist', 'variable-name-with-dashes', 'redis_prefix');
+        $expected = ['print_errors', 'debug', 'gourdin', 'server', 'tva', 'apiKey', 'my.var.with.subnames', 'param', 'user', 'list.ok', 'list.notlist', 'variable-name-with-dashes', 'redis_prefix'];
         sort($expected);
 
         self::assertSame($expected, $variables);
@@ -174,8 +174,8 @@ class ReaderTest extends ParserTestCase
 
     public function providerTestGetAllValuesForEnvironment()
     {
-        return array(
-            array('dev', array(
+        return [
+            ['dev', [
                 'print_errors' => true,
                 'debug' => true,
                 'gourdin' => 2,
@@ -185,12 +185,12 @@ class ReaderTest extends ParserTestCase
                 'my.var.with.subnames' => 21,
                 'param' => '${param}',
                 'user' => 'root',
-                'list.ok' => array('one', 'two', 'three'),
+                'list.ok' => ['one', 'two', 'three'],
                 'list.notlist' => 'string[weird',
                 'variable-name-with-dashes' => 'poney',
                 'redis_prefix' => 'prefix:ending:with:semi:colon:',
-            )),
-            array('prod', array(
+            ]],
+            ['prod', [
                 'print_errors' => false,
                 'debug' => false,
                 'gourdin' => 0,
@@ -200,12 +200,12 @@ class ReaderTest extends ParserTestCase
                 'my.var.with.subnames' => 21,
                 'param' => Configuration::NOT_FOUND,
                 'user' => 'root',
-                'list.ok' => array('alone'),
+                'list.ok' => ['alone'],
                 'list.notlist' => '[string[weird',
                 'variable-name-with-dashes' => 'poney',
                 'redis_prefix' => 'prefix:ending:with:semi:colon:',
-            )),
-        );
+            ]],
+        ];
     }
 
     /**
@@ -220,26 +220,26 @@ class ReaderTest extends ParserTestCase
 
     public function providerTestDiff()
     {
-        return array(
-            array('dev', 'prod', array(
-                'print_errors' => array(true, false),
-                'debug' => array(true, false),
-                'gourdin' => array(2, 0),
-                'tva' => array(19.0, 19.6),
-                'server' => array(Configuration::NOT_FOUND, 'sql21'),
-                'apiKey' => array('=2', 'qd4#qs64d6q6=fgh4f6ùftgg==sdr'),
-                'param' => array('${param}', Configuration::NOT_FOUND),
-                'list.ok' => array(array('one', 'two', 'three'), array('alone')),
-                'list.notlist' => array('string[weird', '[string[weird'),
-            )),
-            array('preprod', 'prod', array(
-                'gourdin' => array(1, 0),
-                'tva' => array(20.5, 19.6),
-                'server' => array('prod21', 'sql21'),
-                'list.ok' => array('not_a_list', array('alone')),
-                'list.notlist' => array('string]', '[string[weird'),
-            )),
-        );
+        return [
+            ['dev', 'prod', [
+                'print_errors' => [true, false],
+                'debug' => [true, false],
+                'gourdin' => [2, 0],
+                'tva' => [19.0, 19.6],
+                'server' => [Configuration::NOT_FOUND, 'sql21'],
+                'apiKey' => ['=2', 'qd4#qs64d6q6=fgh4f6ùftgg==sdr'],
+                'param' => ['${param}', Configuration::NOT_FOUND],
+                'list.ok' => [['one', 'two', 'three'], ['alone']],
+                'list.notlist' => ['string[weird', '[string[weird'],
+            ]],
+            ['preprod', 'prod', [
+                'gourdin' => [1, 0],
+                'tva' => [20.5, 19.6],
+                'server' => ['prod21', 'sql21'],
+                'list.ok' => ['not_a_list', ['alone']],
+                'list.notlist' => ['string]', '[string[weird'],
+            ]],
+        ];
     }
 
     public function testExternal()
@@ -271,11 +271,11 @@ db.user:
     preprod = foobar
 CONFFILE;
 
-        $files = array(
+        $files = [
             'master.conf' => $masterContent,
             'external1.conf' => $externalContent1,
             'external2.conf' => $externalContent2,
-        );
+        ];
 
         $parser = new Parser(new Filesystem(new InMemory($files)));
 
@@ -285,18 +285,18 @@ CONFFILE;
 
         $reader = new Reader($variables, $parser->getExternalVariables());
 
-        $expected = array(
-            'db.pass' => array(
+        $expected = [
+            'db.pass' => [
                 'dev' => 1234,
                 'prod' => 'veryComplexPass',
                 'preprod' => 'root',
-            ),
-            'db.user' => array(
+            ],
+            'db.user' => [
                 'dev' => 'userdb',
                 'prod' => 'userdb',
                 'preprod' => 'foobar',
-            ),
-        );
+            ],
+        ];
 
         foreach($expected as $variable => $info)
         {
@@ -314,7 +314,7 @@ CONFFILE;
     {
         $this->expectException(\RuntimeException::class);
 
-        $parser = new Parser(new Filesystem(new InMemory(array(
+        $parser = new Parser(new Filesystem(new InMemory([
             self::MASTERFILE_PATH => $contentMaster,
             'empty.conf' => '',
             'totoDev.conf' => <<<CONFFILE
@@ -322,7 +322,7 @@ CONFFILE;
 toto:
     dev = someDevValue
 CONFFILE
-        ))));
+        ])));
 
         $parser
             ->enableIncludeSupport()
@@ -335,14 +335,14 @@ CONFFILE
 
     public function providerTestExternalError()
     {
-        return array(
-            'external variable without any external file' => array(<<<CONFFILE
+        return [
+            'external variable without any external file' => [<<<CONFFILE
 [variables]
 toto :
     prod = <external>
 CONFFILE
-            ),
-            'external variable not found in external file' => array(<<<CONFFILE
+            ],
+            'external variable not found in external file' => [<<<CONFFILE
 [externals]
 empty.conf
 
@@ -350,8 +350,8 @@ empty.conf
 toto :
     prod = <external>
 CONFFILE
-            ),
-            'external variable found in external file but not for the correct environment' => array(<<<CONFFILE
+            ],
+            'external variable found in external file but not for the correct environment' => [<<<CONFFILE
 [externals]
 totoDev.conf
 
@@ -359,8 +359,8 @@ totoDev.conf
 toto :
     prod = <external>
 CONFFILE
-            ),
-        );
+            ],
+        ];
     }
 
     public function testExternalConflict()
@@ -389,11 +389,11 @@ v1:
     prod = bar
 CONFFILE;
 
-        $parser = new Parser(new Filesystem(new InMemory(array(
+        $parser = new Parser(new Filesystem(new InMemory([
             self::MASTERFILE_PATH => $contentMaster,
             'ext1.conf' => $contentExt1,
             'ext2.conf' => $contentExt2
-        ))));
+        ])));
 
         $parser
             ->enableIncludeSupport()
@@ -498,11 +498,11 @@ v1:
     prod = \${foo
 CONFFILE;
 
-        $parser = new Parser(new Filesystem(new InMemory(array(
+        $parser = new Parser(new Filesystem(new InMemory([
             self::MASTERFILE_PATH => $contentMaster,
-        ))));
+        ])));
 
-        $reader = new Reader($parser->parse(self::MASTERFILE_PATH), array());
+        $reader = new Reader($parser->parse(self::MASTERFILE_PATH), []);
 
         $reader->setCustomData('foo', 'bar');
 
@@ -539,7 +539,7 @@ db.cache:
     default = false
 CONFFILE;
 
-        $parser = new Parser(new Filesystem(new InMemory(array(self::MASTERFILE_PATH => $masterContent))));
+        $parser = new Parser(new Filesystem(new InMemory([self::MASTERFILE_PATH => $masterContent])));
 
         $parser->enableIncludeSupport()
             ->enableExternalSupport()
@@ -548,32 +548,32 @@ CONFFILE;
         $variables = $parser->parse(self::MASTERFILE_PATH);
         $reader = new Reader($variables, $parser->getExternalVariables(), $parser->getGroups());
 
-        $expected = array(
-            'db.pass' => array(
+        $expected = [
+            'db.pass' => [
                 'staging' => 'password',
                 'preprod' => 'password',
                 'dev1' => 1234,
                 'dev2' => 1234,
                 'dev3' => 1234,
                 'prod' => 'root',
-            ),
-            'db.user' => array(
+            ],
+            'db.user' => [
                 'staging' => 'qauser',
                 'preprod' => 'qauser',
                 'dev1' => 'devuser1',
                 'dev2' => 'devuser2',
                 'dev3' => 'devuser3',
                 'prod' => 'root',
-            ),
-            'db.cache' => array(
+            ],
+            'db.cache' => [
                 'staging' => 'sometimes',
                 'preprod' => true,
                 'dev1' => false,
                 'dev2' => 'maybe',
                 'dev3' => false,
                 'prod' => false,
-            ),
-        );
+            ],
+        ];
 
         foreach($expected as $variable => $info)
         {
@@ -599,7 +599,7 @@ db.pass:
     prod = root
 CONFFILE;
 
-        $parser = new Parser(new Filesystem(new InMemory(array(self::MASTERFILE_PATH => $masterContent))));
+        $parser = new Parser(new Filesystem(new InMemory([self::MASTERFILE_PATH => $masterContent])));
 
         $parser->enableIncludeSupport()
             ->enableExternalSupport()
@@ -624,7 +624,7 @@ db.pass:
     prod = root
 CONFFILE;
 
-        $parser = new Parser(new Filesystem(new InMemory(array(self::MASTERFILE_PATH => $masterContent))));
+        $parser = new Parser(new Filesystem(new InMemory([self::MASTERFILE_PATH => $masterContent])));
 
         $parser->enableIncludeSupport()
             ->enableExternalSupport()

@@ -53,14 +53,14 @@ class RollbackTest extends CommandTestCase
         $this->app['finder.cache.adapter'] = $cacheAdapter;
 
         $cache = new Filesystem($cacheAdapter);
-        $this->assertEmpty($cache->keys());
+        self::assertEmpty($cache->keys());
 
         // exec without cache
         $this->runCommand('rollback', [
             'sourcePath' => 'src/',
         ]);
 
-        $this->assertEmpty($cache->keys());
+        self::assertEmpty($cache->keys());
 
         // exec with cache
         $this->runCommand('rollback', [
@@ -68,7 +68,7 @@ class RollbackTest extends CommandTestCase
             'sourcePath' => 'src/',
         ]);
 
-        $this->assertNotEmpty($cache->keys());
+        self::assertNotEmpty($cache->keys());
     }
 
     public function testSourcePathFromProfile(): void

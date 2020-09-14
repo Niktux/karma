@@ -6,7 +6,7 @@ namespace Karma;
 
 interface FormattersDefinition
 {
-    const
+    public const
         DEFAULT_FORMATTER_NAME = 'default';
 
     public function getDefaultFormatterName(): ?string;

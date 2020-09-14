@@ -33,7 +33,7 @@ class Hydrate extends ConfigureActionCommand
     //    $this->hydrationStats($processor);
     }
 
-    private function warnForUnusedVariables(Hydrator $processor)
+    private function warnForUnusedVariables(Hydrator $processor): void
     {
         $unusedVariables = $processor->getUnusedVariables();
 

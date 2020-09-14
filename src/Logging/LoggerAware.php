@@ -18,23 +18,23 @@ trait LoggerAware
         return $this;
     }
 
-    private function error($message)
+    private function error($message): void
     {
-        return $this->logger->error($message);
+        $this->logger->error($message);
     }
 
-    private function warning($message)
+    private function warning($message): void
     {
-        return $this->logger->warning($message);
+        $this->logger->warning($message);
     }
 
-    private function info($message)
+    private function info($message): void
     {
-        return $this->logger->info($message);
+        $this->logger->info($message);
     }
 
-    private function debug($message)
+    private function debug($message): void
     {
-        return $this->logger->debug($message);
+        $this->logger->debug($message);
     }
 }

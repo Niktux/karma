@@ -15,7 +15,7 @@ class Command extends \Symfony\Component\Console\Command\Command
 {
     use OutputAware;
 
-    protected
+    protected Application
         $app;
 
     public function __construct(Application $app)
@@ -25,13 +25,13 @@ class Command extends \Symfony\Component\Console\Command\Command
         $this->app = $app;
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this->addOption('cache', null, InputOption::VALUE_NONE, 'Cache the dist files list');
         $this->addOption('no-title', null, InputOption::VALUE_NONE, 'Do not display logo title');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->configureOutputInterface($output);
         $this->printHeader($input->getOption('no-title'));
@@ -66,6 +66,8 @@ class Command extends \Symfony\Component\Console\Command\Command
         {
             $this->enableFinderCache();
         }
+
+        return 0;
     }
 
     private function configureOutputInterface(OutputInterface $output): void
@@ -111,11 +113,12 @@ class Command extends \Symfony\Component\Console\Command\Command
         return $value;
     }
 
-    private function printHeader($noTitle = true)
+    private function printHeader(bool $noTitle = true): void
     {
         if($noTitle === true)
         {
-            return $this->output->writeln('Karma ' . Application::VERSION);
+            $this->output->writeln('Karma ' . Application::VERSION);
+            return;
         }
 
         $this->output->writeln(
@@ -123,7 +126,7 @@ class Command extends \Symfony\Component\Console\Command\Command
         );
     }
 
-    private function getLogo($outputDecorated = true)
+    private function getLogo(bool $outputDecorated = true): string
     {
         $logo = <<<ASCIIART
 .@@@@...@@..

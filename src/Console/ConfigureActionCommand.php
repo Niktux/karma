@@ -21,18 +21,20 @@ abstract class ConfigureActionCommand extends Command
         ENV_DEV = 'dev',
         OPTION_ASSIGNMENT = '=';
 
-    private
+    private bool
         $dryRun,
-        $isBackupEnabled,
-        $systemEnvironment,
+        $isBackupEnabled;
+    private ?string
+        $systemEnvironment;
+    private string
         $name,
         $description,
         $outputTitle;
 
-    protected
+    protected string
         $environment;
 
-    public function __construct(Application $app, $name, $description, $outputTitle)
+    public function __construct(Application $app, string $name, string $description, string $outputTitle)
     {
         $this->name = $name;
         $this->description = $description;
@@ -47,7 +49,7 @@ abstract class ConfigureActionCommand extends Command
         $this->systemEnvironment = null;
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         parent::configure();
 
@@ -67,7 +69,7 @@ abstract class ConfigureActionCommand extends Command
         ;
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         parent::execute($input, $output);
 
@@ -76,11 +78,13 @@ abstract class ConfigureActionCommand extends Command
         $processor = $this->getProcessor();
         $this->configureProcessor($processor);
         $this->launchConfigurationAction($processor);
+
+        return 0;
     }
 
     private function processInputs(InputInterface $input): void
     {
-        $this->environment = $input->getOption('env');
+        $this->environment = (string) $input->getOption('env');
         $this->systemEnvironment = $input->getOption('system');
 
         if($input->getOption('dry-run'))

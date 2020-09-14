@@ -41,7 +41,7 @@ class DisplayTest extends CommandTestCase
         $this->runCommand('display', array('--value' => $valueBar));
 
         // Unit Test sanity test
-        $this->assertNotSame($valueFoo, $valueBar);
+        self::assertNotSame($valueFoo, $valueBar);
 
         $this->assertDisplay("~Display $env values~");
         $this->assertNotDisplay("~$valueFoo~");

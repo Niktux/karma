@@ -13,6 +13,7 @@ composer.lock
 # Generated file
 cache/
 report/
+.phpunit.result.cache
 docker/images/phpunit/Dockerfile
 docker/images/phpunit/php.ini
 docker/images/console/Dockerfile

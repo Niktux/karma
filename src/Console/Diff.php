@@ -12,7 +12,7 @@ use Karma\Command;
 
 class Diff extends Command
 {
-    protected function configure()
+    protected function configure(): void
     {
         parent::configure();
 
@@ -25,7 +25,7 @@ class Diff extends Command
         ;
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         parent::execute($input, $output);
 
@@ -52,5 +52,7 @@ class Diff extends Command
             });
 
         $output->writeln($table->render());
+
+        return 0;
     }
 }

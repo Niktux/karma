@@ -94,14 +94,14 @@ YAML;
         $this->app['finder.cache.adapter'] = $cacheAdapter;
 
         $cache = new Filesystem($cacheAdapter);
-        $this->assertEmpty($cache->keys());
+        self::assertEmpty($cache->keys());
 
         // exec without cache
         $this->runCommand(self::COMMAND_NAME, [
             'sourcePath' => 'src/',
         ]);
 
-        $this->assertEmpty($cache->keys());
+        self::assertEmpty($cache->keys());
 
         // exec with cache
         $this->runCommand(self::COMMAND_NAME, [
@@ -109,7 +109,7 @@ YAML;
             'sourcePath' => 'src/',
         ]);
 
-        $this->assertNotEmpty($cache->keys());
+        self::assertNotEmpty($cache->keys());
     }
 
     public function testOverride(): void
@@ -137,7 +137,7 @@ YAML;
         ]);
 
         $expected = "1\n2\n3";
-        $this->assertSame($expected, $adapter->read(('src/file')));
+        self::assertSame($expected, $adapter->read(('src/file')));
     }
 
     public function testDuplicatedOverrideOption(): void

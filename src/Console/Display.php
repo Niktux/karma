@@ -17,7 +17,7 @@ class Display extends Command
         ENV_DEV = 'dev',
         NO_FILTERING = 'karma-nofiltering';
 
-    protected function configure()
+    protected function configure(): void
     {
         parent::configure();
 
@@ -30,7 +30,7 @@ class Display extends Command
         ;
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         parent::execute($input, $output);
 
@@ -45,9 +45,11 @@ class Display extends Command
         $reader->setDefaultEnvironment($input->getOption('env'));
 
         $this->displayValues($reader, $input->getOption('value'));
+
+        return 0;
     }
 
-    private function displayValues(Configuration $reader, $filter = self::NO_FILTERING)
+    private function displayValues(Configuration $reader, $filter = self::NO_FILTERING): void
     {
         $values = new \ArrayIterator($reader->getAllValuesForEnvironment());
 

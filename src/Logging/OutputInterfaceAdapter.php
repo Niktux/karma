@@ -39,7 +39,7 @@ class OutputInterfaceAdapter implements LoggerInterface
         }
     }
 
-    private function convertLevel($level)
+    private function convertLevel($level): int
     {
         $verbosity = OutputInterface::VERBOSITY_NORMAL;
 
@@ -51,7 +51,7 @@ class OutputInterfaceAdapter implements LoggerInterface
         return $verbosity;
     }
 
-    private function writeLevel($level)
+    private function writeLevel($level): void
     {
         $message = str_pad(sprintf(
            '[%s]',

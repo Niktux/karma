@@ -12,26 +12,33 @@ class Hydrator implements ConfigurableProcessor
 {
     use \Karma\Logging\LoggerAware;
 
-    const
+    private const
         TODO_VALUE = '__TODO__',
         FIXME_VALUE = '__FIXME__',
         VARIABLE_REGEX = '~<%(?P<variableName>[A-Za-z0-9_\.\-]+)%>~';
 
-    private
+    private Filesystem
         $sources,
-        $suffix,
-        $reader,
+        $target;
+    private Configuration
+        $reader;
+    private Finder
+        $finder;
+    private string
+        $suffix;
+    private bool
         $dryRun,
         $enableBackup,
-        $finder,
-        $formatterProvider,
+        $nonDistFilesOverwriteAllowed;
+    private FormatterProvider
+        $formatterProvider;
+    private ?string
         $currentFormatterName,
         $currentTargetFile,
-        $systemEnvironment,
+        $systemEnvironment;
+    private array
         $unusedVariables,
         $unvaluedVariables,
-        $target,
-        $nonDistFilesOverwriteAllowed,
         $hydratedFiles;
 
     public function __construct(Filesystem $sources, Filesystem $target, Configuration $reader, Finder $finder, FormatterProvider $formatterProvider = null)
@@ -46,23 +53,19 @@ class Hydrator implements ConfigurableProcessor
         $this->suffix = Application::DEFAULT_DISTFILE_SUFFIX;
         $this->dryRun = false;
         $this->enableBackup = false;
+        $this->nonDistFilesOverwriteAllowed = false;
 
-        $this->formatterProvider = $formatterProvider;
-        if($this->formatterProvider === null)
-        {
-            $this->formatterProvider = new NullProvider();
-        }
+        $this->formatterProvider = $formatterProvider ?? new NullProvider();
 
         $this->currentFormatterName = null;
         $this->currentTargetFile = null;
         $this->systemEnvironment = null;
         $this->unusedVariables = array_flip($reader->getAllVariables());
         $this->unvaluedVariables = [];
-        $this->nonDistFilesOverwriteAllowed = false;
         $this->hydratedFiles = [];
     }
 
-    public function setSuffix(string $suffix)
+    public function setSuffix(string $suffix): ConfigurableProcessor
     {
         $this->suffix = $suffix;
 
@@ -83,14 +86,14 @@ class Hydrator implements ConfigurableProcessor
         return $this;
     }
     
-    public function allowNonDistFilesOverwrite(bool $nonDistFilesOverwriteAllowed = true)
+    public function allowNonDistFilesOverwrite(bool $nonDistFilesOverwriteAllowed = true): ConfigurableProcessor
     {
         $this->nonDistFilesOverwriteAllowed = $nonDistFilesOverwriteAllowed;
 
         return $this;
     }
 
-    public function setFormatterProvider(FormatterProvider $formatterProvider)
+    public function setFormatterProvider(FormatterProvider $formatterProvider): ConfigurableProcessor
     {
         $this->formatterProvider = $formatterProvider;
 

@@ -6,7 +6,7 @@ namespace Karma;
 
 class Console
 {
-    private
+    private \Symfony\Component\Console\Application
         $app;
 
     public function __construct(Application $dic)
@@ -20,12 +20,12 @@ class Console
         $this->app->add(new Console\Rollback($dic));
     }
 
-    public function run()
+    public function run(): void
     {
         $this->app->run();
     }
 
-    public function getConsoleApplication()
+    public function getConsoleApplication(): \Symfony\Component\Console\Application
     {
         return $this->app;
     }

@@ -11,6 +11,9 @@ require_once __DIR__ . '/ParserTestCase.php';
 
 class ParserTest extends ParserTestCase
 {
+    private array
+        $variables;
+
     /**
      * @dataProvider providerTestRead
      */
@@ -18,10 +21,10 @@ class ParserTest extends ParserTestCase
     {
         $this->variables = $this->parser->setEOL("\n")->parse(self::MASTERFILE_PATH);
 
-        $this->assertArrayHasKey($variable, $this->variables);
-        $this->assertArrayHasKey('env', $this->variables[$variable]);
-        $this->assertArrayHasKey($environment, $this->variables[$variable]['env']);
-        $this->assertSame($expectedValue, $this->variables[$variable]['env'][$environment]);
+        self::assertArrayHasKey($variable, $this->variables);
+        self::assertArrayHasKey('env', $this->variables[$variable]);
+        self::assertArrayHasKey($environment, $this->variables[$variable]['env']);
+        self::assertSame($expectedValue, $this->variables[$variable]['env'][$environment]);
     }
 
     public function providerTestRead(): array
@@ -349,7 +352,7 @@ CONFFILE
             ->enableGroupSupport()
             ->parse(self::MASTERFILE_PATH);
 
-        $this->assertEmpty($variables);
+        self::assertEmpty($variables);
     }
 
     public function testExternal(): void
@@ -410,10 +413,10 @@ CONFFILE;
         {
             foreach($info as $environment => $expectedValue)
             {
-                $this->assertArrayHasKey($variable, $variables);
-                $this->assertArrayHasKey('env', $variables[$variable]);
-                $this->assertArrayHasKey($environment, $variables[$variable]['env']);
-                $this->assertSame($expectedValue, $variables[$variable]['env'][$environment]);
+                self::assertArrayHasKey($variable, $variables);
+                self::assertArrayHasKey('env', $variables[$variable]);
+                self::assertArrayHasKey($environment, $variables[$variable]['env']);
+                self::assertSame($expectedValue, $variables[$variable]['env'][$environment]);
             }
         }
     }
@@ -473,10 +476,10 @@ CONFFILE;
         {
             foreach($info as $environment => $expectedValue)
             {
-                $this->assertArrayHasKey($variable, $variables);
-                $this->assertArrayHasKey('env', $variables[$variable]);
-                $this->assertArrayHasKey($environment, $variables[$variable]['env']);
-                $this->assertSame($expectedValue, $variables[$variable]['env'][$environment]);
+                self::assertArrayHasKey($variable, $variables);
+                self::assertArrayHasKey('env', $variables[$variable]);
+                self::assertArrayHasKey($environment, $variables[$variable]['env']);
+                self::assertSame($expectedValue, $variables[$variable]['env'][$environment]);
             }
         }
 
@@ -488,7 +491,7 @@ CONFFILE;
             'production' => ['prod'],
         ];
 
-        $this->assertSameArraysExceptOrder($expected, $groups);
+        self::assertSameArraysExceptOrder($expected, $groups);
     }
 
     /**
@@ -497,7 +500,7 @@ CONFFILE;
     public function testIsSystem(string $variable, bool $expected): void
     {
         $this->parser->parse(self::MASTERFILE_PATH);
-        $this->assertSame($expected, $this->parser->isSystem($variable));
+        self::assertSame($expected, $this->parser->isSystem($variable));
     }
 
     public function providerTestIsSystem(): array
@@ -535,7 +538,7 @@ CONFFILE;
             'production' => ['prod'],
         ];
 
-        $this->assertSameArraysExceptOrder($expected, $groups);
+        self::assertSameArraysExceptOrder($expected, $groups);
 
         $envs = $parser->getDefaultEnvironmentsForGroups();
         $expected = [
@@ -544,7 +547,7 @@ CONFFILE;
             'production' => null,
         ];
 
-        $this->assertSameArraysExceptOrder($expected, $envs);
+        self::assertSameArraysExceptOrder($expected, $envs);
     }
 
     private function assertSameArraysExceptOrder(array $expected, array $result): void
@@ -552,7 +555,7 @@ CONFFILE;
         ksort($result);
         ksort($expected);
 
-        $this->assertSame($expected, $result);
+        self::assertSame($expected, $result);
     }
 
     public function testMultipleDefaultEnvironmentForASameGroup(): void
@@ -590,6 +593,6 @@ CONFFILE;
 
         $variables = $parser->parse(self::MASTERFILE_PATH);
 
-        $this->assertArrayHasKey('toto', $variables);
+        self::assertArrayHasKey('toto', $variables);
     }
 }

@@ -38,7 +38,7 @@ class ValueFilterIteratorTest extends TestCase
     {
         $it = new ValueFilterIterator($filter, $this->values);
 
-        $this->assertSame($expected, iterator_to_array($it));
+        self::assertSame($expected, iterator_to_array($it));
     }
 
     public function providerTestFilter()

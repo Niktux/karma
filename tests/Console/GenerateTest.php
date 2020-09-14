@@ -102,7 +102,7 @@ foo:
 bar: valueAll
 
 YAML;
-        $this->assertSame($expected, $adapter->read('app.yml'));
+        self::assertSame($expected, $adapter->read('app.yml'));
     }
 
     public function testDuplicatedOverrideOption(): void

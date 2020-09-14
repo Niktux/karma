@@ -13,7 +13,7 @@ use Karma\Command;
 
 class Rollback extends Command
 {
-    private
+    private bool
         $dryRun;
 
     public function __construct(Application $app)
@@ -23,7 +23,7 @@ class Rollback extends Command
         $this->dryRun = false;
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         parent::configure();
 
@@ -37,12 +37,14 @@ class Rollback extends Command
         ;
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         parent::execute($input, $output);
 
         $this->processInputs($input);
         $this->launchRollback();
+
+        return 0;
     }
 
     private function processInputs(InputInterface $input): void

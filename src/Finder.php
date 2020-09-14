@@ -9,7 +9,7 @@ use Karma\Filters\FileFilterIterator;
 
 class Finder
 {
-    private
+    private Filesystem
         $fs;
 
     public function __construct(Filesystem $fs)
@@ -17,7 +17,7 @@ class Finder
         $this->fs = $fs;
     }
 
-    public function findFiles($regex): iterable
+    public function findFiles(string $regex): iterable
     {
         return new FileFilterIterator(
             new \ArrayIterator($this->fs->keys()),

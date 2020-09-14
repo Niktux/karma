@@ -19,7 +19,7 @@ class CliTableTest extends TestCase
         $table = new CliTable($input);
         $table->setHeaders($headers);
 
-        $this->assertSame($expected, $table->render());
+        self::assertSame($expected, $table->render());
     }
 
     public function providerTestRender()
@@ -79,7 +79,7 @@ RESULT
 |----------------------|
 RESULT;
 
-        $this->assertSame($expected, $table->render());
+        self::assertSame($expected, $table->render());
     }
 
     public function testWeirdCharacter()
@@ -103,7 +103,7 @@ RESULT;
 |----------------------|
 RESULT;
 
-        $this->assertSame($expected, $table->render());
+        self::assertSame($expected, $table->render());
     }
 
     public function testEnableFormattingTags()
@@ -128,7 +128,7 @@ RESULT;
 |----------------------|
 RESULT;
 
-        $this->assertSame($expected, $table->render());
+        self::assertSame($expected, $table->render());
     }
 
     /**
@@ -172,7 +172,7 @@ RESULT;
         $result = $table->displayKeys($enableKeys)
             ->render();
 
-        $this->assertSame($expected, $result);
+        self::assertSame($expected, $result);
     }
 
     public function providerTestDisplayKeys()
