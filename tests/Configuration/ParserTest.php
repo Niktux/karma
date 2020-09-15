@@ -11,20 +11,17 @@ require_once __DIR__ . '/ParserTestCase.php';
 
 class ParserTest extends ParserTestCase
 {
-    private array
-        $variables;
-
     /**
      * @dataProvider providerTestRead
      */
     public function testRead(string $variable, string $environment, $expectedValue): void
     {
-        $this->variables = $this->parser->setEOL("\n")->parse(self::MASTERFILE_PATH);
+        $variables = $this->parser->setEOL("\n")->parse(self::MASTERFILE_PATH);
 
-        self::assertArrayHasKey($variable, $this->variables);
-        self::assertArrayHasKey('env', $this->variables[$variable]);
-        self::assertArrayHasKey($environment, $this->variables[$variable]['env']);
-        self::assertSame($expectedValue, $this->variables[$variable]['env'][$environment]);
+        self::assertArrayHasKey($variable, $variables);
+        self::assertArrayHasKey('env', $variables[$variable]);
+        self::assertArrayHasKey($environment, $variables[$variable]['env']);
+        self::assertSame($expectedValue, $variables[$variable]['env'][$environment]);
     }
 
     public function providerTestRead(): array
@@ -491,7 +488,7 @@ CONFFILE;
             'production' => ['prod'],
         ];
 
-        self::assertSameArraysExceptOrder($expected, $groups);
+        $this->assertSameArraysExceptOrder($expected, $groups);
     }
 
     /**
@@ -538,7 +535,7 @@ CONFFILE;
             'production' => ['prod'],
         ];
 
-        self::assertSameArraysExceptOrder($expected, $groups);
+        $this->assertSameArraysExceptOrder($expected, $groups);
 
         $envs = $parser->getDefaultEnvironmentsForGroups();
         $expected = [
@@ -547,7 +544,7 @@ CONFFILE;
             'production' => null,
         ];
 
-        self::assertSameArraysExceptOrder($expected, $envs);
+        $this->assertSameArraysExceptOrder($expected, $envs);
     }
 
     private function assertSameArraysExceptOrder(array $expected, array $result): void

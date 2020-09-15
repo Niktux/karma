@@ -13,7 +13,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 abstract class ParserTestCase extends TestCase
 {
-    const
+    public const
         MASTERFILE_PATH = 'master.conf';
 
     protected Parser

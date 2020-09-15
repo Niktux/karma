@@ -29,7 +29,7 @@ class RollbackTest extends CommandTestCase
     {
         $mock = $this->createMock(Hydrator::class);
 
-        $mock->expects($this->once())
+        $mock->expects(self::once())
             ->method($expectedMethodCall);
 
         $this->app['hydrator'] = $mock;

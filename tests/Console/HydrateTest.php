@@ -13,7 +13,7 @@ use Karma\Hydrator;
 
 class HydrateTest extends CommandTestCase
 {
-    const
+    private const
         COMMAND_NAME = 'hydrate';
 
     protected function setUp(): void
@@ -34,7 +34,7 @@ class HydrateTest extends CommandTestCase
     {
         $mock = $this->createMock(Hydrator::class);
 
-        $mock->expects($this->once())
+        $mock->expects(self::once())
             ->method($expectedMethodCall);
 
         $this->app['hydrator'] = $mock;

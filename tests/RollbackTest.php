@@ -11,15 +11,15 @@ use PHPUnit\Framework\TestCase;
 
 class RollbackTest extends TestCase
 {
-    private
-        $sourceFs,
-        $targetFs,
+    private Filesystem
+        $sourceFs;
+    private Hydrator
         $rollback;
 
     protected function setUp(): void
     {
         $this->sourceFs = new Filesystem(new InMemory());
-        $this->targetFs = new Filesystem(new InMemory());
+        $targetFs = new Filesystem(new InMemory());
 
         $this->write('a.php-dist', 'a');
         $this->write('a.php', 'a');
@@ -47,17 +47,17 @@ class RollbackTest extends TestCase
         $this->write('subdir/s.php', 's');
         $this->write('subdir/s.php~', 'old_s');
 
-        $reader = new Reader(array(), array());
-        $this->rollback = new Hydrator($this->sourceFs, $this->targetFs, $reader, new Finder($this->sourceFs));
+        $reader = new Reader([], []);
+        $this->rollback = new Hydrator($this->sourceFs, $targetFs, $reader, new Finder($this->sourceFs));
     }
 
-    public function testRollback()
+    public function testRollback(): void
     {
         $this->rollback
             ->setSuffix('-dist')
             ->rollback();
 
-        $shouldExists = array(
+        $shouldExists = [
             'a.php-dist' => 'a',
             'a.php' => 'old_a',
             'a.php~' => 'old_a',
@@ -81,30 +81,30 @@ class RollbackTest extends TestCase
 
             'subdir/s.php' => 'old_s',
             'subdir/s.php~' => 'old_s',
-        );
+        ];
 
-        $shouldNotExists = array('orphan.php', 'orphan2.php-dist', 'b.php~', 'd.php-dist');
+        $shouldNotExists = ['orphan.php', 'orphan2.php-dist', 'b.php~', 'd.php-dist'];
 
         foreach($shouldExists as $f => $content)
         {
-            $this->assertTrue($this->sourceFs->has($f), "File $f should exists");
-            $this->assertSame($content, $this->sourceFs->read($f));
+            self::assertTrue($this->sourceFs->has($f), "File $f should exists");
+            self::assertSame($content, $this->sourceFs->read($f));
         }
 
         foreach($shouldNotExists as $f)
         {
-            $this->assertFalse($this->sourceFs->has($f), "File should not exists");
+            self::assertFalse($this->sourceFs->has($f), "File should not exists");
         }
     }
 
-    public function testDryRun()
+    public function testDryRun(): void
     {
         $this->rollback
             ->setSuffix('-dist')
             ->setDryRun()
             ->rollback();
 
-        $shouldExists = array(
+        $shouldExists = [
             'a.php-dist' => 'a',
             'a.php' => 'a',
             'a.php~' => 'old_a',
@@ -127,23 +127,23 @@ class RollbackTest extends TestCase
 
             'subdir/s.php' => 's',
             'subdir/s.php~' => 'old_s',
-        );
+        ];
 
-        $shouldNotExists = array('orphan.php', 'b.php~', 'c.php', 'd.php-dist');
+        $shouldNotExists = ['orphan.php', 'b.php~', 'c.php', 'd.php-dist'];
 
         foreach($shouldExists as $f => $content)
         {
-            $this->assertTrue($this->sourceFs->has($f), "File $f should exists");
-            $this->assertSame($content, $this->sourceFs->read($f));
+            self::assertTrue($this->sourceFs->has($f), "File $f should exists");
+            self::assertSame($content, $this->sourceFs->read($f));
         }
 
         foreach($shouldNotExists as $f)
         {
-            $this->assertFalse($this->sourceFs->has($f), "File should not exists");
+            self::assertFalse($this->sourceFs->has($f), "File should not exists");
         }
     }
 
-    private function write($name, $content = null)
+    private function write(string $name, ?string $content = null): void
     {
         $this->sourceFs->write($name, $content);
     }

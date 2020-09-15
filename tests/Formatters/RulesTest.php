@@ -6,21 +6,21 @@ namespace Karma\Formatters;
 
 use PHPUnit\Framework\TestCase;
 
-class RulesTests extends TestCase
+class RulesTest extends TestCase
 {
-    private
+    private Rules
         $formatter;
 
     protected function setUp(): void
     {
-        $rules = array(
+        $rules = [
             ' <true>' => 'string true',
             '<false> ' => 'string false',
             '<null>' => 0,
             'foobar' => 'barfoo',
             'footrue' => true,
             ' <string> ' => '"<string>"',
-        );
+        ];
 
         $this->formatter = new Rules($rules);
     }
@@ -28,35 +28,35 @@ class RulesTests extends TestCase
     /**
      * @dataProvider providerTestFormat
      */
-    public function testFormat($input, $expected)
+    public function testFormat($input, $expected): void
     {
         $result = $this->formatter->format($input);
-        $this->assertSame($expected, $result);
+        self::assertSame($expected, $result);
     }
 
-    public function providerTestFormat()
+    public function providerTestFormat(): array
     {
-        return array(
-            'boolean true' => array(true, 'string true'),
-            'string true' => array('true', '"true"'),
-            'other string true' => array('<true>', '"<true>"'),
-            'footrue' => array('footrue', true),
+        return [
+            'boolean true' => [true, 'string true'],
+            'string true' => ['true', '"true"'],
+            'other string true' => ['<true>', '"<true>"'],
+            'footrue' => ['footrue', true],
 
-            'boolean false' => array(false, 'string false'),
-            'string false' => array('false', '"false"'),
-            'other string false' => array('<false>', '"<false>"'),
+            'boolean false' => [false, 'string false'],
+            'string false' => ['false', '"false"'],
+            'other string false' => ['<false>', '"<false>"'],
 
-            'null' => array(null, 0),
-            'string null' => array('null', '"null"'),
-            'other string null' => array('<null>', '"<null>"'),
+            'null' => [null, 0],
+            'string null' => ['null', '"null"'],
+            'other string null' => ['<null>', '"<null>"'],
 
-            'zero' => array(0, 0),
-            'string zero' => array('0', '"0"'),
-            'other string zero' => array('<0>', '"<0>"'),
+            'zero' => [0, 0],
+            'string zero' => ['0', '"0"'],
+            'other string zero' => ['<0>', '"<0>"'],
 
-            'foo' => array('foo', '"foo"'),
-            'foobar' => array('foobar', 'barfoo'),
-            'barfoobarfoo' => array('barfoobarfoo', '"barfoobarfoo"'),
-        );
+            'foo' => ['foo', '"foo"'],
+            'foobar' => ['foobar', 'barfoo'],
+            'barfoobarfoo' => ['barfoobarfoo', '"barfoobarfoo"'],
+        ];
     }
 }

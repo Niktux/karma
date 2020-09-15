@@ -12,7 +12,7 @@ class ApplicationTest extends TestCase
     /**
      * @dataProvider providerTestContainer
      */
-    public function testContainer($service, $expected)
+    public function testContainer(string $service, string $expected): void
     {
         $adapter = new InMemory();
         $adapter->write(Application::DEFAULT_MASTER_FILE, null);
@@ -20,17 +20,17 @@ class ApplicationTest extends TestCase
         $app = new Application();
         $app['configuration.fileSystem.adapter'] = $adapter;
 
-        $this->assertInstanceOf($expected, $app[$service]);
+        self::assertInstanceOf($expected, $app[$service]);
     }
 
-    public function providerTestContainer()
+    public function providerTestContainer(): array
     {
         return [
-            ['hydrator', 'Karma\\Hydrator'],
-            ['parser', 'Karma\\Configuration\\Parser'],
-            ['configuration', 'Karma\\Configuration'],
-            ['finder', 'Karma\\Finder'],
-            ['configurationFilesGenerator', 'Karma\\Generator\\ConfigurationFileGenerator'],
+            ['hydrator', Hydrator::class],
+            ['parser', Configuration\Parser::class],
+            ['configuration', Configuration::class],
+            ['finder', Finder::class],
+            ['configurationFilesGenerator', Generator\ConfigurationFileGenerator::class],
         ];
     }
 }

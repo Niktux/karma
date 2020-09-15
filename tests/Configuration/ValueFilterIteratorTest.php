@@ -8,7 +8,7 @@ use PHPUnit\Framework\TestCase;
 
 class ValueFilterIteratorTest extends TestCase
 {
-    private
+    private \Iterator
         $values;
 
     protected function setUp(): void
@@ -34,103 +34,103 @@ class ValueFilterIteratorTest extends TestCase
     /**
      * @dataProvider providerTestFilter
      */
-    public function testFilter($filter, $expected)
+    public function testFilter($filter, $expected): void
     {
         $it = new ValueFilterIterator($filter, $this->values);
 
         self::assertSame($expected, iterator_to_array($it));
     }
 
-    public function providerTestFilter()
+    public function providerTestFilter(): array
     {
-        return array(
-            array('root', array(
+        return [
+            ['root', [
                 'db.user' => 'root',
-            )),
-            array('root*', array(
+            ]],
+            ['root*', [
                 'db.user' => 'root',
                 'db.pass' => 'rootroot',
                 'email' => 'root@db.org',
-            )),
-            array('*root*', array(
+            ]],
+            ['*root*', [
                 'db.user' => 'root',
                 'db.pass' => 'rootroot',
                 'email' => 'root@db.org',
                 'someString' => 'Connecting as root is evil ! Mike12',
-                'list' => array(100, 'arootb', true, 'goo'),
-            )),
-            array('*root', array(
+                'list' => [100, 'arootb', true, 'goo'],
+            ]],
+            ['*root', [
                 'db.user' => 'root',
                 'db.pass' => 'rootroot',
-            )),
-            array('null', array(
+            ]],
+            ['null', [
                 'nullValue' => null,
-            )),
-            array(null, array(
+            ]],
+            [null, [
                 'nullValue' => null,
-            )),
-            array('*null*', array(
+            ]],
+            ['*null*', [
                 'otherString' => 'null',
-            )),
-            array('10', array(
+            ]],
+            ['10', [
                 'tenNumber' => 10,
-            )),
-            array('10*', array(
+            ]],
+            ['10*', [
                 'tenNumber' => 10,
                 'numberAsString' => '10',
-                'list' => array(100, 'arootb', true, 'goo'),
-            )),
-            array('0', array(
+                'list' => [100, 'arootb', true, 'goo'],
+            ]],
+            ['0', [
                 'number' => 0,
-            )),
-            array('*0*', array(
+            ]],
+            ['*0*', [
                 'db.host' => '192.160.13.12',
                 'number' => 0,
                 'tenNumber' => 10,
                 'numberAsString' => '10',
-                'list' => array(100, 'arootb', true, 'goo'),
-            )),
-            array('true', array(
+                'list' => [100, 'arootb', true, 'goo'],
+            ]],
+            ['true', [
                 'display_errors' => true,
-                'list' => array(100, 'arootb', true, 'goo'),
-            )),
-            array('true*', array(
+                'list' => [100, 'arootb', true, 'goo'],
+            ]],
+            ['true*', [
                 'trueString' => 'true',
-            )),
-            array('*.o*', array(
+            ]],
+            ['*.o*', [
                 'email' => 'root@db.org',
-            )),
-            array('*o*', array(
+            ]],
+            ['*o*', [
                 'db.user' => 'root',
                 'db.pass' => 'rootroot',
                 'email' => 'root@db.org',
                 'someString' => 'Connecting as root is evil ! Mike12',
-                'list' => array(100, 'arootb', true, 'goo'), // once
-            )),
-            array('192.160.13.12', array(
+                'list' => [100, 'arootb', true, 'goo'], // once
+            ]],
+            ['192.160.13.12', [
                 'db.host' => '192.160.13.12',
-            )),
-            array('root@db.org', array(
+            ]],
+            ['root@db.org', [
                 'email' => 'root@db.org',
-            )),
-            array('*@db.org', array(
+            ]],
+            ['*@db.org', [
                 'email' => 'root@db.org',
-            )),
-            array('db.*', array(
-            )),
-            array('b**te', array(
+            ]],
+            ['db.*', [
+            ]],
+            ['b**te', [
                 'stringWithStar' => 'b*te',
-            )),
-            array('b**t*', array(
+            ]],
+            ['b**t*', [
                 'stringWithStar' => 'b*te',
-            )),
-            array('***te', array(
-            )),
-            array('b***', array(
+            ]],
+            ['***te', [
+            ]],
+            ['b***', [
                 'stringWithStar' => 'b*te',
-            )),
-            array('****', array(
-            )),
-        );
+            ]],
+            ['****', [
+            ]],
+        ];
     }
 }

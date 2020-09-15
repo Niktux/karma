@@ -14,7 +14,7 @@ use PHPUnit\Framework\TestCase;
 
 class VariableProviderTest extends TestCase
 {
-    private
+    private VariableProvider
         $provider;
 
     protected function setUp(): void
@@ -61,18 +61,18 @@ CONFFILE;
         $this->provider = new VariableProvider($parser);
     }
 
-    private function assertSameArraysExceptOrder($expected, $result)
+    private function assertSameArraysExceptOrder(array $expected, array $result): void
     {
         ksort($result);
         ksort($expected);
 
-        $this->assertSame($expected, $result);
+        self::assertSame($expected, $result);
     }
 
     /**
      * @dataProvider providerTestGetAllVariables
      */
-    public function testGetAllVariables($translator, $expected)
+    public function testGetAllVariables(NameTranslator $translator, array $expected): void
     {
         $this->provider->setNameTranslator($translator);
         $variables = $this->provider->getAllVariables();
@@ -80,17 +80,17 @@ CONFFILE;
         $this->assertSameArraysExceptOrder($expected, $variables);
     }
 
-    public function providerTestGetAllVariables()
+    public function providerTestGetAllVariables(): array
     {
-        return array(
-            array(new NullTranslator(), array(
+        return [
+            [new NullTranslator(), [
                 'pass' => 'pass',
                 'logger.level' => 'logger.level'
-            )),
-            array(new FilePrefixTranslator(), array(
+            ]],
+            [new FilePrefixTranslator(), [
                 'pass' => 'db.pass',
                 'logger.level' => 'logger.level',
-            )),
-        );
+            ]],
+        ];
     }
 }

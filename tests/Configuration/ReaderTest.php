@@ -23,7 +23,7 @@ class ReaderTest extends ParserTestCase
         $this->reader = new Reader($variables, $this->parser->getExternalVariables());
     }
 
-    public function providerTestRead()
+    public function providerTestRead(): array
     {
         return [
             // master.conf
@@ -108,7 +108,7 @@ class ReaderTest extends ParserTestCase
     /**
      * @dataProvider providerTestRead
      */
-    public function testRead($variable, $environment, $expectedValue)
+    public function testRead(string $variable, string $environment, $expectedValue): void
     {
         self::assertSame($expectedValue, $this->reader->read($variable, $environment));
     }
@@ -116,7 +116,7 @@ class ReaderTest extends ParserTestCase
     /**
      * @dataProvider providerTestRead
      */
-    public function testReadWithDefaultEnvironment($variable, $environment, $expectedValue)
+    public function testReadWithDefaultEnvironment(string $variable, string $environment, $expectedValue): void
     {
         $this->reader->setDefaultEnvironment($environment);
 
@@ -126,14 +126,14 @@ class ReaderTest extends ParserTestCase
     /**
      * @dataProvider providerTestReadNotFoundValue
      */
-    public function testReadNotFoundValue($variable, $environment)
+    public function testReadNotFoundValue(string $variable, string $environment): void
     {
         $this->expectException(\RuntimeException::class);
 
         $this->reader->read($variable, $environment);
     }
 
-    public function providerTestReadNotFoundValue()
+    public function providerTestReadNotFoundValue(): array
     {
         return [
             ['thisvariabledoesnotexist', 'dev'],
@@ -141,7 +141,7 @@ class ReaderTest extends ParserTestCase
         ];
     }
 
-    public function testGetAllVariables()
+    public function testGetAllVariables(): void
     {
         $variables = $this->reader->getAllVariables();
         sort($variables);
@@ -155,7 +155,7 @@ class ReaderTest extends ParserTestCase
     /**
      * @dataProvider providerTestGetAllValuesForEnvironment
      */
-    public function testGetAllValuesForEnvironment($environment, array $expectedValues)
+    public function testGetAllValuesForEnvironment(string $environment, array $expectedValues): void
     {
         $variables = $this->reader->getAllValuesForEnvironment($environment);
         self::assertIsArray($variables);
@@ -172,7 +172,7 @@ class ReaderTest extends ParserTestCase
         }
     }
 
-    public function providerTestGetAllValuesForEnvironment()
+    public function providerTestGetAllValuesForEnvironment(): array
     {
         return [
             ['dev', [
@@ -211,14 +211,14 @@ class ReaderTest extends ParserTestCase
     /**
      * @dataProvider providerTestDiff
      */
-    public function testDiff($environment1, $environment2, $expectedDiff)
+    public function testDiff(string $environment1, string $environment2, array $expectedDiff): void
     {
         $diff = $this->reader->compareEnvironments($environment1, $environment2);
 
         self::assertSame($expectedDiff, $diff);
     }
 
-    public function providerTestDiff()
+    public function providerTestDiff(): array
     {
         return [
             ['dev', 'prod', [
@@ -242,7 +242,7 @@ class ReaderTest extends ParserTestCase
         ];
     }
 
-    public function testExternal()
+    public function testExternal(): void
     {
         $masterContent = <<<CONFFILE
 [externals]
@@ -310,7 +310,7 @@ CONFFILE;
     /**
      * @dataProvider providerTestExternalError
      */
-    public function testExternalError($contentMaster)
+    public function testExternalError(string $contentMaster): void
     {
         $this->expectException(\RuntimeException::class);
 
@@ -333,7 +333,7 @@ CONFFILE
         $reader->read('toto', 'prod');
     }
 
-    public function providerTestExternalError()
+    public function providerTestExternalError(): array
     {
         return [
             'external variable without any external file' => [<<<CONFFILE
@@ -363,7 +363,7 @@ CONFFILE
         ];
     }
 
-    public function testExternalConflict()
+    public function testExternalConflict(): void
     {
         $this->expectException(\RuntimeException::class);
 
@@ -404,29 +404,29 @@ CONFFILE;
         $reader->read('v1', 'prod');
     }
 
-    public function testOverrideVariable()
+    public function testOverrideVariable(): void
     {
         $environment = 'prod';
 
-        self::assertSame(false, $this->reader->read('print_errors', $environment));
-        self::assertSame(false, $this->reader->read('debug', $environment));
+        self::assertFalse($this->reader->read('print_errors', $environment));
+        self::assertFalse($this->reader->read('debug', $environment));
         self::assertSame(0, $this->reader->read('gourdin', $environment));
 
         $this->reader->overrideVariable('debug', true);
 
-        self::assertSame(false, $this->reader->read('print_errors', $environment));
-        self::assertSame(true, $this->reader->read('debug', $environment), 'read() must return the overriden value');
+        self::assertFalse($this->reader->read('print_errors', $environment));
+        self::assertTrue($this->reader->read('debug', $environment), 'read() must return the overriden value');
         self::assertSame(0, $this->reader->read('gourdin', $environment));
 
         $this->reader->overrideVariable('print_errors', true);
         $this->reader->overrideVariable('debug', null);
 
-        self::assertSame(true, $this->reader->read('print_errors', $environment), 'read() must return the overriden value');
-        self::assertSame(null, $this->reader->read('debug', $environment), 'read() must return the overriden value');
+        self::assertTrue($this->reader->read('print_errors', $environment), 'read() must return the overriden value');
+        self::assertNull($this->reader->read('debug', $environment), 'read() must return the overriden value');
         self::assertSame(0, $this->reader->read('gourdin', $environment));
     }
 
-    public function testOverrideUnknownVariable()
+    public function testOverrideUnknownVariable(): void
     {
         $environment = 'prod';
         $variable = 'UNKNOWN';
@@ -449,7 +449,7 @@ CONFFILE;
         self::assertSame($value, $this->reader->read($variable, $environment), 'Read an overriden unknown variable must not raise an exception');
     }
 
-    public function testCustomData()
+    public function testCustomData(): void
     {
         $var = 'param';
 
@@ -487,7 +487,7 @@ CONFFILE;
         self::assertSame('SomeBaseparam', $this->reader->read($var, 'staging'));
     }
 
-    public function testCustomDataEdgeCases()
+    public function testCustomDataEdgeCases(): void
     {
         $contentMaster = <<<CONFFILE
 [variables]
@@ -512,7 +512,7 @@ CONFFILE;
         self::assertSame('${foo', $reader->read('v1', 'prod'));
     }
 
-    public function testGroups()
+    public function testGroups(): void
     {
         $masterContent = <<<CONFFILE
 [groups]
@@ -584,7 +584,7 @@ CONFFILE;
         }
     }
 
-    public function testGroupsAreNotReadable()
+    public function testGroupsAreNotReadable(): void
     {
         $this->expectException(\RuntimeException::class);
 
@@ -610,7 +610,7 @@ CONFFILE;
         $reader->read('db.pass', 'qa');
     }
 
-    public function testGroupsAreReadableIfADefaultEnvIsDefined()
+    public function testGroupsAreReadableIfADefaultEnvIsDefined(): void
     {
         $masterContent = <<<CONFFILE
 [groups]
@@ -635,7 +635,7 @@ CONFFILE;
         self::assertSame($reader->read('db.pass', 'qa'), $reader->read('db.pass', 'staging'));
     }
 
-    public function testGroupsInDifferentFiles()
+    public function testGroupsInDifferentFiles(): void
     {
         $masterContent = <<<CONFFILE
 [includes]
@@ -667,7 +667,7 @@ CONFFILE;
         self::assertSame('password', $reader->read('db.pass', 'staging'));
     }
 
-    public function testGroupsUsageInExternalFile()
+    public function testGroupsUsageInExternalFile(): void
     {
         $masterContent = <<<CONFFILE
 [externals]
@@ -706,12 +706,12 @@ CONFFILE;
     /**
      * @dataProvider providerTestIsSystem
      */
-    public function testIsSystem($variable, $expected)
+    public function testIsSystem(string $variable, bool $expected): void
     {
         self::assertSame($expected, $this->reader->isSystem($variable));
     }
 
-    public function providerTestIsSystem()
+    public function providerTestIsSystem(): array
     {
         return [
             ['gourdin', true],

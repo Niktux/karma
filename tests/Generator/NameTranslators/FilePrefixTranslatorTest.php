@@ -11,39 +11,39 @@ class FilePrefixTranslatorTest extends TestCase
     /**
      * @dataProvider providerTestTranslate
      */
-    public function testTranslate($file, $variable, $expected)
+    public function testTranslate(string $file, string $variable, string $expected): void
     {
         $t = new FilePrefixTranslator();
 
-        $this->assertSame($expected, $t->translate($file, $variable));
+        self::assertSame($expected, $t->translate($file, $variable));
     }
 
-    public function providerTestTranslate()
+    public function providerTestTranslate(): array
     {
-        return array(
+        return [
             // no prefix for master.conf
-            array('master.conf', 'burger', 'burger'),
-            array('master.conf', 'worker.level', 'worker.level'),
-            array('master.conf', 'app.master.var.pony.master', 'app.master.var.pony.master'),
-            array('master.conf', 'master', 'master'),
-            array('master.conf', 'master.master', 'master.master'),
+            ['master.conf', 'burger', 'burger'],
+            ['master.conf', 'worker.level', 'worker.level'],
+            ['master.conf', 'app.master.var.pony.master', 'app.master.var.pony.master'],
+            ['master.conf', 'master', 'master'],
+            ['master.conf', 'master.master', 'master.master'],
 
             // prefix for other files
-            array('db.conf', 'port', 'db.port'),
-            array('db.conf', 'db', 'db.db'),
-            array('logger.conf', 'worker.level', 'logger.worker.level'),
-            array('logger.conf', 'worker.file', 'logger.worker.file'),
-            array('logger_levels.conf', 'worker', 'logger_levels.worker'),
-            array('ldap.conf', 'host', 'ldap.host'),
-            array('ldap.auth.conf', 'host', 'ldap.auth.host'),
-            array('app.conf', 'app.debug', 'app.app.debug'),
-        );
+            ['db.conf', 'port', 'db.port'],
+            ['db.conf', 'db', 'db.db'],
+            ['logger.conf', 'worker.level', 'logger.worker.level'],
+            ['logger.conf', 'worker.file', 'logger.worker.file'],
+            ['logger_levels.conf', 'worker', 'logger_levels.worker'],
+            ['ldap.conf', 'host', 'ldap.host'],
+            ['ldap.auth.conf', 'host', 'ldap.auth.host'],
+            ['app.conf', 'app.debug', 'app.app.debug'],
+        ];
     }
 
     /**
      * @dataProvider providerTestTranslateWithDifferentMasterFile
      */
-    public function testTranslateWithDifferentMasterFile($file, $variable, $expected)
+    public function testTranslateWithDifferentMasterFile(string $file, string $variable, string $expected): void
     {
         $t = new FilePrefixTranslator();
         $t->changeMasterFile('db.conf');
@@ -51,58 +51,58 @@ class FilePrefixTranslatorTest extends TestCase
         self::assertSame($expected, $t->translate($file, $variable));
     }
 
-    public function providerTestTranslateWithDifferentMasterFile()
+    public function providerTestTranslateWithDifferentMasterFile(): array
     {
-        return array(
+        return [
             // no prefix for master.conf
-            array('master.conf', 'burger', 'master.burger'),
-            array('master.conf', 'worker.level', 'master.worker.level'),
-            array('master.conf', 'app.master.var.pony.master', 'master.app.master.var.pony.master'),
-            array('master.conf', 'master', 'master.master'),
-            array('master.conf', 'master.master', 'master.master.master'),
+            ['master.conf', 'burger', 'master.burger'],
+            ['master.conf', 'worker.level', 'master.worker.level'],
+            ['master.conf', 'app.master.var.pony.master', 'master.app.master.var.pony.master'],
+            ['master.conf', 'master', 'master.master'],
+            ['master.conf', 'master.master', 'master.master.master'],
 
             // prefix for other files
-            array('db.conf', 'port', 'port'),
-            array('db.conf', 'db', 'db'),
-            array('logger.conf', 'worker.level', 'logger.worker.level'),
-            array('logger.conf', 'worker.file', 'logger.worker.file'),
-            array('logger_levels.conf', 'worker', 'logger_levels.worker'),
-            array('ldap.conf', 'host', 'ldap.host'),
-            array('ldap.auth.conf', 'host', 'ldap.auth.host'),
-            array('app.conf', 'app.debug', 'app.app.debug'),
-        );
+            ['db.conf', 'port', 'port'],
+            ['db.conf', 'db', 'db'],
+            ['logger.conf', 'worker.level', 'logger.worker.level'],
+            ['logger.conf', 'worker.file', 'logger.worker.file'],
+            ['logger_levels.conf', 'worker', 'logger_levels.worker'],
+            ['ldap.conf', 'host', 'ldap.host'],
+            ['ldap.auth.conf', 'host', 'ldap.auth.host'],
+            ['app.conf', 'app.debug', 'app.app.debug'],
+        ];
     }
 
     /**
      * @dataProvider providerTestTranslateWithPrefixForMasterFile
      */
-    public function testTranslateWithPrefixForMasterFile($file, $variable, $expected)
+    public function testTranslateWithPrefixForMasterFile(string $file, string $variable, string $expected): void
     {
         $t = new FilePrefixTranslator();
         $t->setPrefixForMasterFile('pony');
 
-        $this->assertSame($expected, $t->translate($file, $variable));
+        self::assertSame($expected, $t->translate($file, $variable));
     }
 
-    public function providerTestTranslateWithPrefixForMasterFile()
+    public function providerTestTranslateWithPrefixForMasterFile(): array
     {
-        return array(
+        return [
             // no prefix for master.conf
-            array('master.conf', 'burger', 'pony.burger'),
-            array('master.conf', 'worker.level', 'pony.worker.level'),
-            array('master.conf', 'app.master.var.pony.master', 'pony.app.master.var.pony.master'),
-            array('master.conf', 'master', 'pony.master'),
-            array('master.conf', 'master.master', 'pony.master.master'),
+            ['master.conf', 'burger', 'pony.burger'],
+            ['master.conf', 'worker.level', 'pony.worker.level'],
+            ['master.conf', 'app.master.var.pony.master', 'pony.app.master.var.pony.master'],
+            ['master.conf', 'master', 'pony.master'],
+            ['master.conf', 'master.master', 'pony.master.master'],
 
             // prefix for other files
-            array('db.conf', 'port', 'db.port'),
-            array('db.conf', 'db', 'db.db'),
-            array('logger.conf', 'worker.level', 'logger.worker.level'),
-            array('logger.conf', 'worker.file', 'logger.worker.file'),
-            array('logger_levels.conf', 'worker', 'logger_levels.worker'),
-            array('ldap.conf', 'host', 'ldap.host'),
-            array('ldap.auth.conf', 'host', 'ldap.auth.host'),
-            array('app.conf', 'app.debug', 'app.app.debug'),
-        );
+            ['db.conf', 'port', 'db.port'],
+            ['db.conf', 'db', 'db.db'],
+            ['logger.conf', 'worker.level', 'logger.worker.level'],
+            ['logger.conf', 'worker.file', 'logger.worker.file'],
+            ['logger_levels.conf', 'worker', 'logger_levels.worker'],
+            ['ldap.conf', 'host', 'ldap.host'],
+            ['ldap.auth.conf', 'host', 'ldap.auth.host'],
+            ['app.conf', 'app.debug', 'app.app.debug'],
+        ];
     }
 }

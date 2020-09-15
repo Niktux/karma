@@ -11,31 +11,30 @@ class NullTranslatorTest extends TestCase
     /**
      * @dataProvider providerTestTranslate
      */
-    public function testTranslate($file, $variable, $expected)
+    public function testTranslate(string $file, string $variable, string $expected): void
     {
         $t = new NullTranslator();
 
-        $this->assertSame($expected, $t->translate($file, $variable));
+        self::assertSame($expected, $t->translate($file, $variable));
     }
 
-    public function providerTestTranslate()
+    public function providerTestTranslate(): array
     {
-        return array(
+        return [
+            ['master.conf', 'burger', 'burger'],
+            ['master.conf', 'worker.level', 'worker.level'],
+            ['master.conf', 'app.master.var.pony.master', 'app.master.var.pony.master'],
+            ['master.conf', 'master', 'master'],
+            ['master.conf', 'master.master', 'master.master'],
 
-            array('master.conf', 'burger', 'burger'),
-            array('master.conf', 'worker.level', 'worker.level'),
-            array('master.conf', 'app.master.var.pony.master', 'app.master.var.pony.master'),
-            array('master.conf', 'master', 'master'),
-            array('master.conf', 'master.master', 'master.master'),
-
-            array('db.conf', 'port', 'port'),
-            array('db.conf', 'db', 'db'),
-            array('logger.conf', 'worker.level', 'worker.level'),
-            array('logger.conf', 'worker.file', 'worker.file'),
-            array('logger_levels.conf', 'worker', 'worker'),
-            array('ldap.conf', 'host', 'host'),
-            array('ldap.auth.conf', 'host', 'host'),
-            array('app.conf', 'app.debug', 'app.debug'),
-        );
+            ['db.conf', 'port', 'port'],
+            ['db.conf', 'db', 'db'],
+            ['logger.conf', 'worker.level', 'worker.level'],
+            ['logger.conf', 'worker.file', 'worker.file'],
+            ['logger_levels.conf', 'worker', 'worker'],
+            ['ldap.conf', 'host', 'host'],
+            ['ldap.auth.conf', 'host', 'host'],
+            ['app.conf', 'app.debug', 'app.debug'],
+        ];
     }
 }

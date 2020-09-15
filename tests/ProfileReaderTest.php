@@ -10,15 +10,15 @@ use PHPUnit\Framework\TestCase;
 
 class ProfileReaderTest extends TestCase
 {
-    private function buildReader($profileContent = null, $filename = Application::PROFILE_FILENAME)
+    private function buildReader(?string $profileContent = null, ?string $filename = Application::PROFILE_FILENAME): ProfileReader
     {
-        $files = array();
+        $files = [];
 
         if($profileContent !== null)
         {
-            $files = array(
+            $files = [
                $filename => $profileContent,
-            );
+            ];
         }
 
         return new ProfileReader(
@@ -29,14 +29,8 @@ class ProfileReaderTest extends TestCase
     /**
      * @dataProvider providerTestEmpty
      */
-    public function testEmpty($yaml, $profileFilename)
+    public function testEmpty(?string $yaml, ?string $profileFilename): void
     {
-        $profile = Application::PROFILE_FILENAME;
-        if($profileFilename !== null)
-        {
-            $profile = $profileFilename;
-        }
-
         $reader = $this->buildReader($yaml, $profileFilename);
 
         self::assertFalse($reader->hasTemplatesSuffix());
@@ -49,17 +43,17 @@ class ProfileReaderTest extends TestCase
         self::assertNull($reader->getConfigurationDirectory());
     }
 
-    public function providerTestEmpty()
+    public function providerTestEmpty(): array
     {
-        return array(
-            'no profile' => array(null, null),
-            'invalid key' => array('suffixes: -tpl', null),
-            'bad character case' => array('SUFFIX: -tpl', null),
-            'bad profile filename' => array('suffix: -tpl', '.stuff'),
-        );
+        return [
+            'no profile' => [null, null],
+            'invalid key' => ['suffixes: -tpl', null],
+            'bad character case' => ['SUFFIX: -tpl', null],
+            'bad profile filename' => ['suffix: -tpl', '.stuff'],
+        ];
     }
 
-    public function testMasterOnly()
+    public function testMasterOnly(): void
     {
         $yaml = <<<YAML
 master: othermaster.conf
@@ -77,7 +71,7 @@ YAML;
         self::assertNull($reader->getConfigurationDirectory());
     }
 
-    public function testSuffixOnly()
+    public function testSuffixOnly(): void
     {
         $yaml = <<<YAML
 suffix: -tpl
@@ -95,7 +89,7 @@ YAML;
         self::assertNull($reader->getConfigurationDirectory());
     }
 
-    public function testFullProfile()
+    public function testFullProfile(): void
     {
         $yaml = <<<YAML
 suffix: -tpl
@@ -124,10 +118,10 @@ YAML;
         self::assertTrue($reader->hasTargetPath());
         self::assertSame('target/', $reader->getTargetPath());
 
-        self::assertSame(array('translator' => 'prefix'), $reader->getGeneratorOptions());
+        self::assertSame(['translator' => 'prefix'], $reader->getGeneratorOptions());
     }
 
-    public function testSourcePathAsArray()
+    public function testSourcePathAsArray(): void
     {
         $yaml = <<<YAML
 suffix: -tpl
@@ -155,14 +149,14 @@ YAML;
         self::assertSame(array('translator' => 'prefix'), $reader->getGeneratorOptions());
     }
 
-    public function testSyntaxError()
+    public function testSyntaxError(): void
     {
         $this->expectException(\RuntimeException::class);
 
         $this->buildReader("\tsuffix:-tpl");
     }
 
-    public function testTargetPathAsArray()
+    public function testTargetPathAsArray(): void
     {
         $this->expectException(\RuntimeException::class);
 
@@ -172,10 +166,10 @@ targetPath:
     - path2/
 YAML;
 
-        $reader = $this->buildReader($yaml);
+        $this->buildReader($yaml);
     }
 
-    public function testInvalidFormat()
+    public function testInvalidFormat(): void
     {
         $reader = $this->buildReader( <<< YAML
 suffix:
@@ -204,8 +198,8 @@ YAML
         self::assertFalse($reader->hasConfigurationDirectory(), 'confDir must only allow strings');
         self::assertTrue($reader->hasSourcePath(), 'sourcePath must allow both strings and arrays');
 
-        self::assertFalse(is_array($reader->getDefaultFormatterName()), 'Default formatter must only allow strings');
+        self::assertIsNotArray($reader->getDefaultFormatterName(), 'Default formatter must only allow strings');
 
-        self::assertTrue(is_array($reader->getFileExtensionFormatters()));
+        self::assertIsArray($reader->getFileExtensionFormatters());
     }
 }

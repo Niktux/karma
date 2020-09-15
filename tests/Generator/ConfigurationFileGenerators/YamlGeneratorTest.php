@@ -16,9 +16,11 @@ use PHPUnit\Framework\TestCase;
 
 class YamlGeneratorTest extends TestCase
 {
-    private
-        $fs,
-        $variableProvider,
+    private Filesystem
+        $fs;
+    private VariableProvider
+        $variableProvider;
+    private YamlGenerator
         $generator;
 
     protected function setUp(): void
@@ -35,7 +37,7 @@ class YamlGeneratorTest extends TestCase
         $this->generator = new YamlGenerator($this->fs, $reader, $this->variableProvider);
     }
 
-    private function initializeParserAndConfFiles()
+    private function initializeParserAndConfFiles(): Parser
     {
         $masterContent = <<<CONFFILE
 [externals]
@@ -79,11 +81,11 @@ host:
     staging = [stg-sql1, stg-sql2, stg-sql3 ]
 CONFFILE;
 
-        $files = array(
+        $files = [
             Application::DEFAULT_MASTER_FILE => $masterContent,
             'external.conf' => $externalContent,
             'db.conf' => $dbContent,
-        );
+        ];
 
         $parser = new Parser(new Filesystem(new InMemory($files)));
         $parser->enableIncludeSupport()
@@ -92,7 +94,7 @@ CONFFILE;
         return $parser;
     }
 
-    public function testDryRun()
+    public function testDryRun(): void
     {
         $this->assertNumberOfFilesIs(0);
 
@@ -105,7 +107,7 @@ CONFFILE;
         $this->assertNumberOfFilesIs(0);
     }
 
-    public function testGenerateForDev()
+    public function testGenerateForDev(): void
     {
         $this->generator->generate('dev');
 
@@ -132,7 +134,7 @@ YAML
 );
     }
 
-    public function testGenerateForStaging()
+    public function testGenerateForStaging(): void
     {
         $this->generator->generate('staging');
 
@@ -162,7 +164,7 @@ YAML
 );
     }
 
-    public function testOverride()
+    public function testOverride(): void
     {
         $this->fs->write('db.yml', 'burger over ponies');
 
@@ -176,7 +178,7 @@ YAML
         );
     }
 
-    public function testBackup()
+    public function testBackup(): void
     {
         $this->fs->write('db.yml', 'burger over ponies');
 
@@ -194,7 +196,7 @@ YAML
         $this->assertFileContains('db.yml~', 'burger over ponies');
     }
 
-    public function testOverrideBackupedFiles()
+    public function testOverrideBackupedFiles(): void
     {
         $this->fs->write('db.yml', 'burger over ponies');
         $this->fs->write('db.yml~', 'old backup');
@@ -213,7 +215,7 @@ YAML
         $this->assertFileContains('db.yml~', 'burger over ponies');
     }
 
-    public function testGenerateForDevWithStagingSystem()
+    public function testGenerateForDevWithStagingSystem(): void
     {
         $this->generator->setSystemEnvironment('staging');
         $this->generator->generate('dev');
@@ -230,22 +232,22 @@ YAML
         );
     }
 
-    private function assertNumberOfFilesIs($expectedCount)
+    private function assertNumberOfFilesIs(int $expectedCount): void
     {
-        $this->assertCount($expectedCount, $this->fs->keys(), "Filesystem must contain exactly $expectedCount files");
+        self::assertCount($expectedCount, $this->fs->keys(), "Filesystem must contain exactly $expectedCount files");
     }
 
-    private function assertHasFile($filename)
+    private function assertHasFile(string $filename): void
     {
-        $this->assertTrue($this->fs->has($filename), "$filename should exist");
+        self::assertTrue($this->fs->has($filename), "$filename should exist");
     }
 
-    private function assertFileContains($filename, $content)
+    private function assertFileContains(string $filename, string $content): void
     {
-        $this->assertSame($content, $this->fs->read($filename), "Unexpected content for file $filename");
+        self::assertSame($content, $this->fs->read($filename), "Unexpected content for file $filename");
     }
 
-    public function testVariableNameTooShort()
+    public function testVariableNameTooShort(): void
     {
         $this->expectException(\RuntimeException::class);
 

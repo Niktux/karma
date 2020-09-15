@@ -10,7 +10,7 @@ use PHPUnit\Framework\TestCase;
 
 class MultipleAdapterTest extends TestCase
 {
-    private
+    private Adapter
         $multiple,
         $src,
         $lib;
@@ -33,36 +33,36 @@ class MultipleAdapterTest extends TestCase
         $this->multiple->mount('var/lib', $this->lib);
     }
     
-    public function testMount()
+    public function testMount(): void
     {
-        $this->assertFalse($this->multiple->exists('tmp/test'), 'tmp/test should not exist');
+        self::assertFalse($this->multiple->exists('tmp/test'), 'tmp/test should not exist');
         
         $this->multiple->mount('tmp', new InMemory(['test' => 42]));
         
-        $this->assertTrue($this->multiple->exists('tmp/test'), 'tmp/test should exist');
+        self::assertTrue($this->multiple->exists('tmp/test'), 'tmp/test should exist');
     }
     
     /**
      * @dataProvider providerAllFiles
      */
-    public function testRead($adapterName, $expectedPath, $testedPath)
+    public function testRead(string $adapterName, string $expectedPath, string $testedPath): void
     {
         $adapter = $adapterName === 'src' ? $this->src : $this->lib;
         
         if($adapter->exists($expectedPath))
         {
-            $this->assertSame(
+            self::assertSame(
                 $adapter->read($expectedPath),
                 $this->multiple->read($testedPath)
             );
         }
         else
         {
-            $this->assertSame($expectedPath, 'doesNotExist');
+            self::assertSame($expectedPath, 'doesNotExist');
         }
     }
     
-    public function providerAllFiles()
+    public function providerAllFiles(): array
     {
         return [
             ['src', 'wildHorses', 'src/wildHorses'],
@@ -76,37 +76,37 @@ class MultipleAdapterTest extends TestCase
         ];
     }
 
-    public function testWrite()
+    public function testWrite(): void
     {
-        $this->assertFalse($this->multiple->exists('var/lib/reply'));
-        $this->assertFalse($this->lib->exists('reply'));
-        $this->assertFalse($this->src->exists('reply'));
+        self::assertFalse($this->multiple->exists('var/lib/reply'));
+        self::assertFalse($this->lib->exists('reply'));
+        self::assertFalse($this->src->exists('reply'));
         
         $content = 'Always reply 42';
         $this->multiple->write('var/lib/reply', $content);
         
-        $this->assertTrue($this->multiple->exists('var/lib/reply'));
-        $this->assertTrue($this->lib->exists('reply'));
-        $this->assertFalse($this->src->exists('reply'));
+        self::assertTrue($this->multiple->exists('var/lib/reply'));
+        self::assertTrue($this->lib->exists('reply'));
+        self::assertFalse($this->src->exists('reply'));
         
-        $this->assertSame($content, $this->multiple->read('var/lib/reply'));
-        $this->assertSame($content, $this->lib->read('reply'));
+        self::assertSame($content, $this->multiple->read('var/lib/reply'));
+        self::assertSame($content, $this->lib->read('reply'));
     }
     
     /**
      * @dataProvider providerAllFiles
      */
-    public function testExists($adapterName, $expectedPath, $testedPath)
+    public function testExists(string $adapterName, string $expectedPath, string $testedPath): void
     {
         $adapter = $adapterName === 'src' ? $this->src : $this->lib;
         
-        $this->assertSame(
+        self::assertSame(
             $adapter->exists($expectedPath),
             $this->multiple->exists($testedPath)
         );
     }
     
-    public function testKeys()
+    public function testKeys(): void
     {
         $expected = [
             'src/wildHorses', 'src/pony/unicorn.ext',
@@ -115,45 +115,45 @@ class MultipleAdapterTest extends TestCase
         
         $result = $this->multiple->keys();
         
-        $this->assertCount(count($expected), $result);
+        self::assertCount(count($expected), $result);
         foreach($expected as $path)
         {
-            $this->assertContains($path, $result);
+            self::assertContains($path, $result);
         }
     }
     
     /**
      * @dataProvider providerAllFiles
      */
-    public function testMtime($adapterName, $expectedPath, $testedPath)
+    public function testMtime(string $adapterName, string $expectedPath, string $testedPath): void
     {
         $adapter = $adapterName === 'src' ? $this->src : $this->lib;
         
         if($adapter->exists($expectedPath))
         {
-            $this->assertSame(
+            self::assertSame(
                 $adapter->mtime($expectedPath),
                 $this->multiple->mtime($testedPath)
             );
         }
         else
         {
-            $this->assertSame($expectedPath, 'doesNotExist');
+            self::assertSame($expectedPath, 'doesNotExist');
         }
     }
     
-    public function testDelete()
+    public function testDelete(): void
     {
-        $this->assertTrue($this->multiple->exists('var/lib/fat/burger'));
-        $this->assertTrue($this->lib->exists('fat/burger'));
+        self::assertTrue($this->multiple->exists('var/lib/fat/burger'));
+        self::assertTrue($this->lib->exists('fat/burger'));
         
         $this->multiple->delete('var/lib/fat/burger');
         
-        $this->assertFalse($this->multiple->exists('var/lib/fat/burger'));
-        $this->assertFalse($this->lib->exists('fat/burger'));
+        self::assertFalse($this->multiple->exists('var/lib/fat/burger'));
+        self::assertFalse($this->lib->exists('fat/burger'));
     }
     
-    public function testRename()
+    public function testRename(): void
     {
         $this->expectException(\RuntimeException::class);
 
@@ -163,20 +163,20 @@ class MultipleAdapterTest extends TestCase
     /**
      * @dataProvider providerAllFiles
      */
-    public function testIsDirectory($adapterName, $expectedPath, $testedPath)
+    public function testIsDirectory(string $adapterName, string $expectedPath, string $testedPath): void
     {
         $adapter = $adapterName === 'src' ? $this->src : $this->lib;
         
         if($adapter->exists($expectedPath))
         {
-            $this->assertSame(
+            self::assertSame(
                 $adapter->isDirectory($expectedPath),
                 $this->multiple->isDirectory($testedPath)
             );
         }
         else
         {
-            $this->assertSame($expectedPath, 'doesNotExist');
+            self::assertSame($expectedPath, 'doesNotExist');
         }
     }
 }

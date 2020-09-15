@@ -18,7 +18,7 @@ class DiffTest extends CommandTestCase
         $reader = $this->app['configuration'];
         $valueBar = $reader->read('app.bar');
 
-        // Command must sumup displayed environments
+        // Command must sum up displayed environments
         $this->assertDisplay("~dev~");
         $this->assertDisplay("~prod~");
 

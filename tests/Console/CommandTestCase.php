@@ -8,13 +8,13 @@ use Karma\Application;
 use Gaufrette\Adapter\InMemory;
 use Karma\Console;
 use PHPUnit\Framework\TestCase;
-use Pimple\Container;
 use Symfony\Component\Console\Tester\CommandTester;
 
 abstract class CommandTestCase extends TestCase
 {
-    protected
-        $app,
+    protected Application
+        $app;
+    protected CommandTester
         $commandTester;
 
     protected function setUp(): void
@@ -33,7 +33,7 @@ CONFFILE;
             Application::DEFAULT_MASTER_FILE => $masterContent,
         ]);
 
-        $this->app['profile.fileSystem.adapter'] = function(Container $c) {
+        $this->app['profile.fileSystem.adapter'] = static function() {
             return new InMemory();
         };
     }

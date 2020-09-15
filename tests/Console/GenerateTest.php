@@ -35,7 +35,7 @@ class GenerateTest extends CommandTestCase
     {
         $mock = $this->createMock(YamlGenerator::class);
 
-        $mock->expects($this->once())
+        $mock->expects(self::once())
             ->method($expectedMethodCall);
 
         $this->app['configurationFilesGenerator'] = $mock;

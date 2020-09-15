@@ -14,17 +14,19 @@ use PHPUnit\Framework\TestCase;
 
 class HydratorTest extends TestCase
 {
-    private
+    private Filesystem
         $sourceFs,
-        $targetFs,
-        $reader,
+        $targetFs;
+    private InMemoryReader
+        $reader;
+    private Hydrator
         $hydrator;
 
     protected function setUp(): void
     {
         $this->sourceFs = new Filesystem(new InMemory());
         $this->targetFs = new Filesystem(new InMemory());
-        $this->reader = new InMemoryReader(array(
+        $this->reader = new InMemoryReader([
             'var:dev' => 42,
             'var:preprod' => 51,
             'var:prod' => 69,
@@ -32,11 +34,11 @@ class HydratorTest extends TestCase
             'db.user:preprod' => 'someUser',
             'bool:dev' => true,
             'bool:prod' => false,
-            'list:dev' => array('str', 2, true, null),
-            'list:prod' => array(42),
+            'list:dev' => ['str', 2, true, null],
+            'list:prod' => [42],
             'todo:dev' => '__TODO__',
             'fixme:dev' => '__FIXME__',
-        ));
+        ]);
 
         $this->hydrator = new Hydrator($this->sourceFs, $this->targetFs, $this->reader, new Finder($this->sourceFs), new NullProvider());
         $this->hydrator->setSuffix('-dist');
@@ -45,7 +47,7 @@ class HydratorTest extends TestCase
     /**
      * @dataProvider providerTestSimple
      */
-    public function testSimple($environment, $expectedBValue, $expectedFValue)
+    public function testSimple(string $environment, string $expectedBValue, string $expectedFValue): void
     {
         $this->write('a.php');
         $this->write('b.php-dist', '<%var%>');
@@ -77,7 +79,7 @@ class HydratorTest extends TestCase
     /**
      * @dataProvider providerTestSimple
      */
-    public function testSimpleWithoutTarget($environment, $expectedBValue, $expectedFValue)
+    public function testSimpleWithoutTarget(string $environment, string  $expectedBValue, string $expectedFValue): void
     {
         $this->targetFs = $this->sourceFs;
         $hydrator = new Hydrator($this->sourceFs, $this->sourceFs, $this->reader, new Finder($this->sourceFs), new NullProvider());
@@ -109,50 +111,50 @@ class HydratorTest extends TestCase
         $this->assertTargetContent($expectedFValue, 'f.php');
     }
 
-    public function providerTestSimple()
+    public function providerTestSimple(): array
     {
-        return array(
-            array('dev', '42', 'root'),
-            array('preprod', '51', 'someUser'),
-        );
+        return [
+            ['dev', '42', 'root'],
+            ['preprod', '51', 'someUser'],
+        ];
     }
     
-    private function assertTargetHas($filename, $message = '')
+    private function assertTargetHas(string $filename, string $message = ''): void
     {
         if(empty($message))
         {
             $message = "$filename should exist in target FS";
         }
         
-        $this->assertTrue($this->targetFs->has($filename), $message);
+        self::assertTrue($this->targetFs->has($filename), $message);
     }
 
-    private function assertTargetHasNot($filename, $message = '')
+    private function assertTargetHasNot(string $filename, string $message = ''): void
     {
         if(empty($message))
         {
             $message = "$filename should NOT exist in target FS";
         }
         
-        $this->assertFalse($this->targetFs->has($filename), $message);
+        self::assertFalse($this->targetFs->has($filename), $message);
     }
     
-    private function assertTargetContent($expectedContent, $filename, $message = '')
+    private function assertTargetContent(string $expectedContent, string $filename, string $message = ''): void
     {
-        $this->assertSame($expectedContent, $this->targetFs->read($filename), $message);
+        self::assertSame($expectedContent, $this->targetFs->read($filename), $message);
     }
     
-    private function assertSourceContent($expectedContent, $filename, $message = '')
+    private function assertSourceContent(string $expectedContent, string $filename, string $message = ''): void
     {
-        $this->assertSame($expectedContent, $this->sourceFs->read($filename), $message);
+        self::assertSame($expectedContent, $this->sourceFs->read($filename), $message);
     }
     
-    private function assertTargetNbFiles($expectedCount)
+    private function assertTargetNbFiles(int $expectedCount): void
     {
-        $this->assertCount($expectedCount, $this->targetFs->keys());
+        self::assertCount($expectedCount, $this->targetFs->keys());
     }
 
-    public function testTarget()
+    public function testTarget(): void
     {
         $this->write('a.php-dist', '<%var%>');
         $this->write('b.php', '<%var%>');
@@ -171,7 +173,7 @@ class HydratorTest extends TestCase
         $this->assertTargetContent('<%var%>', 'b.php');
     }
 
-    public function testDryRun()
+    public function testDryRun(): void
     {
         $this->write('a.php');
         $this->write('b.php-dist', '<%var%>');
@@ -184,7 +186,7 @@ class HydratorTest extends TestCase
         $this->assertTargetHasNot('b.php');
     }
 
-    public function testGetUnusedVariables()
+    public function testGetUnusedVariables(): void
     {
         $this->write('a.php');
         $this->write('b.php-dist', '<%var%>');
@@ -195,20 +197,20 @@ class HydratorTest extends TestCase
 
         $unusedVariables = $this->hydrator->getUnusedVariables();
 
-        $this->assertContains('db.user', $unusedVariables);
-        $this->assertContains('bool', $unusedVariables);
-        $this->assertContains('todo', $unusedVariables);
-        $this->assertContains('fixme', $unusedVariables);
-        $this->assertNotContains('var', $unusedVariables);
-        $this->assertNotContains('list', $unusedVariables);
-        $this->assertCount(4, $unusedVariables);
+        self::assertContains('db.user', $unusedVariables);
+        self::assertContains('bool', $unusedVariables);
+        self::assertContains('todo', $unusedVariables);
+        self::assertContains('fixme', $unusedVariables);
+        self::assertNotContains('var', $unusedVariables);
+        self::assertNotContains('list', $unusedVariables);
+        self::assertCount(4, $unusedVariables);
     }
 
-    public function testTrappedFilenames()
+    public function testTrappedFilenames(): void
     {
-        $existingFiles = array(
+        $existingFiles = [
             'a.php', 'b.php-dist', 'c.php-dis', 'd.php-distt', 'e.php-dist.dist', 'f.dist', 'g-dist.php', 'h.php-dist-dist'
-        );
+        ];
 
         foreach($existingFiles as $file)
         {
@@ -217,8 +219,7 @@ class HydratorTest extends TestCase
 
         $this->hydrator->hydrate('prod');
 
-        $createdFiles = array('b.php', 'h.php-dist');
-        $allFiles = array_merge($existingFiles, $createdFiles);
+        $createdFiles = ['b.php', 'h.php-dist'];
 
         // check there is no extra generated file
         $this->assertTargetNbFiles(count($createdFiles));
@@ -230,15 +231,15 @@ class HydratorTest extends TestCase
         
         foreach($existingFiles as $file)
         {
-            $this->assertTargetHasNot($file, "File $file should'nt be overwritten");
+            $this->assertTargetHasNot($file, "File $file shouldn't be overwritten");
         }
     }
     
-    public function testTrappedFilenamesToTarget()
+    public function testTrappedFilenamesToTarget(): void
     {
-        $existingFiles = array(
+        $existingFiles = [
             'a.php', 'b.php-dist', 'c.php-dis', 'd.php-distt', 'e.php-dist.dist', 'f.dist', 'g-dist.php', 'h.php-dist-dist', 'dist-dir/z-dist'
-        );
+        ];
     
         foreach($existingFiles as $file)
         {
@@ -249,9 +250,9 @@ class HydratorTest extends TestCase
             ->allowNonDistFilesOverwrite()
             ->hydrate('prod');
     
-        $expectedFiles = array(
+        $expectedFiles = [
             'b.php', 'h.php-dist', 'a.php', 'c.php-dis', 'd.php-distt', 'e.php-dist.dist', 'f.dist', 'g-dist.php', 'z'
-        );
+        ];
         
         // check there is no extra generated file
         $this->assertTargetNbFiles(count($expectedFiles));
@@ -262,11 +263,11 @@ class HydratorTest extends TestCase
         }
     }
     
-    public function testDuplicatedFilenamesToTarget()
+    public function testDuplicatedFilenamesToTarget(): void
     {
         $this->expectException(\RuntimeException::class);
 
-        $existingFiles = array('dist-1/test.php-dist', 'dist-2/test.php-dist');
+        $existingFiles = ['dist-1/test.php-dist', 'dist-2/test.php-dist'];
 
         foreach($existingFiles as $file)
         {
@@ -278,10 +279,10 @@ class HydratorTest extends TestCase
             ->hydrate('prod');
     }
 
-    public function testIdempotentHydratationToTarget()
+    public function testIdempotentHydratationToTarget(): void
     {
         $this->targetFs->write('test.php', 'oldValue');
-        $existingFiles = array('dist/test.php-dist', 'dist/test2.php-dist');
+        $existingFiles = ['dist/test.php-dist', 'dist/test2.php-dist'];
 
         foreach($existingFiles as $file)
         {
@@ -293,7 +294,7 @@ class HydratorTest extends TestCase
             ->hydrate('prod');
 
         // check there is no extra generated file
-        $expectedFiles = array('test.php', 'test2.php');
+        $expectedFiles = ['test.php', 'test2.php'];
         $this->assertTargetNbFiles(count($expectedFiles));
 
         foreach($expectedFiles as $file)
@@ -301,15 +302,15 @@ class HydratorTest extends TestCase
             $this->assertTargetHas($file, "File $file should be created");
         }
         
-        $this->assertTargetContent('newValue', 'test.php', "File test.php shoud have been updated");
+        $this->assertTargetContent('newValue', 'test.php', "File test.php should have been updated");
     }
 
-    private function write($name, $content = null)
+    private function write(string $name, ?string $content = null): void
     {
         $this->sourceFs->write($name, $content);
     }
 
-    public function testBackupFiles()
+    public function testBackupFiles(): void
     {
         $this->write('a.php-dist');
         $this->write('b.php-dist', '<%var%>');
@@ -341,19 +342,19 @@ class HydratorTest extends TestCase
         $this->assertTargetContent('42', 'b.php~');
     }
 
-    public function testFormatter()
+    public function testFormatter(): void
     {
-        $yellFormatter = new Rules(array(
+        $yellFormatter = new Rules([
             '<true>' => 'TRUE',
             '<false>' => 'FALSE',
-        ));
+        ]);
 
-        $otherFormatter = new Rules(array(
+        $otherFormatter = new Rules([
             '<true>' => 'string_true',
             '<false>' => 0,
-        ));
+        ]);
 
-        $provider = new CallbackProvider(function ($fileExtension, ?string $index) use($yellFormatter, $otherFormatter) {
+        $provider = new CallbackProvider(static function ($fileExtension, ?string $index) use($yellFormatter, $otherFormatter) {
             return strtolower($index ?? '') === 'yell' ? $yellFormatter : $otherFormatter;
         });
 
@@ -366,41 +367,41 @@ class HydratorTest extends TestCase
         $this->hydrator->hydrate('dev');
         $this->assertTargetContent('string_true', 'a');
         $this->assertTargetContent('TRUE', 'b');
-        $this->assertTargetContent(implode("\n", array("str", 2, "TRUE", null)). "\n", 'list');
+        $this->assertTargetContent(implode("\n", ["str", 2, "TRUE", null]). "\n", 'list');
 
         $this->hydrator->hydrate('prod');
         $this->assertTargetContent('0', 'a');
         $this->assertTargetContent('FALSE', 'b');
     }
 
-    public function testFormatterByFileExtension()
+    public function testFormatterByFileExtension(): void
     {
-        $yellFormatter = new Rules(array(
+        $yellFormatter = new Rules([
             '<true>' => 'TRUE',
-        ));
+        ]);
 
-        $stringFormatter = new Rules(array(
+        $stringFormatter = new Rules([
             '<true>' => 'string_true',
-        ));
+        ]);
 
-        $intFormatter = new Rules(array(
+        $intFormatter = new Rules([
             '<true>' => 1,
-        ));
+        ]);
 
-        $provider = new CallbackProvider(function ($fileExtension, $index) use($yellFormatter, $stringFormatter, $intFormatter) {
+        $provider = new CallbackProvider(static function ($fileExtension, $index) use($yellFormatter, $stringFormatter, $intFormatter) {
 
             if($index === 'int')
             {
                 return $intFormatter;
             }
 
-            $formatters = array(
+            $formatters = [
                 'ini' => $intFormatter,
                 'yml' => $yellFormatter,
                 'txt' => $stringFormatter
-            );
+            ];
 
-            return isset($formatters[$fileExtension]) ? $formatters[$fileExtension] : /* default */ $yellFormatter;
+            return $formatters[$fileExtension] ?? /* default */ $yellFormatter;
         });
 
         $this->hydrator->setFormatterProvider($provider);
@@ -419,7 +420,7 @@ class HydratorTest extends TestCase
         $this->assertTargetContent('1', 'e.yml');
     }
 
-    public function testFormatterError()
+    public function testFormatterError(): void
     {
         $this->expectException(\RuntimeException::class);
 
@@ -432,7 +433,7 @@ FILE
         $this->hydrator->hydrate('dev');
     }
 
-    public function testTodo()
+    public function testTodo(): void
     {
         $this->write('a-dist', <<< FILE
 <%todo%>
@@ -442,11 +443,11 @@ FILE
         $this->hydrator->hydrate('dev');
         $unvaluedVariables = $this->hydrator->getUnvaluedVariables();
 
-        $this->assertCount(1, $unvaluedVariables);
-        $this->assertContains('todo', $unvaluedVariables);
+        self::assertCount(1, $unvaluedVariables);
+        self::assertContains('todo', $unvaluedVariables);
     }
 
-    public function testFixMe()
+    public function testFixMe(): void
     {
         $this->expectException(\RuntimeException::class);
 
@@ -461,13 +462,13 @@ FILE
     /**
      * @dataProvider providerTestList
      */
-    public function testList($env, $expected)
+    public function testList(string $env, string $expected): void
     {
-        $reader = new InMemoryReader(array(
-            'var:dev' => array(42, 51, 69, 'some string'),
-            'var:staging' => array(33),
+        $reader = new InMemoryReader([
+            'var:dev' => [42, 51, 69, 'some string'],
+            'var:staging' => [33],
             'var:prod' => 1337,
-        ));
+        ]);
 
         $this->hydrator = new Hydrator($this->sourceFs, $this->targetFs, $reader, new Finder($this->sourceFs));
 
@@ -481,51 +482,51 @@ YAML
         $this->assertTargetContent($expected, 'a.yml');
     }
 
-    public function providerTestList()
+    public function providerTestList(): array
     {
-        return array(
-            array('dev', <<< YAML
+        return [
+            ['dev', <<< YAML
 array:
   - 42
   - 51
   - 69
   - some string
 YAML
-          ),
-            array('staging', <<< YAML
+            ],
+            ['staging', <<< YAML
 array:
   - 33
 YAML
-          ),
-            array('prod', <<< YAML
+            ],
+            ['prod', <<< YAML
 array:
   - 1337
 YAML
-          ),
-        );
+            ],
+        ];
     }
 
-    public function testListMultiFormat()
+    public function testListMultiFormat(): void
     {
-        $reader = new InMemoryReader(array(
-            'var:dev' => array(42, 51, 69),
-        ));
+        $reader = new InMemoryReader([
+            'var:dev' => [42, 51, 69],
+        ]);
 
         $this->hydrator = new Hydrator($this->sourceFs, $this->targetFs, $reader, new Finder($this->sourceFs));
 
-        $this->write('a.php-dist', <<< PHP
-\$var = array(
+        $this->write('a.php-dist', <<< CONF_IN_PHP
+\$var = [
     <%var%>,
-);
-PHP
+];
+CONF_IN_PHP
         );
-        $expectedPhp = <<< PHP
-\$var = array(
+        $expectedPhp = <<< CONF_IN_PHP
+\$var = [
     42,
     51,
     69,
-);
-PHP;
+];
+CONF_IN_PHP;
 
         $this->write('b.ini-dist', <<< INI
 [group]
@@ -545,13 +546,13 @@ INI;
         $this->assertTargetContent($expectedIni, 'b.ini');
     }
 
-    public function testListEdgeCases()
+    public function testListEdgeCases(): void
     {
-        $reader = new InMemoryReader(array(
-            'var:dev' => array(42, 51),
+        $reader = new InMemoryReader([
+            'var:dev' => [42, 51],
             'foo:dev' => 33,
-            'bar:dev' => array(1337, 1001),
-        ));
+            'bar:dev' => [1337, 1001],
+        ]);
 
         $this->hydrator = new Hydrator($this->sourceFs, $this->targetFs, $reader, new Finder($this->sourceFs));
 
@@ -586,11 +587,11 @@ TXT;
     /**
      * @dataProvider providerTestListEndOfLine
      */
-    public function testListEndOfLine($content, $expected)
+    public function testListEndOfLine(string $content, string $expected): void
     {
-        $reader = new InMemoryReader(array(
-            'var:dev' => array(42, 51),
-        ));
+        $reader = new InMemoryReader([
+            'var:dev' => [42, 51],
+        ]);
 
         $this->hydrator = new Hydrator($this->sourceFs, $this->targetFs, $reader, new Finder($this->sourceFs));
 
@@ -600,28 +601,28 @@ TXT;
         $this->assertTargetContent($expected, 'a.txt');
     }
 
-    public function providerTestListEndOfLine()
+    public function providerTestListEndOfLine(): array
     {
-        return array(
-            "unix"    => array("line:\n - var=<%var%>\nend", "line:\n - var=42\n - var=51\nend"),
-            "windows" => array("line:\r\n - var=<%var%>\r\nend", "line:\r\n - var=42\r\n - var=51\r\nend"),
-            "mac" => array("line:\r - var=<%var%>\rend", "line:\r - var=42\r - var=51\rend"),
-        );
+        return [
+            "unix"    => ["line:\n - var=<%var%>\nend", "line:\n - var=42\n - var=51\nend"],
+            "windows" => ["line:\r\n - var=<%var%>\r\nend", "line:\r\n - var=42\r\n - var=51\r\nend"],
+            "mac" => ["line:\r - var=<%var%>\rend", "line:\r - var=42\r - var=51\rend"],
+        ];
     }
 
     /**
      * @dataProvider providerTestListDirective
      */
-    public function testListDirective($content, $env, $expected)
+    public function testListDirective(string $content, string $env, string $expected): void
     {
-        $reader = new InMemoryReader(array(
-            'items:dev' => array(42, 51, 69, 'someString'),
-            'items:staging' => array(33),
+        $reader = new InMemoryReader([
+            'items:dev' => [42, 51, 69, 'someString'],
+            'items:staging' => [33],
             'items:prod' => 1337,
             'servers:dev' => null,
-            'servers:staging' => array(),
-            'servers:prod' => array('a', 'b', 'c'),
-        ));
+            'servers:staging' => [],
+            'servers:prod' => ['a', 'b', 'c'],
+        ]);
 
         $this->hydrator = new Hydrator($this->sourceFs, $this->targetFs, $reader, new Finder($this->sourceFs));
 
@@ -631,10 +632,10 @@ TXT;
         $this->assertTargetContent($expected, 'a');
     }
 
-    public function providerTestListDirective()
+    public function providerTestListDirective(): array
     {
         // nominal case
-        $contentA = 'items = array( <% karma:list var=items delimiter=", " %> );';
+        $contentA = 'items = [ <% karma:list var=items delimiter=", " %> ];';
         // alternative delimiter, some useless spaces
         $contentB = 'items: <% karma:list    var=items   delimiter="-" %>';
         // directive case, no space around tags
@@ -650,127 +651,127 @@ TXT;
         // prefix only wrapper
         $contentY = 'servers: <% karma:list var=servers delimiter="/" wrapper="arr/":"" %>';
 
-        return array(
-            array(
+        return [
+            [
                 $contentA, 'dev',
-                "items = array( 42, 51, 69, someString );"
-            ),
-            array(
+                "items = [ 42, 51, 69, someString ];"
+            ],
+            [
                 $contentA, 'staging',
-                "items = array( 33 );"
-            ),
-            array(
+                "items = [ 33 ];"
+            ],
+            [
                 $contentA, 'prod',
-                "items = array( 1337 );"
-            ),
+                "items = [ 1337 ];"
+            ],
 
-            array(
+            [
                 $contentB, 'dev',
                 "items: 42-51-69-someString"
-            ),
-            array(
+            ],
+            [
                 $contentB, 'staging',
                 "items: 33"
-            ),
-            array(
+            ],
+            [
                 $contentB, 'prod',
                 "items: 1337"
-            ),
+            ],
 
-            array(
+            [
                 $contentC, 'dev',
                 "items: 425169someString"
-            ),
-            array(
+            ],
+            [
                 $contentC, 'staging',
                 "items: 33"
-            ),
-            array(
+            ],
+            [
                 $contentC, 'prod',
                 "items: 1337"
-            ),
+            ],
 
-            array(
+            [
                 $contentD, 'dev',
                 "servers[]"
-            ),
+            ],
 
-            array(
+            [
                 $contentD, 'staging',
                 "servers[]"
-            ),
+            ],
 
-            array(
+            [
                 $contentD, 'prod',
                 "servers[a,b,c]"
-            ),
+            ],
 
-            array(
+            [
                 $contentE, 'dev',
                 "servers[]"
-            ),
+            ],
 
-            array(
+            [
                 $contentE, 'staging',
                 "servers[]"
-            ),
+            ],
 
-            array(
+            [
                 $contentE, 'prod',
                 "servers[abc]"
-            ),
+            ],
 
-            array(
+            [
                 $contentW, 'dev',
                 "servers: "
-            ),
+            ],
 
-            array(
+            [
                 $contentW, 'staging',
                 "servers: "
-            ),
+            ],
 
-            array(
+            [
                 $contentW, 'prod',
                 "servers: {a, b, c}"
-            ),
+            ],
 
-            array(
+            [
                 $contentX, 'dev',
                 "servers: "
-            ),
+            ],
 
-            array(
+            [
                 $contentX, 'staging',
                 "servers: "
-            ),
+            ],
 
-            array(
+            [
                 $contentX, 'prod',
                 "servers: <values><val>a</val><val>b</val><val>c</val></values>"
-            ),
+            ],
 
-            array(
+            [
                 $contentY, 'dev',
                 "servers: "
-            ),
+            ],
 
-            array(
+            [
                 $contentY, 'staging',
                 "servers: "
-            ),
+            ],
 
-            array(
+            [
                 $contentY, 'prod',
                 "servers: arr/a/b/c"
-            ),
-        );
+            ],
+        ];
     }
 
     /**
      * @dataProvider providerTestListDirectiveSyntaxError
      */
-    public function testListDirectiveSyntaxError($content)
+    public function testListDirectiveSyntaxError(string $content): void
     {
         $this->expectException(\RuntimeException::class);
 
@@ -778,40 +779,40 @@ TXT;
         $this->hydrator->hydrate('dev');
     }
 
-    public function providerTestListDirectiveSyntaxError()
+    public function providerTestListDirectiveSyntaxError(): array
     {
-        return array(
-            'missing var' => array('<% karma:list %>'),
-            'empty var' => array('<% karma:list var= %>'),
-            'empty delimiter' => array('<% karma:list var=db.user delimiter= %>'),
-            'space around equal #1' => array('<% karma:list var= db.user %>'),
-            'space around equal #2' => array('<% karma:list var =db.user %>'),
-            'space around equal #3' => array('<% karma:list var = db.user %>'),
-            'not existing variable' => array('<% karma:list var=doesnotexist %>'),
-            'disallowed spaces' => array('<% karma : list var=db.user%>'),
-            'unknown parameter' => array('<% karma:list var=db.user foobar=3 %>'),
-            'mispelled parameter' => array('<% karma:list var=db.user delimiterssss="," %>'),
-            'wrong order #1' => array('<% var=db.user karma:list %>'),
-            'wrong order #2' => array('<% karma:list delimiter=", " var=db.user %>'),
-            'wrong order #3' => array('<% karma:list var=db.user wrapper="<":">" delimiter=", " %>'),
-            'wrong order #4' => array('<% karma:list wrapper="<":">" var=db.user delimiter=", " %>'),
-            'wrong directive' => array('<% karma:listing var=db.user %>'),
-            'delimiter without quotes' => array('<% karma:list var=db.user delimiter=- %>'),
-            'wrapper without quotes' => array('<% karma:list var=db.user delimiter=- wrapper=<:> %>'),
-            'wrapper without both values' => array('<% karma:list var=db.user delimiter=- wrapper="<" %>'),
-        );
+        return [
+            'missing var' => ['<% karma:list %>'],
+            'empty var' => ['<% karma:list var= %>'],
+            'empty delimiter' => ['<% karma:list var=db.user delimiter= %>'],
+            'space around equal #1' => ['<% karma:list var= db.user %>'],
+            'space around equal #2' => ['<% karma:list var =db.user %>'],
+            'space around equal #3' => ['<% karma:list var = db.user %>'],
+            'not existing variable' => ['<% karma:list var=doesnotexist %>'],
+            'disallowed spaces' => ['<% karma : list var=db.user%>'],
+            'unknown parameter' => ['<% karma:list var=db.user foobar=3 %>'],
+            'mispelled parameter' => ['<% karma:list var=db.user delimiterssss="," %>'],
+            'wrong order #1' => ['<% var=db.user karma:list %>'],
+            'wrong order #2' => ['<% karma:list delimiter=", " var=db.user %>'],
+            'wrong order #3' => ['<% karma:list var=db.user wrapper="<":">" delimiter=", " %>'],
+            'wrong order #4' => ['<% karma:list wrapper="<":">" var=db.user delimiter=", " %>'],
+            'wrong directive' => ['<% karma:listing var=db.user %>'],
+            'delimiter without quotes' => ['<% karma:list var=db.user delimiter=- %>'],
+            'wrapper without quotes' => ['<% karma:list var=db.user delimiter=- wrapper=<:> %>'],
+            'wrapper without both values' => ['<% karma:list var=db.user delimiter=- wrapper="<" %>'],
+        ];
     }
 
-    public function testMultipleListDirective()
+    public function testMultipleListDirective(): void
     {
-        $reader = new InMemoryReader(array(
-            'items:dev' => array(42, 51, 69, 'someString'),
-            'servers:dev' => array('a', 'b', 'c'),
-        ));
+        $reader = new InMemoryReader([
+            'items:dev' => [42, 51, 69, 'someString'],
+            'servers:dev' => ['a', 'b', 'c'],
+        ]);
 
         $this->hydrator = new Hydrator($this->sourceFs, $this->targetFs, $reader, new Finder($this->sourceFs));
-        $this->hydrator->setFormatterProvider(new CallbackProvider(function() {
-            return new Rules(array('<string>' => '"<string>"'));
+        $this->hydrator->setFormatterProvider(new CallbackProvider(static function() {
+            return new Rules(['<string>' => '"<string>"']);
         }));
 
         $this->write('a-dist', <<<FILE
@@ -828,12 +829,12 @@ FILE
         , 'a');
     }
 
-    public function testDashesInVariableNameAreAllowed()
+    public function testDashesInVariableNameAreAllowed(): void
     {
-        $reader = new InMemoryReader(array(
+        $reader = new InMemoryReader([
             'var-with-dashes:dev' => 'poney',
             'dash-dash-dash:dev' => 'licorne',
-        ));
+        ]);
 
         $this->hydrator = new Hydrator($this->sourceFs, $this->targetFs, $reader, new Finder($this->sourceFs));
 
@@ -846,18 +847,18 @@ FILE
     /**
      * @dataProvider providerTestHydrateWithADifferentSystemEnvironment
      */
-    public function testHydrateWithADifferentSystemEnvironment($env, $systemEnv, $expectedA, $expectedList, $expectedDirective)
+    public function testHydrateWithADifferentSystemEnvironment(string $env, string $systemEnv, string $expectedA, string $expectedList, string $expectedDirective): void
     {
-        $reader = new InMemoryReader(array(
+        $reader = new InMemoryReader([
             'poney:dev' => 'poney_d',
             'poney:staging' => 'poney_s',
             '@licorne:dev' => 'licorne_d',
             '@licorne:staging' => 'licorne_s',
-            'env:dev' => array('d', 'e', 'v'),
-            'env:staging' => array('s', 't', 'a'),
-            '@dsn:dev' => array('d', 'e', 'v'),
-            '@dsn:staging' => array('s', 't', 'a'),
-        ));
+            'env:dev' => ['d', 'e', 'v'],
+            'env:staging' => ['s', 't', 'a'],
+            '@dsn:dev' => ['d', 'e', 'v'],
+            '@dsn:staging' => ['s', 't', 'a'],
+        ]);
 
         $this->hydrator = new Hydrator($this->sourceFs, $this->targetFs, $reader, new Finder($this->sourceFs));
         
@@ -874,31 +875,31 @@ FILE
         $this->assertTargetContent($expectedDirective, 'directive');
     }
 
-    public function providerTestHydrateWithADifferentSystemEnvironment()
+    public function providerTestHydrateWithADifferentSystemEnvironment(): array
     {
         $dev = "d\ne\nv";
         $sta = "s\nt\na";
 
-        return array(
-            array('dev', 'dev', 'poney_d = licorne_d', "$dev\n$dev", 'dev = dev'),
-            array('dev', 'staging', 'poney_d = licorne_s', "$sta\n$dev", 'sta = dev'),
-            array('staging', 'dev', 'poney_s = licorne_d', "$dev\n$sta", 'dev = sta'),
-            array('staging', 'staging', 'poney_s = licorne_s', "$sta\n$sta", 'sta = sta'),
-        );
+        return [
+            ['dev', 'dev', 'poney_d = licorne_d', "$dev\n$dev", 'dev = dev'],
+            ['dev', 'staging', 'poney_d = licorne_s', "$sta\n$dev", 'sta = dev'],
+            ['staging', 'dev', 'poney_s = licorne_d', "$dev\n$sta", 'dev = sta'],
+            ['staging', 'staging', 'poney_s = licorne_s', "$sta\n$sta", 'sta = sta'],
+        ];
     }
     
     /**
      * @group nested
      */
-    public function testNestedVariables()
+    public function testNestedVariables(): void
     {
         $this->expectException(\RuntimeException::class);
 
-        $reader = new InMemoryReader(array(
+        $reader = new InMemoryReader([
             'meat:dev' => 'pony',
             'burger:dev' => "<%meat%> with sparkles",
-            'customer:dev' => 'prudman',
-        ));
+            'customer:dev' => 'cloudman',
+        ]);
 
         $hydrator = new Hydrator($this->sourceFs, $this->targetFs, $reader, new Finder($this->sourceFs));
         

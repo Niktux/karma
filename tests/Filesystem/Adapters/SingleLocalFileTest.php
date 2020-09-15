@@ -4,19 +4,21 @@ declare(strict_types = 1);
 
 namespace Karma\Filesystem\Adapters;
 
+use Gaufrette\Adapter;
 use Gaufrette\Adapter\InMemory;
 use PHPUnit\Framework\TestCase;
 
 class SingleLocalFileTest extends TestCase
 {
-    const
+    private const
         FILENAME = 'toto.yml-dist',
         FILEDIR = '/path/to/',
         FILEPATH = '/path/to/toto.yml-dist',
         CONTENT = 'yolo';
 
-    private
-        $src,
+    private Adapter
+        $src;
+    private SingleLocalFile
         $singleLocalFile;
 
     protected function setUp(): void
@@ -33,91 +35,91 @@ class SingleLocalFileTest extends TestCase
     /**
      * @dataProvider providerTestRead
      */
-    public function testRead($key, $expected)
+    public function testRead(string $key, $expected): void
     {
-        $this->assertSame($expected, $this->singleLocalFile->read($key));
+        self::assertSame($expected, $this->singleLocalFile->read($key));
     }
 
-    public function providerTestRead()
+    public function providerTestRead(): array
     {
-        return array(
+        return [
             [self::FILENAME, self::CONTENT],
             [self::FILEPATH, false],
             ['/path/to/subDir/anotherFile', false],
             ['/path/to/fileInSameDir', false],
             ['fileInSameDir', false],
             ['doesNotExist', false],
-        );
+        ];
     }
 
     /**
     * @dataProvider providerTestWrite
     */
-    public function testWrite($key, $expected)
+    public function testWrite(string $key, $expected): void
     {
         $content = 'burger';
 
-        $this->assertFalse($this->singleLocalFile->read($key), 'precond fail');
+        self::assertFalse($this->singleLocalFile->read($key), 'precond fail');
         $this->singleLocalFile->write($key, $content);
-        $this->assertSame($expected, $this->src->exists($key), 'written as expected');
+        self::assertSame($expected, $this->src->exists($key), 'written as expected');
 
         if($expected === true)
         {
-            $this->assertSame($content, $this->src->read($key));
+            self::assertSame($content, $this->src->read($key));
         }
 
-        $this->assertFalse($this->singleLocalFile->read($key));
+        self::assertFalse($this->singleLocalFile->read($key));
     }
 
-    public function providerTestWrite()
+    public function providerTestWrite(): array
     {
-        return array(
+        return [
             ['newFile', true],
             ['new/sub/dirs/newFile', true],
-        );
+        ];
     }
 
     /**
      * @dataProvider providerTestRead
      */
-    public function testExists($key, $expected)
+    public function testExists(string $key, $expected): void
     {
-        $this->assertSame(
+        self::assertSame(
             $expected !== false,
             $this->singleLocalFile->exists($key)
         );
     }
 
-    public function testKeys()
+    public function testKeys(): void
     {
         $keys = $this->singleLocalFile->keys();
 
-        $this->assertCount(1, $keys);
-        $this->assertContains(self::FILENAME, $keys);
-        $this->assertNotContains(self::FILEPATH, $keys);
+        self::assertCount(1, $keys);
+        self::assertContains(self::FILENAME, $keys);
+        self::assertNotContains(self::FILEPATH, $keys);
     }
 
-    public function testMtime()
+    public function testMtime(): void
     {
-        $this->assertSame(
+        self::assertSame(
             $this->singleLocalFile->mtime(self::FILENAME),
             $this->src->mtime(self::FILENAME)
         );
 
-        $this->assertFalse($this->singleLocalFile->mtime('fileInSameDir'));
+        self::assertFalse($this->singleLocalFile->mtime('fileInSameDir'));
     }
 
     /**
      * @dataProvider providerFileList
      */
-    public function testDelete($key)
+    public function testDelete(string $key): void
     {
         $this->expectException(\RuntimeException::class);
 
         $this->singleLocalFile->delete($key);
     }
 
-    public function testRename()
+    public function testRename(): void
     {
         $this->expectException(\RuntimeException::class);
 
@@ -127,20 +129,20 @@ class SingleLocalFileTest extends TestCase
     /**
      * @dataProvider providerFileList
      */
-    public function testIsDirectory($key)
+    public function testIsDirectory(string $key): void
     {
-        $this->assertFalse($this->singleLocalFile->isDirectory($key));
+        self::assertFalse($this->singleLocalFile->isDirectory($key));
     }
 
-    public function providerFileList()
+    public function providerFileList(): array
     {
-        return array(
+        return [
             [self::FILEPATH],
             ['fileInSameDir'],
             [self::FILEDIR . 'fileInSameDir'],
             ['doesNotExist'],
             [self::FILEDIR . 'doesNotExist'],
             ['anotherFile'],
-        );
+        ];
     }
 }

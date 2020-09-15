@@ -12,15 +12,15 @@ use PHPUnit\Framework\TestCase;
 
 class ProfileProviderTest extends TestCase
 {
-    private function buildProvider($profileContent = null, $filename = Application::PROFILE_FILENAME)
+    private function buildProvider(?string $profileContent = null, string $filename = Application::PROFILE_FILENAME): ProfileProvider
     {
-        $files = array();
+        $files = [];
 
         if($profileContent !== null)
         {
-            $files = array(
+            $files = [
                 $filename => $profileContent,
-            );
+            ];
         }
 
         $profile = new ProfileReader(
@@ -30,7 +30,7 @@ class ProfileProviderTest extends TestCase
         return new ProfileProvider($profile);
     }
 
-    public function testFormatter()
+    public function testFormatter(): void
     {
         $yaml = <<<YAML
 formatters:
@@ -43,39 +43,37 @@ YAML;
         $provider = $this->buildProvider($yaml);
         $fileExtension = 'yaml';
 
-        $this->assertTrue($provider->hasFormatter('yaml'), 'Yaml formatter must exist');
-        $this->assertFalse($provider->hasFormatter('php'), 'PHP formatter must not exist');
-        $this->assertInstanceOf('Karma\Formatter', $provider->getFormatter($fileExtension)); // default
-        $this->assertInstanceOf('Karma\Formatter', $provider->getFormatter($fileExtension, 'yaml'));
-        $this->assertSame($provider->getFormatter($fileExtension), $provider->getFormatter($fileExtension, 'yaml'));
+        self::assertTrue($provider->hasFormatter('yaml'), 'Yaml formatter must exist');
+        self::assertFalse($provider->hasFormatter('php'), 'PHP formatter must not exist');
+        self::assertSame($provider->getFormatter($fileExtension), $provider->getFormatter($fileExtension, 'yaml'));
     }
 
     /**
      * @dataProvider providerTestFormatterSyntaxError
      */
-    public function testFormatterSyntaxError($yaml)
+    public function testFormatterSyntaxError(string $yaml): void
     {
         $this->expectException(\InvalidArgumentException::class);
 
-        $provider = $this->buildProvider($yaml);
+        $this->buildProvider($yaml);
     }
 
-    public function providerTestFormatterSyntaxError()
+    public function providerTestFormatterSyntaxError(): array
     {
-        return array(
-            array(<<<YAML
+        return [
+            [<<<YAML
 formatters:
   yaml: foobar
 YAML
-            ),
-            array(<<<YAML
+            ],
+            [<<<YAML
 formatters: foobar
 YAML
-            ),
-        );
+            ],
+        ];
     }
 
-    public function testFormatterByFileExtension()
+    public function testFormatterByFileExtension(): void
     {
         $yaml = <<<YAML
 formatters:
@@ -94,10 +92,10 @@ fileExtensionFormatters:
 YAML;
         $provider = $this->buildProvider($yaml);
 
-        $this->assertSame($provider->getFormatter(null, 'f1'), $provider->getFormatter('ini', null));
-        $this->assertSame($provider->getFormatter(null, 'f2'), $provider->getFormatter('yml', null));
-        $this->assertSame($provider->getFormatter(null, 'f3'), $provider->getFormatter('cfg', null));
-        $this->assertSame($provider->getFormatter(null, 'f2'), $provider->getFormatter('txt', null)); // default
-        $this->assertSame($provider->getFormatter(null, 'f3'), $provider->getFormatter('ini', 'f3'));
+        self::assertSame($provider->getFormatter(null, 'f1'), $provider->getFormatter('ini', null));
+        self::assertSame($provider->getFormatter(null, 'f2'), $provider->getFormatter('yml', null));
+        self::assertSame($provider->getFormatter(null, 'f3'), $provider->getFormatter('cfg', null));
+        self::assertSame($provider->getFormatter(null, 'f2'), $provider->getFormatter('txt', null)); // default
+        self::assertSame($provider->getFormatter(null, 'f3'), $provider->getFormatter('ini', 'f3'));
     }
 }

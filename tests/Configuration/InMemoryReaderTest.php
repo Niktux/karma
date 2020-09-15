@@ -4,7 +4,6 @@ declare(strict_types = 1);
 
 namespace Karma\Configuration;
 
-use Karma\Configuration\InMemoryReader;
 use Karma\Configuration;
 use PHPUnit\Framework\TestCase;
 
@@ -26,7 +25,7 @@ class InMemoryReaderTest extends TestCase
     /**
      * @dataProvider providerTestRead
      */
-    public function testRead($variable, $environment, $expected)
+    public function testRead(string $variable, string $environment, $expected): void
     {
         self::assertSame($expected, $this->reader->read($variable, $environment));
     }
@@ -34,13 +33,13 @@ class InMemoryReaderTest extends TestCase
     /**
      * @dataProvider providerTestRead
      */
-    public function testReadWithDefaultEnvironment($variable, $environment, $expected)
+    public function testReadWithDefaultEnvironment(string $variable, string $environment, $expected): void
     {
         $this->reader->setDefaultEnvironment($environment);
         self::assertSame($expected, $this->reader->read($variable));
     }
 
-    public function providerTestRead()
+    public function providerTestRead(): array
     {
         return [
             ['baz', 'recette', 'bazrecette'],
@@ -50,14 +49,14 @@ class InMemoryReaderTest extends TestCase
         ];
     }
 
-    public function testVariableDoesNotExist()
+    public function testVariableDoesNotExist(): void
     {
         $this->expectException(\RuntimeException::class);
 
         $this->reader->read('doesnotexist', 'dev');
     }
 
-    public function testGetAllVariables()
+    public function testGetAllVariables(): void
     {
         $variables = $this->reader->getAllVariables();
         sort($variables);
@@ -71,7 +70,7 @@ class InMemoryReaderTest extends TestCase
     /**
      * @dataProvider providerTestGetAllValuesForEnvironment
      */
-    public function testGetAllValuesForEnvironment($environment, array $expectedValues)
+    public function testGetAllValuesForEnvironment(string $environment, array $expectedValues): void
     {
         $variables = $this->reader->getAllValuesForEnvironment($environment);
         self::assertIsArray($variables);
@@ -88,7 +87,7 @@ class InMemoryReaderTest extends TestCase
         }
     }
 
-    public function providerTestGetAllValuesForEnvironment()
+    public function providerTestGetAllValuesForEnvironment(): array
     {
         return [
             ['dev', [
@@ -109,7 +108,7 @@ class InMemoryReaderTest extends TestCase
         ];
     }
 
-    public function testOverrideVariable()
+    public function testOverrideVariable(): void
     {
         $environment = 'dev';
 
@@ -124,10 +123,10 @@ class InMemoryReaderTest extends TestCase
         $this->reader->overrideVariable('bar', null);
 
         self::assertSame('foofoo', $this->reader->read('foo', $environment));
-        self::assertSame(null, $this->reader->read('bar', $environment));
+        self::assertNull($this->reader->read('bar', $environment));
     }
 
-    public function testCustomData()
+    public function testCustomData(): void
     {
         $var = 'param';
 
@@ -163,12 +162,12 @@ class InMemoryReaderTest extends TestCase
     /**
      * @dataProvider providerTestIsSystem
      */
-    public function testIsSystem($variable, $expected)
+    public function testIsSystem(string $variable, bool $expected): void
     {
         self::assertSame($expected, $this->reader->isSystem($variable));
     }
 
-    public function providerTestIsSystem()
+    public function providerTestIsSystem(): array
     {
         return [
             ['foo', true],

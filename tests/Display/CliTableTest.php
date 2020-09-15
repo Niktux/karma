@@ -14,7 +14,7 @@ class CliTableTest extends TestCase
     /**
      * @dataProvider providerTestRender
      */
-    public function testRender($headers, $input, $expected)
+    public function testRender(array $headers, array $input, string $expected): void
     {
         $table = new CliTable($input);
         $table->setHeaders($headers);
@@ -22,14 +22,14 @@ class CliTableTest extends TestCase
         self::assertSame($expected, $table->render());
     }
 
-    public function providerTestRender()
+    public function providerTestRender(): array
     {
-        return array(
-            array(array('Variable', 'Dev', 'Prod'), array(
-                array('x', 153, 15.24),
-                array('db.password', null, 'azertyroot1234#'),
-                array('toto', 'some_value', false),
-            ), <<<RESULT
+        return [
+            [['Variable', 'Dev', 'Prod'], [
+                ['x', 153, 15.24],
+                ['db.password', null, 'azertyroot1234#'],
+                ['toto', 'some_value', false],
+            ], <<<RESULT
 |--------------------------------------------|
 | Variable    | Dev        | Prod            |
 |--------------------------------------------|
@@ -38,12 +38,12 @@ class CliTableTest extends TestCase
 | toto        | some_value | false           |
 |--------------------------------------------|
 RESULT
-            ),
-            array(array('Variable', 'Dev', 'Production'), array(
-                array('x', 153, 15.24),
-                array('db.password', null, 'root'),
-                array('toto', '0', true),
-            ), <<<RESULT
+            ],
+            [['Variable', 'Dev', 'Production'], [
+                ['x', 153, 15.24],
+                ['db.password', null, 'root'],
+                ['toto', '0', true],
+            ], <<<RESULT
 |---------------------------------|
 | Variable    | Dev  | Production |
 |---------------------------------|
@@ -52,20 +52,20 @@ RESULT
 | toto        | 0    | true       |
 |---------------------------------|
 RESULT
-            ),
-        );
+            ],
+        ];
     }
 
-    public function testValueRenderingFunction()
+    public function testValueRenderingFunction(): void
     {
-        $table = new CliTable(array(
-            array('a', 'a1', 'a2'),
-            array('B', 'B1', 'B2'),
-            array('cccc', 'cccc1', 'cccc2'),
-        ));
+        $table = new CliTable([
+            ['a', 'a1', 'a2'],
+            ['B', 'B1', 'B2'],
+            ['cccc', 'cccc1', 'cccc2'],
+        ]);
 
-        $table->setHeaders(array('', 'e1', 'e2'))
-              ->setValueRenderingFunction(function ($value){
+        $table->setHeaders(['', 'e1', 'e2'])
+              ->setValueRenderingFunction(static function ($value){
             return strtoupper($value);
         });
 
@@ -82,15 +82,15 @@ RESULT;
         self::assertSame($expected, $table->render());
     }
 
-    public function testWeirdCharacter()
+    public function testWeirdCharacter(): void
     {
-        $table = new CliTable(array(
-            array('a', 'a1', 'a2'),
-            array('B', 'B1', 'B2'),
-            array('x<y2', 'cccc1', 'cccc2'),
-        ));
+        $table = new CliTable([
+            ['a', 'a1', 'a2'],
+            ['B', 'B1', 'B2'],
+            ['x<y2', 'cccc1', 'cccc2'],
+        ]);
 
-        $table->setHeaders(array('', 'e1', 'e2'))
+        $table->setHeaders(['', 'e1', 'e2'])
               ->enableFormattingTags();
 
         $expected = <<<RESULT
@@ -106,18 +106,18 @@ RESULT;
         self::assertSame($expected, $table->render());
     }
 
-    public function testEnableFormattingTags()
+    public function testEnableFormattingTags(): void
     {
-        $table = new CliTable(array(
-            array('a', 'a1', 'a2'),
-            array('B', 'B1', 'B2'),
-            array('<color=blue>c</color>', 'cccc1', 'cccc2'),
-        ));
+        $table = new CliTable([
+            ['a', 'a1', 'a2'],
+            ['B', 'B1', 'B2'],
+            ['<color=blue>c</color>', 'cccc1', 'cccc2'],
+        ]);
 
-        $table->setHeaders(array('1234', 'e1', 'e2'))
+        $table->setHeaders(['1234', 'e1', 'e2'])
               ->enableFormattingTags();
 
-        // Expects thats tags have no impact on column size computation
+        // Expects that tags have no impact on column size computation
         $expected = <<<RESULT
 |----------------------|
 | 1234 | e1    | e2    |
@@ -134,7 +134,7 @@ RESULT;
     /**
      * @dataProvider providerTestSanityChecks
      */
-    public function testSanityChecks(array $values)
+    public function testSanityChecks(array $values): void
     {
         $this->expectException(\InvalidArgumentException::class);
 
@@ -142,32 +142,32 @@ RESULT;
         $table->render();
     }
 
-    public function providerTestSanityChecks()
+    public function providerTestSanityChecks(): array
     {
-        return array(
-            'one dim array' => array(array('a', 'b', 'c')),
-            'one dim assoc array' => array(array('a' => 0, 'b' => 1, 'c' => 2)),
+        return [
+            'one dim array' => [['a', 'b', 'c']],
+            'one dim assoc array' => [['a' => 0, 'b' => 1, 'c' => 2]],
 
-            'two dim array but inconsistent row length #1' => array(array(array('a'), array('b', 'c'))),
-            'two dim array but inconsistent row length #2' => array(array(array('a', 'b'), array('c'))),
-        );
+            'two dim array but inconsistent row length #1' => [[['a'], ['b', 'c']]],
+            'two dim array but inconsistent row length #2' => [[['a', 'b'], ['c']]],
+        ];
     }
 
     /**
      * @dataProvider providerTestDisplayKeys
      */
-    public function testDisplayKeys($enableKeys, $expected)
+    public function testDisplayKeys(bool $enableKeys, string $expected): void
     {
-        $values = array(
-            'key1' => array('a', 'bb'),
-            'key2' => array(true, 3),
-            array(42, 51),
-            'key4' => array(null, 12),
-            array(82, 86),
-        );
+        $values = [
+            'key1' => ['a', 'bb'],
+            'key2' => [true, 3],
+            [42, 51],
+            'key4' => [null, 12],
+            [82, 86],
+        ];
 
         $table = new CliTable($values);
-        $table->setHeaders(array('colA', 'colB'));
+        $table->setHeaders(['colA', 'colB']);
 
         $result = $table->displayKeys($enableKeys)
             ->render();
@@ -175,10 +175,10 @@ RESULT;
         self::assertSame($expected, $result);
     }
 
-    public function providerTestDisplayKeys()
+    public function providerTestDisplayKeys(): array
     {
-        return array(
-            array(true, <<<RESULT
+        return [
+            [true, <<<RESULT
 |--------------------|
 |      | colA | colB |
 |--------------------|
@@ -189,8 +189,8 @@ RESULT;
 | 1    | 82   | 86   |
 |--------------------|
 RESULT
-            ),
-            array(false, <<<RESULT
+            ],
+            [false, <<<RESULT
 |-------------|
 | colA | colB |
 |-------------|
@@ -201,7 +201,7 @@ RESULT
 | 82   | 86   |
 |-------------|
 RESULT
-            ),
-        );
+            ],
+        ];
     }
 }
