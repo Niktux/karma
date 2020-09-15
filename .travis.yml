@@ -2,7 +2,6 @@ language: php
 
 php:
     - 7.4
-
 before_script:
     - composer install
 
@@ -16,7 +15,7 @@ before_deploy:
 deploy:
     provider: releases
     api_key:
-        secure: KUlnR2JrQzRiuoCQw5VARrR9anBeq7DrmURNwStyHHJl7ysV9rGK4G7O6axbU6twcuRjRo+J5thjlWWt+zan6x2mgkVZRCfOSz/zsc6a2cvoGq8klWEXd3jp/1rKstyS2rYDyYNffwZ3Hl6cUmPeM41DbOjIj1xXeBpbfCGMS8Y=
+        secure: UHlwBFUGylOYVhiHnD98dQD3/unK+jyGjIL6MuxuF2Gk7nBbW9UPPZnjju3H5PcpuA/qtptgB4lwVx83ac0hiJKgEp3ipH3t44ftBOyfmrxxGrtdut+n8aW4jAlpnh0tRYjHl3tn3lr/bIqhNPZGlNH1sJtYaYz+s/xBwAdhop4=
     file: karma.phar
     skip_cleanup: true
     on:
