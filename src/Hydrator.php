@@ -229,11 +229,7 @@ class Hydrator implements ConfigurableProcessor
 
         while(preg_match($regex, $fileContent, $matches))
         {
-            $delimiter = '';
-            if(isset($matches['delimiterName']))
-            {
-                $delimiter = $matches['delimiterName'];
-            }
+            $delimiter = $matches['delimiterName'] ?? '';
 
             $wrapper = ['prefix' => '', 'suffix' => ''];
             if(isset($matches['wrapperPrefix'], $matches['wrapperSuffix']))
@@ -274,7 +270,7 @@ class Hydrator implements ConfigurableProcessor
             $values = [$values];
         }
 
-        array_walk($values, function (& $value) use ($formatter) {
+        array_walk($values, static function (& $value) use ($formatter) {
             $value = $formatter->format($value);
         });
 

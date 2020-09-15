@@ -11,11 +11,9 @@ trait OutputAware
     protected ?OutputInterface
         $output = null;
 
-    public function setOutput(OutputInterface $output)
+    public function setOutput(OutputInterface $output): void
     {
         $this->output = $output;
-
-        return $this;
     }
 
     protected function error($messages, $newline = false, $type = OutputInterface::OUTPUT_NORMAL): void
@@ -49,7 +47,7 @@ trait OutputAware
                     $messages = array($messages);
                 }
 
-                array_walk($messages, function(& $message) use($textColor) {
+                array_walk($messages, static function(& $message) use($textColor) {
                     $message = "<fg=$textColor>$message</fg=$textColor>";
                 });
 

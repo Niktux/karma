@@ -105,7 +105,7 @@ class GroupParser extends AbstractSectionParser
 
     private function hasDuplicatedValues(array $values): bool
     {
-        $duplicatedValues = array_filter(array_count_values($values), function ($counter) {
+        $duplicatedValues = array_filter(array_count_values($values), static function ($counter) {
             return $counter !== 1;
         });
 

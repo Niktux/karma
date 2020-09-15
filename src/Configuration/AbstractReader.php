@@ -9,7 +9,7 @@ use Karma\Configuration;
 abstract class AbstractReader implements Configuration
 {
     private array
-        $overridenVariables,
+        $overriddenVariables,
         $customData;
 
     protected string
@@ -18,7 +18,7 @@ abstract class AbstractReader implements Configuration
     public function __construct()
     {
         $this->defaultEnvironment = 'dev';
-        $this->overridenVariables = [];
+        $this->overriddenVariables = [];
         $this->customData = [];
     }
 
@@ -26,9 +26,9 @@ abstract class AbstractReader implements Configuration
     {
         $value = null;
 
-        if(array_key_exists($variable, $this->overridenVariables))
+        if(array_key_exists($variable, $this->overriddenVariables))
         {
-            $value = $this->overridenVariables[$variable];
+            $value = $this->overriddenVariables[$variable];
         }
         else
         {
@@ -73,7 +73,7 @@ abstract class AbstractReader implements Configuration
 
     public function overrideVariable(string $variable, $value): void
     {
-        $this->overridenVariables[$variable] = $value;
+        $this->overriddenVariables[$variable] = $value;
     }
 
     public function setCustomData(string $customDataName, $value): void

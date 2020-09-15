@@ -59,7 +59,7 @@ class Reader extends AbstractReader
             $environment = $this->defaultEnvironment;
         }
 
-        if(in_array($environment, $this->groupNames))
+        if(in_array($environment, $this->groupNames, false))
         {
             if(! isset($this->defaultEnvironmentsForGroups[$environment]))
             {

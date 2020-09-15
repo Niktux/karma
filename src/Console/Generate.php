@@ -6,6 +6,7 @@ namespace Karma\Console;
 
 use Karma\ConfigurableProcessor;
 use Karma\Application;
+use Karma\Generator\ConfigurationFileGenerator;
 
 class Generate extends ConfigureActionCommand
 {
@@ -26,6 +27,9 @@ class Generate extends ConfigureActionCommand
 
     protected function launchConfigurationAction(ConfigurableProcessor $processor): void
     {
-        $processor->generate($this->environment);
+        if($processor instanceof ConfigurationFileGenerator)
+        {
+            $processor->generate($this->environment);
+        }
     }
 }

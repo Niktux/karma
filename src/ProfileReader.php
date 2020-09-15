@@ -41,7 +41,7 @@ class ProfileReader implements FormattersDefinition
         $this->read($fs);
     }
 
-    private function read(Filesystem $fs)
+    private function read(Filesystem $fs): void
     {
         $profileFilename = Application::PROFILE_FILENAME;
 
@@ -185,7 +185,7 @@ class ProfileReader implements FormattersDefinition
     private function ensureParameterFormatIsValid($parameter, $value): void
     {
         $parameterValidators = [
-            'targetPath' => function($value) {
+            'targetPath' => static function($value) {
                 return is_string($value);
             }
         ];
@@ -200,7 +200,7 @@ class ProfileReader implements FormattersDefinition
 
         if(! $parameterValidators[$parameter]($value))
         {
-            throw new \RuntimeException('Paramater %s format is invalid');
+            throw new \RuntimeException('Parameter %s format is invalid');
         }
     }
 }

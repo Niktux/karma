@@ -13,7 +13,7 @@ use Karma\Configuration\ValueFilterIterator;
 
 class Display extends Command
 {
-    const
+    private const
         ENV_DEV = 'dev',
         NO_FILTERING = 'karma-nofiltering';
 

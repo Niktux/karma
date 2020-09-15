@@ -19,15 +19,16 @@ use Pimple\Container;
 
 class Application extends Container
 {
-    const
+    public const
         VERSION = '7.4.0',
         DEFAULT_DISTFILE_SUFFIX = '-dist',
         DEFAULT_CONF_DIRECTORY = 'env',
         DEFAULT_MASTER_FILE = 'master.conf',
         BACKUP_SUFFIX = '~',
-        FINDER_CACHE_DIRECTORY = 'cache/karma',
-        FINDER_CACHE_DURATION = 86400,
         PROFILE_FILENAME = '.karma';
+    private const
+        FINDER_CACHE_DIRECTORY = 'cache/karma',
+        FINDER_CACHE_DURATION = 86400;
 
     public function __construct()
     {

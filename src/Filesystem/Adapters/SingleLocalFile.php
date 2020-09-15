@@ -39,7 +39,7 @@ class SingleLocalFile implements Adapter
         return $key === $this->filename;
     }
 
-    public function keys()
+    public function keys(): array
     {
         return [$this->filename];
     }
@@ -54,7 +54,7 @@ class SingleLocalFile implements Adapter
         return $this->adapter->mtime($key);
     }
 
-    public function delete($key)
+    public function delete($key): bool
     {
         throw new \RuntimeException('Not implemented yet : ' . __METHOD__);
     }

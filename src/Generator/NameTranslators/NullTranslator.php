@@ -8,7 +8,7 @@ use Karma\Generator\NameTranslator;
 
 class NullTranslator implements NameTranslator
 {
-    public function translate($file, $variable)
+    public function translate(string $file, string $variable): string
     {
         return $variable;
     }

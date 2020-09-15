@@ -21,7 +21,7 @@ class FilePrefixTranslator implements NameTranslator
         $this->prefixForMasterFile = null;
     }
 
-    public function translate($file, $variable)
+    public function translate(string $file, string $variable): string
     {
         $prefix = $this->computePrefix($file);
 

@@ -22,7 +22,7 @@ class Rules implements Formatter
             '<true>' => true,
             '<false>' => false,
             '<null>' => null,
-            '<string>' => function($value) {
+            '<string>' => static function($value) {
                 return is_string($value);
             }
         ];
@@ -51,7 +51,7 @@ class Rules implements Formatter
     {
         if($value === '<string>')
         {
-            $result = function ($value) use ($result) {
+            $result = static function ($value) use ($result) {
                 return str_replace('<string>', $value, $result);
             };
         }
@@ -63,7 +63,7 @@ class Rules implements Formatter
     {
         foreach($this->rules as $rule)
         {
-            list($condition, $result) = $rule;
+            [$condition, $result] = $rule;
 
             if($this->isRuleMatches($condition, $value))
             {

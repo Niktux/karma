@@ -118,7 +118,7 @@ class VariableParser extends AbstractSectionParser
             $this->triggerError("line must contains = ($line)");
         }
 
-        list($envList, $value) = explode(self::ASSIGNMENT, $line, 2);
+        [$envList, $value] = explode(self::ASSIGNMENT, $line, 2);
         $environments = array_map('trim', explode(self::ENV_SEPARATOR, $envList));
 
         $value = $this->parseList($value);

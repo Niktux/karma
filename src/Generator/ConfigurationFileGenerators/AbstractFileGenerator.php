@@ -36,14 +36,14 @@ abstract class AbstractFileGenerator implements ConfigurationFileGenerator
 
     public function setDryRun(bool $value = true): ConfigurableProcessor
     {
-        $this->dryRun = (bool) $value;
+        $this->dryRun = $value;
 
         return $this;
     }
 
     public function enableBackup(bool $value = true): ConfigurableProcessor
     {
-        $this->enableBackup = (bool) $value;
+        $this->enableBackup = $value;
 
         return $this;
     }

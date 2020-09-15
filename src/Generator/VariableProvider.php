@@ -20,18 +20,16 @@ class VariableProvider
         $this->nameTranslator = new NullTranslator();
     }
 
-    public function setNameTranslator(NameTranslator $translator)
+    public function setNameTranslator(NameTranslator $translator): void
     {
         $this->nameTranslator = $translator;
-
-        return $this;
     }
 
-    public function getAllVariables()
+    public function getAllVariables(): array
     {
         $parsedVariables = $this->parser->getVariables();
 
-        $variables = array();
+        $variables = [];
 
         foreach($parsedVariables as $variable => $info)
         {

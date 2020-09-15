@@ -120,7 +120,7 @@ abstract class ConfigureActionCommand extends Command
 
         if(is_array($targetPath))
         {
-            throw new \RuntimeException('Invalid argument targetPath : could not be mutiple (single path required as string)');
+            throw new \RuntimeException('Invalid argument targetPath : could not be multiple (single path required as string)');
         }
 
         if(empty($targetPath) && $profile->hasTargetPath() === true)
@@ -139,7 +139,7 @@ abstract class ConfigureActionCommand extends Command
         $this->app['sources.path'] = $sourcePath;
         $this->app['target.path'] = $targetPath;
 
-        $this->processOverridenVariables(
+        $this->processOverriddenVariables(
             $this->parseOptionWithAssignments($input, 'override')
         );
         $this->processCustomData(
@@ -150,7 +150,7 @@ abstract class ConfigureActionCommand extends Command
     abstract protected function launchConfigurationAction(ConfigurableProcessor $processor): void;
     abstract protected function getProcessor(): ConfigurableProcessor;
 
-    private function configureProcessor(ConfigurableProcessor $processor)
+    private function configureProcessor(ConfigurableProcessor $processor): void
     {
         if($this->dryRun === true)
         {
@@ -173,7 +173,7 @@ abstract class ConfigureActionCommand extends Command
         }
     }
 
-    private function parseOptionWithAssignments(InputInterface $input, $optionName)
+    private function parseOptionWithAssignments(InputInterface $input, $optionName): array
     {
         $strings = $input->getOption($optionName);
 
@@ -186,7 +186,7 @@ abstract class ConfigureActionCommand extends Command
 
         foreach($strings as $string)
         {
-            if(stripos($string, self::OPTION_ASSIGNMENT) === false)
+            if(strpos($string, self::OPTION_ASSIGNMENT) === false)
             {
                 throw new \InvalidArgumentException(sprintf(
                     '%s option must contain %c : --%s <variable>=<value>',
@@ -196,7 +196,7 @@ abstract class ConfigureActionCommand extends Command
                 ));
             }
 
-            list($variable, $value) = explode(self::OPTION_ASSIGNMENT, $string, 2);
+            [$variable, $value] = explode(self::OPTION_ASSIGNMENT, $string, 2);
 
             if(array_key_exists($variable, $data))
             {
@@ -209,7 +209,7 @@ abstract class ConfigureActionCommand extends Command
         return $data;
     }
 
-    private function processOverridenVariables(array $overrides): void
+    private function processOverriddenVariables(array $overrides): void
     {
         $reader = $this->app['configuration'];
         $logger = $this->app['logger'];

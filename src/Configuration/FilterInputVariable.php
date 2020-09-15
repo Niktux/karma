@@ -66,7 +66,7 @@ trait FilterInputVariable
 
     private function removeEmptyEntries(array $list): array
     {
-        return array_merge(array_filter($list, function($item): bool {
+        return array_merge(array_filter($list, static function($item): bool {
             return is_numeric($item) === true || empty($item) === false;
         }));
     }

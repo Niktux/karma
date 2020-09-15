@@ -6,5 +6,5 @@ namespace Karma\Generator;
 
 interface NameTranslator
 {
-    public function translate($file, $variable);
+    public function translate(string $file, string $variable): string;
 }

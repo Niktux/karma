@@ -5,7 +5,6 @@ declare(strict_types = 1);
 namespace Karma\Logging;
 
 use Psr\Log\LoggerInterface;
-use Symfony\Component\Console\Output\Output;
 use Symfony\Component\Console\Output\OutputInterface;
 use Psr\Log\LogLevel;
 
@@ -30,7 +29,7 @@ class OutputInterfaceAdapter implements LoggerInterface
         ];
     }
 
-    public function log($level, $message, array $context = [])
+    public function log($level, $message, array $context = []): void
     {
         if($this->convertLevel($level) <= $this->output->getVerbosity())
         {

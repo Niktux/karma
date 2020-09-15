@@ -16,7 +16,7 @@ class MultipleAdapter implements Adapter
         $this->mountTable = [];
     }
     
-    public function mount(string $mountPoint, Adapter $adapter)
+    public function mount(string $mountPoint, Adapter $adapter): void
     {
         $directorySeparator = '/';
         $mountPoint = rtrim($mountPoint, $directorySeparator) . $directorySeparator;
@@ -43,14 +43,14 @@ class MultipleAdapter implements Adapter
     
     public function read($key)
     {
-        list($adapter, $relativeKey) = $this->find($key);
+        [$adapter, $relativeKey] = $this->find($key);
         
         return $adapter->read($relativeKey);
     }
     
     public function write($key, $content)
     {
-        list($adapter, $relativeKey) = $this->find($key);
+        [$adapter, $relativeKey] = $this->find($key);
         
         return $adapter->write($relativeKey, $content);
     }
@@ -59,7 +59,7 @@ class MultipleAdapter implements Adapter
     {
         try
         {
-            list($adapter, $relativeKey) = $this->find($key);
+            [$adapter, $relativeKey] = $this->find($key);
         }
         catch(\RuntimeException $e)
         {
@@ -69,15 +69,15 @@ class MultipleAdapter implements Adapter
         return $adapter->exists($relativeKey);
     }
     
-    public function keys()
+    public function keys(): array
     {
-        $keys = array();
+        $keys = [];
 
         foreach($this->mountTable as $mountPoint => $adapter)
         {
             $adapterKeys = $adapter->keys();
             
-            array_walk($adapterKeys, function(& $key) use($mountPoint) {
+            array_walk($adapterKeys, static function(& $key) use($mountPoint) {
                 $key = $mountPoint . $key;
             });
                         
@@ -89,14 +89,14 @@ class MultipleAdapter implements Adapter
     
     public function mtime($key)
     {
-        list($adapter, $relativeKey) = $this->find($key);
+        [$adapter, $relativeKey] = $this->find($key);
         
         return $adapter->mtime($relativeKey);
     }
     
-    public function delete($key)
+    public function delete($key): bool
     {
-        list($adapter, $relativeKey) = $this->find($key);
+        [$adapter, $relativeKey] = $this->find($key);
         
         return $adapter->delete($relativeKey);
     }
@@ -108,7 +108,7 @@ class MultipleAdapter implements Adapter
     
     public function isDirectory($key): bool
     {
-        list($adapter, $relativeKey) = $this->find($key);
+        [$adapter, $relativeKey] = $this->find($key);
         
         return $adapter->isDirectory($relativeKey);
     }

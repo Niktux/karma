@@ -4,14 +4,13 @@ declare(strict_types = 1);
 
 namespace Karma\Generator\ConfigurationFileGenerators;
 
-use Karma\Generator\ConfigurationFileGenerator;
 use Gaufrette\Filesystem;
 use Karma\Configuration;
 use Karma\Generator\VariableProvider;
 use Symfony\Component\Yaml\Yaml;
 use Karma\Application;
 
-class YamlGenerator extends AbstractFileGenerator implements ConfigurationFileGenerator
+class YamlGenerator extends AbstractFileGenerator
 {
     private array
         $files;

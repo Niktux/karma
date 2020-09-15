@@ -39,7 +39,7 @@ class CliTable
 
     public function enableFormattingTags(bool $value = true): self
     {
-        $this->enableFormattingTags = (bool) $value;
+        $this->enableFormattingTags = $value;
 
         return $this;
     }
@@ -53,7 +53,7 @@ class CliTable
 
     public function displayKeys(bool $value = true): self
     {
-        $this->displayKeys = (bool) $value;
+        $this->displayKeys = $value;
 
         return $this;
     }
@@ -127,7 +127,7 @@ class CliTable
 
         foreach($this->rows as $row)
         {
-            if(is_array($row) ||$row instanceof \Countable)
+            if(is_countable($row))
             {
                 $this->nbColumns = max($this->nbColumns, count($row));
             }

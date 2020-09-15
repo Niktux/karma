@@ -25,7 +25,7 @@ class ValueFilterIterator extends \FilterIterator
         $filter = $this->filterValue($filter);
 
         $this->isRegex = false;
-        if(stripos((string) $filter, self::FILTER_WILDCARD) !== false)
+        if(strpos((string) $filter, self::FILTER_WILDCARD) !== false)
         {
             $this->isRegex = true;
             $filter = $this->convertToRegex($filter);
