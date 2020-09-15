@@ -14,6 +14,9 @@ whalephant = $(DOCKER_RUN) --rm --name whalephant \
 docker/images/phpunit/Dockerfile: whalephant
 	$(call whalephant, docker/images/phpunit)
 
+docker/images/console/Dockerfile: whalephant
+	$(call whalephant, docker/images/console)
+
 whalephant:
 	$(eval LATEST_VERSION := $(shell curl -L -s -H 'Accept: application/json' https://github.com/niktux/whalephant/releases/latest | sed -e 's/.*"tag_name":"\([^"]*\)".*/\1/'))
 	@echo "Latest version of Whalephant is ${LATEST_VERSION}"
@@ -28,6 +31,8 @@ clean-whalephant: clean-generated-dockerfiles
 clean-generated-dockerfiles:
 	-rm -f docker/images/phpunit/Dockerfile
 	-rm -f docker/images/phpunit/php.ini
+	-rm -f docker/images/console/Dockerfile
+	-rm -f docker/images/console/php.ini
 
 #------------------------------------------------------------------------------
 

@@ -1,23 +1,23 @@
-# IDE files
+# Dev environment
 .settings/
 .buildpath
 .project
 .idea/
+php_errors.log
 
 # Composer files
 vendor/
 composer.phar
 composer.lock
 
-# Logs
-php_errors.log
-
-# Code coverage report
-report/
-
 # Generated file
+cache/
+report/
+.phpunit.result.cache
 docker/images/phpunit/Dockerfile
 docker/images/phpunit/php.ini
+docker/images/console/Dockerfile
+docker/images/console/php.ini
 
 # Test data
 env/
@@ -25,10 +25,9 @@ data/
 genEnv/
 genConfig/
 .karma
+.karma-hydrate
+.karma-generate
 src/.solidifier.yml
-
-# Cache
-cache/
 
 # Packaging
 php-composer.phar

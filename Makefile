@@ -14,6 +14,7 @@ export GROUP_ID
 
 include makefiles/executables.mk
 include makefiles/composer.mk
+include makefiles/console.mk
 include makefiles/phar.mk
 include makefiles/phpunit.mk
 include makefiles/whalephant.mk

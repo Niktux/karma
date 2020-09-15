@@ -16,21 +16,21 @@
         "MIT"
     ],
     "require" : {
-        "symfony/console" : "~2.8",
+        "symfony/console" : "~4.4",
         "pimple/pimple" : "~3.0",
-        "php" : ">=5.6",
-        "symfony/yaml" : "~2.8",
-        "knplabs/gaufrette" : "~0.2",
-        "cpliakas/git-wrapper" : "~1.2",
-        "psr/log" : "~1"
+        "php" : ">=7.4",
+        "symfony/yaml" : "~4.4",
+        "knplabs/gaufrette" : "~0.9",
+        "psr/log" : "~1.1"
     },
     "require-dev" : {
+        "roave/security-advisories": "dev-master",
         "ptrofimov/xpmock" : "1.1.5",
-        "phpunit/phpunit" : "~5.7"
+        "phpunit/phpunit" : "~9.3"
     },
     "autoload" : {
-        "psr-0" : {
-            "Karma" : "src"
+        "psr-4" : {
+            "Karma\\" : "src/"
         }
     },
     "support" : {
