@@ -20,7 +20,7 @@ use Pimple\Container;
 class Application extends Container
 {
     public const
-        VERSION = '7.4.0',
+        VERSION = '7.4.1',
         DEFAULT_DISTFILE_SUFFIX = '-dist',
         DEFAULT_CONF_DIRECTORY = 'env',
         DEFAULT_MASTER_FILE = 'master.conf',
