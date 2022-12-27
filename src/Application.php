@@ -8,7 +8,7 @@ use Karma\Configuration\Reader;
 use Karma\Configuration\Parser;
 use Gaufrette\Filesystem;
 use Gaufrette\Adapter\Local;
-use Gaufrette\Adapter\Cache;
+use Karma\Filesystem\Adapters\Cache;
 use Karma\FormatterProviders\ProfileProvider;
 use Karma\Generator\NameTranslators\FilePrefixTranslator;
 use Karma\Generator\VariableProvider;
