@@ -1,6 +1,6 @@
 name: karma-console
 php:
-    version: 7.4
+    version: "8.1"
 ini:
     - "error_reporting = E_ALL;"
     - "xdebug.var_display_max_depth = 5;"

@@ -393,7 +393,12 @@ class Hydrator implements ConfigurableProcessor
                     $replacementCounter++;
                     foreach($values as $value)
                     {
-                        $result[] = preg_replace(self::VARIABLE_REGEX, $formatter->format($value), $line, 1);
+                        $result[] = preg_replace(
+                            self::VARIABLE_REGEX,
+                            (string) $formatter->format($value),
+                            $line,
+                            1
+                        );
                     }
 
                     continue;

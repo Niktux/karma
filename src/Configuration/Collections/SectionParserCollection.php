@@ -92,6 +92,9 @@ class SectionParserCollection implements \IteratorAggregate
         return $this->parsers[$sectionName];
     }
 
+    /**
+     * @return SectionParser[]
+     */
     public function getIterator(): \Iterator
     {
         return new \ArrayIterator(

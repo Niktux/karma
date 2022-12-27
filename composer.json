@@ -18,7 +18,7 @@
     "require" : {
         "symfony/console" : "~4.4",
         "pimple/pimple" : "~3.0",
-        "php" : ">=7.4",
+        "php" : ">=8.1",
         "symfony/yaml" : "~4.4",
         "knplabs/gaufrette" : "~0.9",
         "psr/log" : "~1.1"
