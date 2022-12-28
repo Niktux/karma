@@ -4,7 +4,7 @@
 
 COMPOSER_VERSION?=latest
 
-composer = docker run -t -i --rm \
+composer = docker run -i --rm \
                 -v ${HOST_SOURCE_PATH}:/var/www/app \
                 -v ~/.cache/composer:/tmp/composer \
                 -e COMPOSER_CACHE_DIR=/tmp/composer \
