@@ -30,7 +30,7 @@ jobs:
           ${{ runner.os }}-php-
 
     - name: Install dependencies
-      run: make composer-install
+      run: make ga-composer-install
 
     - name: Run test suite
-      run: make phpunit
+      run: make ga-phpunit

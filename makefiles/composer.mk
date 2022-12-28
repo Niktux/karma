@@ -4,7 +4,7 @@
 
 COMPOSER_VERSION?=latest
 
-composer = docker run -i --rm \
+composer = docker run $3 -i --rm \
                 -v ${HOST_SOURCE_PATH}:/var/www/app \
                 -v ~/.cache/composer:/tmp/composer \
                 -e COMPOSER_CACHE_DIR=/tmp/composer \
@@ -32,19 +32,22 @@ composer-init:
 	mkdir -p ~/.cache/composer
 
 composer: composer-init ## Run composer
-	$(call composer, $(CLI_ARGS), $(COMPOSER_ARGS))
+	$(call composer, $(CLI_ARGS), $(COMPOSER_ARGS), -t)
 
 composer-install: composer-init
+	$(call composer, install, --ignore-platform-reqs, -t)
+
+ga-composer-install: composer-init
 	$(call composer, install, --ignore-platform-reqs)
 
 composer-install-no-dev: composer-init
-	$(call composer, install, --no-dev --ignore-platform-reqs)
+	$(call composer, install, --no-dev --ignore-platform-reqs, -t)
 
 composer-update: composer-init
-	$(call composer, update, --ignore-platform-reqs)
+	$(call composer, update, --ignore-platform-reqs, -t)
 
 composer-dumpautoload: composer-init
-	$(call composer, dumpautoload)
+	$(call composer, dumpautoload, -t)
 
 #------------------------------------------------------------------------------
 

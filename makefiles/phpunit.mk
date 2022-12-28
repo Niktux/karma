@@ -5,7 +5,7 @@
 PHPUNIT_IMAGE_NAME=karma/phpunit
 CONTAINER_SOURCE_PATH=/usr/src/karma
 
-phpunit = docker run -it --rm --name phpunit \
+phpunit = docker run -i $2 --rm --name phpunit \
 	                 -v ${HOST_SOURCE_PATH}:${CONTAINER_SOURCE_PATH} \
 	                 -w ${CONTAINER_SOURCE_PATH} \
 	                 -u ${USER_ID}:${GROUP_ID} \
@@ -21,10 +21,13 @@ endif
 #------------------------------------------------------------------------------
 
 phpunit: vendor/bin/phpunit create-phpunit-image ## Run unit tests
-	$(call phpunit, )
+	$(call phpunit, , -t)
+
+ga-phpunit: create-phpunit-image
+	$(call phpunit,)
 
 phpunit-coverage: vendor/bin/phpunit create-phpunit-image
-	$(call phpunit, --coverage-html=coverage/)
+	$(call phpunit, --coverage-html=coverage/, -t)
 
 vendor/bin/phpunit: composer-install
 
