@@ -9,6 +9,7 @@ require_once __DIR__ . '/CommandTestCase.php';
 use Gaufrette\Adapter\InMemory;
 use Karma\Application;
 use Karma\Generator\ConfigurationFileGenerators\YamlGenerator;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class GenerateTest extends CommandTestCase
 {
@@ -28,9 +29,7 @@ class GenerateTest extends CommandTestCase
         ]);
     }
 
-    /**
-     * @dataProvider providerTestOptions
-     */
+    #[DataProvider('providerTestOptions')]
     public function testOptions(string $option, string $expectedMethodCall): void
     {
         $mock = $this->createMock(YamlGenerator::class);
@@ -46,7 +45,7 @@ class GenerateTest extends CommandTestCase
         ]);
     }
 
-    public function providerTestOptions(): array
+    public static function providerTestOptions(): array
     {
         return [
             ['--dry-run', 'setDryRun'],

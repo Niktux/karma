@@ -4,13 +4,12 @@ declare(strict_types = 1);
 
 namespace Karma\Generator\NameTranslators;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class NullTranslatorTest extends TestCase
 {
-    /**
-     * @dataProvider providerTestTranslate
-     */
+    #[DataProvider('providerTestTranslate')]
     public function testTranslate(string $file, string $variable, string $expected): void
     {
         $t = new NullTranslator();
@@ -18,7 +17,7 @@ class NullTranslatorTest extends TestCase
         self::assertSame($expected, $t->translate($file, $variable));
     }
 
-    public function providerTestTranslate(): array
+    public static function providerTestTranslate(): array
     {
         return [
             ['master.conf', 'burger', 'burger'],

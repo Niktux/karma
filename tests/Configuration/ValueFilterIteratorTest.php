@@ -4,6 +4,7 @@ declare(strict_types = 1);
 
 namespace Karma\Configuration;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class ValueFilterIteratorTest extends TestCase
@@ -31,9 +32,7 @@ class ValueFilterIteratorTest extends TestCase
         ));
     }
 
-    /**
-     * @dataProvider providerTestFilter
-     */
+    #[DataProvider('providerTestFilter')]
     public function testFilter($filter, $expected): void
     {
         $it = new ValueFilterIterator($filter, $this->values);
@@ -41,7 +40,7 @@ class ValueFilterIteratorTest extends TestCase
         self::assertSame($expected, iterator_to_array($it));
     }
 
-    public function providerTestFilter(): array
+    public static function providerTestFilter(): array
     {
         return [
             ['root', [

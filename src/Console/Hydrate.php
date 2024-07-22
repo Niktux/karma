@@ -8,7 +8,7 @@ use Karma\ConfigurableProcessor;
 use Karma\Application;
 use Karma\Hydrator;
 
-class Hydrate extends ConfigureActionCommand
+final class Hydrate extends ConfigureActionCommand
 {
     public function __construct(Application $app)
     {

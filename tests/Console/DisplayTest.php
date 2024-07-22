@@ -4,13 +4,13 @@ declare(strict_types = 1);
 
 namespace Karma\Console;
 
+use PHPUnit\Framework\Attributes\DataProvider;
+
 require_once __DIR__ . '/CommandTestCase.php';
 
 class DisplayTest extends CommandTestCase
 {
-    /**
-     * @dataProvider providerTestDisplay
-     */
+    #[DataProvider('providerTestDisplay')]
     public function testDisplay(string $env): void
     {
         $this->runCommand('display', array('--env' => $env));
@@ -22,7 +22,7 @@ class DisplayTest extends CommandTestCase
         $this->assertDisplay("~$valueFoo~");
     }
 
-    public function providerTestDisplay(): array
+    public static function providerTestDisplay(): array
     {
         return [
             ['dev'],

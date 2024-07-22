@@ -7,6 +7,7 @@ namespace Karma\Configuration;
 use Karma\Configuration;
 use Gaufrette\Filesystem;
 use Gaufrette\Adapter\InMemory;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 require_once __DIR__ . '/ParserTestCase.php';
 
@@ -23,7 +24,7 @@ class ReaderTest extends ParserTestCase
         $this->reader = new Reader($variables, $this->parser->getExternalVariables());
     }
 
-    public function providerTestRead(): array
+    public static function providerTestRead(): array
     {
         return [
             // master.conf
@@ -105,17 +106,13 @@ class ReaderTest extends ParserTestCase
         ];
     }
 
-    /**
-     * @dataProvider providerTestRead
-     */
+    #[DataProvider('providerTestRead')]
     public function testRead(string $variable, string $environment, $expectedValue): void
     {
         self::assertSame($expectedValue, $this->reader->read($variable, $environment));
     }
 
-    /**
-     * @dataProvider providerTestRead
-     */
+    #[DataProvider('providerTestRead')]
     public function testReadWithDefaultEnvironment(string $variable, string $environment, $expectedValue): void
     {
         $this->reader->setDefaultEnvironment($environment);
@@ -123,9 +120,7 @@ class ReaderTest extends ParserTestCase
         self::assertSame($expectedValue, $this->reader->read($variable));
     }
 
-    /**
-     * @dataProvider providerTestReadNotFoundValue
-     */
+    #[DataProvider('providerTestReadNotFoundValue')]
     public function testReadNotFoundValue(string $variable, string $environment): void
     {
         $this->expectException(\RuntimeException::class);
@@ -133,7 +128,7 @@ class ReaderTest extends ParserTestCase
         $this->reader->read($variable, $environment);
     }
 
-    public function providerTestReadNotFoundValue(): array
+    public static function providerTestReadNotFoundValue(): array
     {
         return [
             ['thisvariabledoesnotexist', 'dev'],
@@ -152,9 +147,7 @@ class ReaderTest extends ParserTestCase
         self::assertSame($expected, $variables);
     }
 
-    /**
-     * @dataProvider providerTestGetAllValuesForEnvironment
-     */
+    #[DataProvider('providerTestGetAllValuesForEnvironment')]
     public function testGetAllValuesForEnvironment(string $environment, array $expectedValues): void
     {
         $variables = $this->reader->getAllValuesForEnvironment($environment);
@@ -172,7 +165,7 @@ class ReaderTest extends ParserTestCase
         }
     }
 
-    public function providerTestGetAllValuesForEnvironment(): array
+    public static function providerTestGetAllValuesForEnvironment(): array
     {
         return [
             ['dev', [
@@ -208,9 +201,7 @@ class ReaderTest extends ParserTestCase
         ];
     }
 
-    /**
-     * @dataProvider providerTestDiff
-     */
+    #[DataProvider('providerTestDiff')]
     public function testDiff(string $environment1, string $environment2, array $expectedDiff): void
     {
         $diff = $this->reader->compareEnvironments($environment1, $environment2);
@@ -218,7 +209,7 @@ class ReaderTest extends ParserTestCase
         self::assertSame($expectedDiff, $diff);
     }
 
-    public function providerTestDiff(): array
+    public static function providerTestDiff(): array
     {
         return [
             ['dev', 'prod', [
@@ -307,9 +298,7 @@ CONFFILE;
         }
     }
 
-    /**
-     * @dataProvider providerTestExternalError
-     */
+    #[DataProvider('providerTestExternalError')]
     public function testExternalError(string $contentMaster): void
     {
         $this->expectException(\RuntimeException::class);
@@ -333,7 +322,7 @@ CONFFILE
         $reader->read('toto', 'prod');
     }
 
-    public function providerTestExternalError(): array
+    public static function providerTestExternalError(): array
     {
         return [
             'external variable without any external file' => [<<<CONFFILE
@@ -703,15 +692,13 @@ CONFFILE;
         self::assertSame('success', $reader->read('db.pass', 'staging'));
     }
 
-    /**
-     * @dataProvider providerTestIsSystem
-     */
+    #[DataProvider('providerTestIsSystem')]
     public function testIsSystem(string $variable, bool $expected): void
     {
         self::assertSame($expected, $this->reader->isSystem($variable));
     }
 
-    public function providerTestIsSystem(): array
+    public static function providerTestIsSystem(): array
     {
         return [
             ['gourdin', true],

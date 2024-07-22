@@ -4,13 +4,12 @@ declare(strict_types = 1);
 
 namespace Karma\Generator\NameTranslators;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class FilePrefixTranslatorTest extends TestCase
 {
-    /**
-     * @dataProvider providerTestTranslate
-     */
+    #[DataProvider('providerTestTranslate')]
     public function testTranslate(string $file, string $variable, string $expected): void
     {
         $t = new FilePrefixTranslator();
@@ -18,7 +17,7 @@ class FilePrefixTranslatorTest extends TestCase
         self::assertSame($expected, $t->translate($file, $variable));
     }
 
-    public function providerTestTranslate(): array
+    public static function providerTestTranslate(): array
     {
         return [
             // no prefix for master.conf
@@ -40,9 +39,7 @@ class FilePrefixTranslatorTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider providerTestTranslateWithDifferentMasterFile
-     */
+    #[DataProvider('providerTestTranslateWithDifferentMasterFile')]
     public function testTranslateWithDifferentMasterFile(string $file, string $variable, string $expected): void
     {
         $t = new FilePrefixTranslator();
@@ -51,7 +48,7 @@ class FilePrefixTranslatorTest extends TestCase
         self::assertSame($expected, $t->translate($file, $variable));
     }
 
-    public function providerTestTranslateWithDifferentMasterFile(): array
+    public static function providerTestTranslateWithDifferentMasterFile(): array
     {
         return [
             // no prefix for master.conf
@@ -73,9 +70,7 @@ class FilePrefixTranslatorTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider providerTestTranslateWithPrefixForMasterFile
-     */
+    #[DataProvider('providerTestTranslateWithPrefixForMasterFile')]
     public function testTranslateWithPrefixForMasterFile(string $file, string $variable, string $expected): void
     {
         $t = new FilePrefixTranslator();
@@ -84,7 +79,7 @@ class FilePrefixTranslatorTest extends TestCase
         self::assertSame($expected, $t->translate($file, $variable));
     }
 
-    public function providerTestTranslateWithPrefixForMasterFile(): array
+    public static function providerTestTranslateWithPrefixForMasterFile(): array
     {
         return [
             // no prefix for master.conf

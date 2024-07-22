@@ -8,6 +8,7 @@ use Karma\ProfileReader;
 use Gaufrette\Filesystem;
 use Gaufrette\Adapter\InMemory;
 use Karma\Application;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class ProfileProviderTest extends TestCase
@@ -48,9 +49,7 @@ YAML;
         self::assertSame($provider->getFormatter($fileExtension), $provider->getFormatter($fileExtension, 'yaml'));
     }
 
-    /**
-     * @dataProvider providerTestFormatterSyntaxError
-     */
+    #[DataProvider('providerTestFormatterSyntaxError')]
     public function testFormatterSyntaxError(string $yaml): void
     {
         $this->expectException(\InvalidArgumentException::class);
@@ -58,7 +57,7 @@ YAML;
         $this->buildProvider($yaml);
     }
 
-    public function providerTestFormatterSyntaxError(): array
+    public static function providerTestFormatterSyntaxError(): array
     {
         return [
             [<<<YAML

@@ -9,18 +9,23 @@ use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Xpmock\TestCaseTrait;
 
+final class Output
+{
+    use OutputAware;
+}
+
 class OutputAwareTest extends TestCase
 {
     use TestCaseTrait;
 
     private BufferedOutput
         $buffer;
-    private
+    private Output
         $output;
 
     protected function setUp(): void
     {
-        $this->output = $this->getObjectForTrait('\Karma\Logging\OutputAware');
+        $this->output = new Output();
 
         $this->buffer = new BufferedOutput();
         $this->buffer->setVerbosity(OutputInterface::VERBOSITY_NORMAL);

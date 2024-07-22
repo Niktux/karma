@@ -10,6 +10,8 @@ use Karma\Configuration\InMemoryReader;
 use Karma\FormatterProviders\NullProvider;
 use Karma\FormatterProviders\CallbackProvider;
 use Karma\Formatters\Rules;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\TestCase;
 
 class HydratorTest extends TestCase
@@ -44,9 +46,7 @@ class HydratorTest extends TestCase
         $this->hydrator->setSuffix('-dist');
     }
 
-    /**
-     * @dataProvider providerTestSimple
-     */
+    #[DataProvider('providerTestSimple')]
     public function testSimple(string $environment, string $expectedBValue, string $expectedFValue): void
     {
         $this->write('a.php');
@@ -76,9 +76,7 @@ class HydratorTest extends TestCase
         $this->assertTargetContent($expectedFValue, 'f.php');
     }
     
-    /**
-     * @dataProvider providerTestSimple
-     */
+    #[DataProvider('providerTestSimple')]
     public function testSimpleWithoutTarget(string $environment, string  $expectedBValue, string $expectedFValue): void
     {
         $this->targetFs = $this->sourceFs;
@@ -111,7 +109,7 @@ class HydratorTest extends TestCase
         $this->assertTargetContent($expectedFValue, 'f.php');
     }
 
-    public function providerTestSimple(): array
+    public static function providerTestSimple(): array
     {
         return [
             ['dev', '42', 'root'],
@@ -459,9 +457,7 @@ FILE
         $this->hydrator->hydrate('dev');
     }
 
-    /**
-     * @dataProvider providerTestList
-     */
+    #[DataProvider('providerTestList')]
     public function testList(string $env, string $expected): void
     {
         $reader = new InMemoryReader([
@@ -482,7 +478,7 @@ YAML
         $this->assertTargetContent($expected, 'a.yml');
     }
 
-    public function providerTestList(): array
+    public static function providerTestList(): array
     {
         return [
             ['dev', <<< YAML
@@ -584,9 +580,7 @@ TXT;
         $this->assertTargetContent($expected, 'a.txt');
     }
 
-    /**
-     * @dataProvider providerTestListEndOfLine
-     */
+    #[DataProvider('providerTestListEndOfLine')]
     public function testListEndOfLine(string $content, string $expected): void
     {
         $reader = new InMemoryReader([
@@ -601,7 +595,7 @@ TXT;
         $this->assertTargetContent($expected, 'a.txt');
     }
 
-    public function providerTestListEndOfLine(): array
+    public static function providerTestListEndOfLine(): array
     {
         return [
             "unix"    => ["line:\n - var=<%var%>\nend", "line:\n - var=42\n - var=51\nend"],
@@ -610,9 +604,7 @@ TXT;
         ];
     }
 
-    /**
-     * @dataProvider providerTestListDirective
-     */
+    #[DataProvider('providerTestListDirective')]
     public function testListDirective(string $content, string $env, string $expected): void
     {
         $reader = new InMemoryReader([
@@ -632,7 +624,7 @@ TXT;
         $this->assertTargetContent($expected, 'a');
     }
 
-    public function providerTestListDirective(): array
+    public static function providerTestListDirective(): array
     {
         // nominal case
         $contentA = 'items = [ <% karma:list var=items delimiter=", " %> ];';
@@ -768,9 +760,7 @@ TXT;
         ];
     }
 
-    /**
-     * @dataProvider providerTestListDirectiveSyntaxError
-     */
+    #[DataProvider('providerTestListDirectiveSyntaxError')]
     public function testListDirectiveSyntaxError(string $content): void
     {
         $this->expectException(\RuntimeException::class);
@@ -779,7 +769,7 @@ TXT;
         $this->hydrator->hydrate('dev');
     }
 
-    public function providerTestListDirectiveSyntaxError(): array
+    public static function providerTestListDirectiveSyntaxError(): array
     {
         return [
             'missing var' => ['<% karma:list %>'],
@@ -844,9 +834,7 @@ FILE
         $this->assertTargetContent('poney = licorne', 'a');
     }
 
-    /**
-     * @dataProvider providerTestHydrateWithADifferentSystemEnvironment
-     */
+    #[DataProvider('providerTestHydrateWithADifferentSystemEnvironment')]
     public function testHydrateWithADifferentSystemEnvironment(string $env, string $systemEnv, string $expectedA, string $expectedList, string $expectedDirective): void
     {
         $reader = new InMemoryReader([
@@ -875,7 +863,7 @@ FILE
         $this->assertTargetContent($expectedDirective, 'directive');
     }
 
-    public function providerTestHydrateWithADifferentSystemEnvironment(): array
+    public static function providerTestHydrateWithADifferentSystemEnvironment(): array
     {
         $dev = "d\ne\nv";
         $sta = "s\nt\na";
@@ -888,9 +876,7 @@ FILE
         ];
     }
     
-    /**
-     * @group nested
-     */
+    #[Group('nested')]
     public function testNestedVariables(): void
     {
         $this->expectException(\RuntimeException::class);

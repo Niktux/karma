@@ -34,6 +34,9 @@ vendor/bin/phpunit: composer-install
 create-phpunit-image: docker/images/phpunit/Dockerfile
 	docker build -q -t ${PHPUNIT_IMAGE_NAME} docker/images/phpunit/
 
+phpunit-migrate-configuration:
+	$(call phpunit, --migrate-configuration, -t)
+
 #------------------------------------------------------------------------------
 
 clean-phpunit:

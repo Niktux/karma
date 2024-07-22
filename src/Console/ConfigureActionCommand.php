@@ -142,6 +142,7 @@ abstract class ConfigureActionCommand extends Command
         $this->processOverriddenVariables(
             $this->parseOptionWithAssignments($input, 'override')
         );
+
         $this->processCustomData(
             $this->parseOptionWithAssignments($input, 'data')
         );

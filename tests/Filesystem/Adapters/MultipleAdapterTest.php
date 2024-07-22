@@ -6,6 +6,7 @@ namespace Karma\Filesystem\Adapters;
 
 use Gaufrette\Adapter;
 use Gaufrette\Adapter\InMemory;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class MultipleAdapterTest extends TestCase
@@ -42,9 +43,7 @@ class MultipleAdapterTest extends TestCase
         self::assertTrue($this->multiple->exists('tmp/test'), 'tmp/test should exist');
     }
     
-    /**
-     * @dataProvider providerAllFiles
-     */
+    #[DataProvider('providerAllFiles')]
     public function testRead(string $adapterName, string $expectedPath, string $testedPath): void
     {
         $adapter = $adapterName === 'src' ? $this->src : $this->lib;
@@ -62,7 +61,7 @@ class MultipleAdapterTest extends TestCase
         }
     }
     
-    public function providerAllFiles(): array
+    public static function providerAllFiles(): array
     {
         return [
             ['src', 'wildHorses', 'src/wildHorses'],
@@ -93,9 +92,7 @@ class MultipleAdapterTest extends TestCase
         self::assertSame($content, $this->lib->read('reply'));
     }
     
-    /**
-     * @dataProvider providerAllFiles
-     */
+    #[DataProvider('providerAllFiles')]
     public function testExists(string $adapterName, string $expectedPath, string $testedPath): void
     {
         $adapter = $adapterName === 'src' ? $this->src : $this->lib;
@@ -122,9 +119,7 @@ class MultipleAdapterTest extends TestCase
         }
     }
     
-    /**
-     * @dataProvider providerAllFiles
-     */
+    #[DataProvider('providerAllFiles')]
     public function testMtime(string $adapterName, string $expectedPath, string $testedPath): void
     {
         $adapter = $adapterName === 'src' ? $this->src : $this->lib;
@@ -160,9 +155,7 @@ class MultipleAdapterTest extends TestCase
         $this->multiple->rename('a', 'b');
     }
     
-    /**
-     * @dataProvider providerAllFiles
-     */
+    #[DataProvider('providerAllFiles')]
     public function testIsDirectory(string $adapterName, string $expectedPath, string $testedPath): void
     {
         $adapter = $adapterName === 'src' ? $this->src : $this->lib;

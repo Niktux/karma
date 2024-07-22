@@ -6,6 +6,7 @@ namespace Karma\Filesystem\Adapters;
 
 use Gaufrette\Adapter;
 use Gaufrette\Adapter\InMemory;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class SingleLocalFileTest extends TestCase
@@ -32,15 +33,13 @@ class SingleLocalFileTest extends TestCase
         $this->singleLocalFile = new SingleLocalFile(self::FILENAME, $this->src);
     }
 
-    /**
-     * @dataProvider providerTestRead
-     */
+    #[DataProvider('providerTestRead')]
     public function testRead(string $key, $expected): void
     {
         self::assertSame($expected, $this->singleLocalFile->read($key));
     }
 
-    public function providerTestRead(): array
+    public static function providerTestRead(): array
     {
         return [
             [self::FILENAME, self::CONTENT],
@@ -52,9 +51,7 @@ class SingleLocalFileTest extends TestCase
         ];
     }
 
-    /**
-    * @dataProvider providerTestWrite
-    */
+    #[DataProvider('providerTestWrite')]
     public function testWrite(string $key, $expected): void
     {
         $content = 'burger';
@@ -71,7 +68,7 @@ class SingleLocalFileTest extends TestCase
         self::assertFalse($this->singleLocalFile->read($key));
     }
 
-    public function providerTestWrite(): array
+    public static function providerTestWrite(): array
     {
         return [
             ['newFile', true],
@@ -79,9 +76,7 @@ class SingleLocalFileTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider providerTestRead
-     */
+    #[DataProvider('providerTestRead')]
     public function testExists(string $key, $expected): void
     {
         self::assertSame(
@@ -109,9 +104,7 @@ class SingleLocalFileTest extends TestCase
         self::assertFalse($this->singleLocalFile->mtime('fileInSameDir'));
     }
 
-    /**
-     * @dataProvider providerFileList
-     */
+    #[DataProvider('providerFileList')]
     public function testDelete(string $key): void
     {
         $this->expectException(\RuntimeException::class);
@@ -126,15 +119,13 @@ class SingleLocalFileTest extends TestCase
         $this->singleLocalFile->rename(self::FILENAME, 'renamed');
     }
 
-    /**
-     * @dataProvider providerFileList
-     */
+    #[DataProvider('providerFileList')]
     public function testIsDirectory(string $key): void
     {
         self::assertFalse($this->singleLocalFile->isDirectory($key));
     }
 
-    public function providerFileList(): array
+    public static function providerFileList(): array
     {
         return [
             [self::FILEPATH],

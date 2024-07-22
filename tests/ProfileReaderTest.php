@@ -6,6 +6,7 @@ namespace Karma;
 
 use Gaufrette\Filesystem;
 use Gaufrette\Adapter\InMemory;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class ProfileReaderTest extends TestCase
@@ -26,9 +27,7 @@ class ProfileReaderTest extends TestCase
         );
     }
 
-    /**
-     * @dataProvider providerTestEmpty
-     */
+    #[DataProvider('providerTestEmpty')]
     public function testEmpty(?string $yaml, ?string $profileFilename): void
     {
         $reader = $this->buildReader($yaml, $profileFilename);
@@ -43,7 +42,7 @@ class ProfileReaderTest extends TestCase
         self::assertNull($reader->getConfigurationDirectory());
     }
 
-    public function providerTestEmpty(): array
+    public static function providerTestEmpty(): array
     {
         return [
             'no profile' => [null, null],
