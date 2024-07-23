@@ -8,7 +8,7 @@ use Karma\ConfigurableProcessor;
 
 interface ConfigurationFileGenerator extends ConfigurableProcessor
 {
-    public const
+    public const string
         DELIMITER = '.';
 
     public function generate(string $environment): void;

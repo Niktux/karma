@@ -21,7 +21,7 @@ class ReaderTest extends ParserTestCase
         parent::setUp();
 
         $variables = $this->parser->parse(self::MASTERFILE_PATH);
-        $this->reader = new Reader($variables, $this->parser->getExternalVariables());
+        $this->reader = new Reader($variables, $this->parser->externalVariables());
     }
 
     public static function providerTestRead(): array
@@ -138,7 +138,7 @@ class ReaderTest extends ParserTestCase
 
     public function testGetAllVariables(): void
     {
-        $variables = $this->reader->getAllVariables();
+        $variables = $this->reader->allVariables();
         sort($variables);
 
         $expected = ['print_errors', 'debug', 'gourdin', 'server', 'tva', 'apiKey', 'my.var.with.subnames', 'param', 'user', 'list.ok', 'list.notlist', 'variable-name-with-dashes', 'redis_prefix'];
@@ -150,7 +150,7 @@ class ReaderTest extends ParserTestCase
     #[DataProvider('providerTestGetAllValuesForEnvironment')]
     public function testGetAllValuesForEnvironment(string $environment, array $expectedValues): void
     {
-        $variables = $this->reader->getAllValuesForEnvironment($environment);
+        $variables = $this->reader->allValuesForEnvironment($environment);
         self::assertIsArray($variables);
 
         $keys = array_keys($variables);
@@ -274,7 +274,7 @@ CONFFILE;
             ->enableExternalSupport()
             ->parse(self::MASTERFILE_PATH);
 
-        $reader = new Reader($variables, $parser->getExternalVariables());
+        $reader = new Reader($variables, $parser->externalVariables());
 
         $expected = [
             'db.pass' => [
@@ -318,7 +318,7 @@ CONFFILE
             ->enableExternalSupport();
 
         $variables = $parser->parse(self::MASTERFILE_PATH);
-        $reader = new Reader($variables, $parser->getExternalVariables());
+        $reader = new Reader($variables, $parser->externalVariables());
         $reader->read('toto', 'prod');
     }
 
@@ -389,7 +389,7 @@ CONFFILE;
             ->enableExternalSupport();
 
         $variables = $parser->parse(self::MASTERFILE_PATH);
-        $reader = new Reader($variables, $parser->getExternalVariables());
+        $reader = new Reader($variables, $parser->externalVariables());
         $reader->read('v1', 'prod');
     }
 
@@ -535,7 +535,7 @@ CONFFILE;
             ->enableGroupSupport();
 
         $variables = $parser->parse(self::MASTERFILE_PATH);
-        $reader = new Reader($variables, $parser->getExternalVariables(), $parser->getGroups());
+        $reader = new Reader($variables, $parser->externalVariables(), $parser->groups());
 
         $expected = [
             'db.pass' => [
@@ -595,7 +595,7 @@ CONFFILE;
             ->enableGroupSupport();
 
         $variables = $parser->parse(self::MASTERFILE_PATH);
-        $reader = new Reader($variables, $parser->getExternalVariables(), $parser->getGroups());
+        $reader = new Reader($variables, $parser->externalVariables(), $parser->groups());
         $reader->read('db.pass', 'qa');
     }
 
@@ -620,7 +620,7 @@ CONFFILE;
             ->enableGroupSupport();
 
         $variables = $parser->parse(self::MASTERFILE_PATH);
-        $reader = new Reader($variables, $parser->getExternalVariables(), $parser->getGroups(), $parser->getDefaultEnvironmentsForGroups());
+        $reader = new Reader($variables, $parser->externalVariables(), $parser->groups(), $parser->defaultEnvironmentsForGroups());
         self::assertSame($reader->read('db.pass', 'qa'), $reader->read('db.pass', 'staging'));
     }
 
@@ -651,7 +651,7 @@ CONFFILE;
             ->enableGroupSupport();
 
         $variables = $parser->parse(self::MASTERFILE_PATH);
-        $reader = new Reader($variables, $parser->getExternalVariables(), $parser->getGroups());
+        $reader = new Reader($variables, $parser->externalVariables(), $parser->groups());
 
         self::assertSame('password', $reader->read('db.pass', 'staging'));
     }
@@ -687,7 +687,7 @@ CONFFILE;
             ->enableGroupSupport();
 
         $variables = $parser->parse(self::MASTERFILE_PATH);
-        $reader = new Reader($variables, $parser->getExternalVariables(), $parser->getGroups());
+        $reader = new Reader($variables, $parser->externalVariables(), $parser->groups());
 
         self::assertSame('success', $reader->read('db.pass', 'staging'));
     }

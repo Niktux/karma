@@ -11,7 +11,7 @@ trait LoggerAware
     private LoggerInterface
         $logger;
 
-    public function setLogger(LoggerInterface $logger)
+    public function setLogger(LoggerInterface $logger): static
     {
         $this->logger = $logger;
 

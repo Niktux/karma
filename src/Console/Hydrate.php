@@ -20,7 +20,7 @@ final class Hydrate extends ConfigureActionCommand
         );
     }
 
-    protected function getProcessor(): ConfigurableProcessor
+    protected function processor(): ConfigurableProcessor
     {
         return $this->app['hydrator'];
     }
@@ -37,7 +37,7 @@ final class Hydrate extends ConfigureActionCommand
 
     private function warnForUnusedVariables(Hydrator $processor): void
     {
-        $unusedVariables = $processor->getUnusedVariables();
+        $unusedVariables = $processor->unusedVariables();
 
         if(! empty($unusedVariables))
         {
@@ -54,7 +54,7 @@ final class Hydrate extends ConfigureActionCommand
 
     private function warnForUnvaluedVariables(Hydrator $processor): void
     {
-        $unvaluedVariables = $processor->getUnvaluedVariables();
+        $unvaluedVariables = $processor->unvaluedVariables();
 
         if(! empty($unvaluedVariables))
         {

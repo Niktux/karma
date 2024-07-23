@@ -6,7 +6,7 @@ namespace Karma\Configuration\Parser;
 
 abstract class AbstractSectionParser implements SectionParser
 {
-    private const
+    private const string
         COMMENT_CHARACTER = '#';
 
     protected ?string

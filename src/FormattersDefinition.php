@@ -6,10 +6,10 @@ namespace Karma;
 
 interface FormattersDefinition
 {
-    public const
+    public const string
         DEFAULT_FORMATTER_NAME = 'default';
 
-    public function getDefaultFormatterName(): ?string;
-    public function getFormatters();
-    public function getFileExtensionFormatters();
+    public function defaultFormatterName(): ?string;
+    public function formatters();
+    public function fileExtensionFormatters();
 }

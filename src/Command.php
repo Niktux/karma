@@ -11,7 +11,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Karma\Logging\OutputInterfaceAdapter;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 
-class Command extends \Symfony\Component\Console\Command\Command
+abstract class Command extends \Symfony\Component\Console\Command\Command
 {
     use OutputAware;
 
@@ -41,19 +41,19 @@ class Command extends \Symfony\Component\Console\Command\Command
         $confDir = Application::DEFAULT_CONF_DIRECTORY;
         if($profile->hasConfigurationDirectory())
         {
-            $confDir = $profile->getConfigurationDirectory();
+            $confDir = $profile->configurationDirectory();
         }
 
         $masterFile = Application::DEFAULT_MASTER_FILE;
         if($profile->hasMasterFilename())
         {
-            $masterFile = $profile->getMasterFilename();
+            $masterFile = $profile->masterFilename();
         }
 
         $suffix = Application::DEFAULT_DISTFILE_SUFFIX;
         if($profile->hasTemplatesSuffix())
         {
-            $suffix = $profile->getTemplatesSuffix();
+            $suffix = $profile->templatesSuffix();
         }
 
         $this->app['configuration.path']       = $confDir;

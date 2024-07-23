@@ -6,9 +6,9 @@ namespace Karma\Formatters;
 
 use Karma\Formatter;
 
-class Raw implements Formatter
+final readonly class Raw implements Formatter
 {
-    public function format($value)
+    public function format(mixed $value): mixed
     {
         return $value;
     }    

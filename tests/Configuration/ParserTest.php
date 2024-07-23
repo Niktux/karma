@@ -477,7 +477,7 @@ CONFFILE;
             }
         }
 
-        $groups = $parser->getGroups();
+        $groups = $parser->groups();
 
         $expected = [
             'dev' => ['dev1', 'dev2', 'dev3'],
@@ -523,7 +523,7 @@ CONFFILE;
             ->enableGroupSupport()
             ->parse(self::MASTERFILE_PATH);
 
-        $groups = $parser->getGroups();
+        $groups = $parser->groups();
         $expected = [
             'dev' => ['dev1', 'dev2', 'dev3'],
             'qa' => ['staging', 'preprod'],
@@ -532,7 +532,7 @@ CONFFILE;
 
         $this->assertSameArraysExceptOrder($expected, $groups);
 
-        $envs = $parser->getDefaultEnvironmentsForGroups();
+        $envs = $parser->defaultEnvironmentsForGroups();
         $expected = [
             'dev' => 'dev2',
             'qa' => 'staging',

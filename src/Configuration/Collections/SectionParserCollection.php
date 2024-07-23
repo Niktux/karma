@@ -12,9 +12,9 @@ use Karma\Configuration\Parser\GroupParser;
 use Karma\Configuration\Parser\IncludeParser;
 use Karma\Configuration\Parser\VariableParser;
 
-class SectionParserCollection implements \IteratorAggregate
+final class SectionParserCollection implements \IteratorAggregate
 {
-    private const
+    private const string
         VARIABLES = 'variables',
         INCLUDES = 'includes',
         EXTERNALS = 'externals',

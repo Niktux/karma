@@ -6,7 +6,7 @@ namespace Karma\Configuration\Parser;
 
 use Karma\Configuration\Parser;
 
-class ExternalParser extends AbstractSectionParser
+final class ExternalParser extends AbstractSectionParser
 {
     private Parser
         $parser;
@@ -28,7 +28,7 @@ class ExternalParser extends AbstractSectionParser
         $file = trim($line);
 
         $found = false;
-        if($this->parser->getFileSystem()->has($file))
+        if($this->parser->fileSystem()->has($file))
         {
             $found = true;
             $this->variables = $this->parser->parse($file);
@@ -40,12 +40,12 @@ class ExternalParser extends AbstractSectionParser
         ];
     }
 
-    public function getExternalVariables(): array
+    public function externalVariables(): array
     {
         return $this->variables;
     }
 
-    public function getExternalFilesStatus(): array
+    public function externalFilesStatus(): array
     {
         return $this->filesStatus;
     }

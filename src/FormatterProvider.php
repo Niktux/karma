@@ -8,5 +8,5 @@ interface FormatterProvider
 {
     public function hasFormatter(?string $index): bool;
 
-    public function getFormatter(?string $fileExtension, ?string $index = null): Formatter;
+    public function formatter(?string $fileExtension, ?string $index = null): Formatter;
 }

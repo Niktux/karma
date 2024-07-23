@@ -33,13 +33,13 @@ class ProfileReaderTest extends TestCase
         $reader = $this->buildReader($yaml, $profileFilename);
 
         self::assertFalse($reader->hasTemplatesSuffix());
-        self::assertNull($reader->getTemplatesSuffix());
+        self::assertNull($reader->templatesSuffix());
 
         self::assertFalse($reader->hasMasterFilename());
-        self::assertNull($reader->getMasterFilename());
+        self::assertNull($reader->masterFilename());
 
         self::assertFalse($reader->hasConfigurationDirectory());
-        self::assertNull($reader->getConfigurationDirectory());
+        self::assertNull($reader->configurationDirectory());
     }
 
     public static function providerTestEmpty(): array
@@ -61,13 +61,13 @@ YAML;
         $reader = $this->buildReader($yaml);
 
         self::assertFalse($reader->hasTemplatesSuffix());
-        self::assertNull($reader->getTemplatesSuffix());
+        self::assertNull($reader->templatesSuffix());
 
         self::assertTrue($reader->hasMasterFilename());
-        self::assertSame('othermaster.conf', $reader->getMasterFilename());
+        self::assertSame('othermaster.conf', $reader->masterFilename());
 
         self::assertFalse($reader->hasConfigurationDirectory());
-        self::assertNull($reader->getConfigurationDirectory());
+        self::assertNull($reader->configurationDirectory());
     }
 
     public function testSuffixOnly(): void
@@ -79,13 +79,13 @@ YAML;
         $reader = $this->buildReader($yaml);
 
         self::assertTrue($reader->hasTemplatesSuffix());
-        self::assertSame('-tpl', $reader->getTemplatesSuffix());
+        self::assertSame('-tpl', $reader->templatesSuffix());
 
         self::assertFalse($reader->hasMasterFilename());
-        self::assertNull($reader->getMasterFilename());
+        self::assertNull($reader->masterFilename());
 
         self::assertFalse($reader->hasConfigurationDirectory());
-        self::assertNull($reader->getConfigurationDirectory());
+        self::assertNull($reader->configurationDirectory());
     }
 
     public function testFullProfile(): void
@@ -103,21 +103,21 @@ YAML;
         $reader = $this->buildReader($yaml);
 
         self::assertTrue($reader->hasTemplatesSuffix());
-        self::assertSame('-tpl', $reader->getTemplatesSuffix());
+        self::assertSame('-tpl', $reader->templatesSuffix());
 
         self::assertTrue($reader->hasMasterFilename());
-        self::assertSame('othermaster.conf', $reader->getMasterFilename());
+        self::assertSame('othermaster.conf', $reader->masterFilename());
 
         self::assertTrue($reader->hasConfigurationDirectory());
-        self::assertSame('env2/', $reader->getConfigurationDirectory());
+        self::assertSame('env2/', $reader->configurationDirectory());
 
         self::assertTrue($reader->hasSourcePath());
-        self::assertSame('lib/', $reader->getSourcePath());
+        self::assertSame('lib/', $reader->sourcePath());
 
         self::assertTrue($reader->hasTargetPath());
-        self::assertSame('target/', $reader->getTargetPath());
+        self::assertSame('target/', $reader->targetPath());
 
-        self::assertSame(['translator' => 'prefix'], $reader->getGeneratorOptions());
+        self::assertSame(['translator' => 'prefix'], $reader->generatorOptions());
     }
 
     public function testSourcePathAsArray(): void
@@ -137,7 +137,7 @@ YAML;
         $reader = $this->buildReader($yaml);
 
         self::assertTrue($reader->hasSourcePath());
-        $srcPath = $reader->getSourcePath();
+        $srcPath = $reader->sourcePath();
         self::assertIsArray($srcPath);
         self::assertCount(3, $srcPath);
         
@@ -145,7 +145,7 @@ YAML;
         self::assertContains('config/', $srcPath);
         self::assertContains('settings/', $srcPath);
 
-        self::assertSame(array('translator' => 'prefix'), $reader->getGeneratorOptions());
+        self::assertSame(array('translator' => 'prefix'), $reader->generatorOptions());
     }
 
     public function testSyntaxError(): void
@@ -197,8 +197,8 @@ YAML
         self::assertFalse($reader->hasConfigurationDirectory(), 'confDir must only allow strings');
         self::assertTrue($reader->hasSourcePath(), 'sourcePath must allow both strings and arrays');
 
-        self::assertIsNotArray($reader->getDefaultFormatterName(), 'Default formatter must only allow strings');
+        self::assertIsNotArray($reader->defaultFormatterName(), 'Default formatter must only allow strings');
 
-        self::assertIsArray($reader->getFileExtensionFormatters());
+        self::assertIsArray($reader->fileExtensionFormatters());
     }
 }

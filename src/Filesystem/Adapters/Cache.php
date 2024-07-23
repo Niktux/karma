@@ -8,7 +8,7 @@ use Gaufrette\Adapter;
 use Gaufrette\Adapter\MetadataSupporter;
 use Gaufrette\Adapter\InMemory;
 
-class Cache implements Adapter, MetadataSupporter
+final class Cache implements Adapter, MetadataSupporter
 {
     protected Adapter
         $source,

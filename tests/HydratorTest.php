@@ -193,7 +193,7 @@ class HydratorTest extends TestCase
         $this->hydrator
             ->hydrate('dev');
 
-        $unusedVariables = $this->hydrator->getUnusedVariables();
+        $unusedVariables = $this->hydrator->unusedVariables();
 
         self::assertContains('db.user', $unusedVariables);
         self::assertContains('bool', $unusedVariables);
@@ -439,7 +439,7 @@ FILE
         );
 
         $this->hydrator->hydrate('dev');
-        $unvaluedVariables = $this->hydrator->getUnvaluedVariables();
+        $unvaluedVariables = $this->hydrator->unvaluedVariables();
 
         self::assertCount(1, $unvaluedVariables);
         self::assertContains('todo', $unvaluedVariables);

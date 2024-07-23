@@ -11,7 +11,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Karma\Application;
 use Karma\Command;
 
-class Rollback extends Command
+final class Rollback extends Command
 {
     private bool
         $dryRun;
@@ -58,7 +58,7 @@ class Rollback extends Command
                 throw new \RuntimeException('Missing argument sourcePath');
             }
 
-            $sourcePath = $profile->getSourcePath();
+            $sourcePath = $profile->sourcePath();
         }
 
         $this->output->writeln(sprintf(

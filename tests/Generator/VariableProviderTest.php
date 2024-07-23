@@ -74,7 +74,7 @@ CONFFILE;
     public function testGetAllVariables(NameTranslator $translator, array $expected): void
     {
         $this->provider->setNameTranslator($translator);
-        $variables = $this->provider->getAllVariables();
+        $variables = $this->provider->allVariables();
 
         $this->assertSameArraysExceptOrder($expected, $variables);
     }

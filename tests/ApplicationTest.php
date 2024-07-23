@@ -25,11 +25,16 @@ class ApplicationTest extends TestCase
     public static function providerTestContainer(): array
     {
         return [
-            ['hydrator', Hydrator::class],
-            ['parser', Configuration\Parser::class],
-            ['configuration', Configuration::class],
-            ['finder', Finder::class],
-            ['configurationFilesGenerator', Generator\ConfigurationFileGenerator::class],
+           'hydrator' =>
+               ['hydrator', Hydrator::class],
+           'parser' =>
+               ['parser', Configuration\Parser::class],
+           'config' =>
+               ['configuration', Configuration::class],
+           'finder' =>
+               ['finder', Finder::class],
+           'configFileGen' =>
+               ['configurationFilesGenerator', Generator\ConfigurationFileGenerator::class],
         ];
     }
 }

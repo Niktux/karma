@@ -7,7 +7,7 @@ namespace Karma\Filters;
 use Gaufrette\Adapter;
 use Gaufrette\Filesystem;
 
-class FileFilterIterator extends \FilterIterator implements \Countable
+final class FileFilterIterator extends \FilterIterator implements \Countable
 {
     private Adapter
         $fsAdapter;

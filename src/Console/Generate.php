@@ -8,7 +8,7 @@ use Karma\ConfigurableProcessor;
 use Karma\Application;
 use Karma\Generator\ConfigurationFileGenerator;
 
-class Generate extends ConfigureActionCommand
+final class Generate extends ConfigureActionCommand
 {
     public function __construct(Application $app)
     {
@@ -20,7 +20,7 @@ class Generate extends ConfigureActionCommand
         );
     }
 
-    protected function getProcessor(): ConfigurableProcessor
+    protected function processor(): ConfigurableProcessor
     {
         return $this->app['configurationFilesGenerator'];
     }

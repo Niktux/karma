@@ -4,7 +4,7 @@ declare(strict_types = 1);
 
 namespace Karma;
 
-class Console
+final readonly class Console
 {
     private \Symfony\Component\Console\Application
         $app;

@@ -8,7 +8,7 @@ use Karma\Formatter;
 use Karma\FormatterProvider;
 use Karma\Formatters\Raw;
 
-class NullProvider implements FormatterProvider
+final class NullProvider implements FormatterProvider
 {
     private Raw
         $raw;
@@ -18,12 +18,12 @@ class NullProvider implements FormatterProvider
         $this->raw = new Raw();
     }
 
-    public function hasFormatter(?string $index): bool
+    public function hasFormatter(?string $index): false
     {
         return false;
     }
 
-    public function getFormatter(?string $fileExtension, ?string $index = null): Formatter
+    public function formatter(?string $fileExtension, ?string $index = null): Formatter
     {
         return $this->raw;
     }

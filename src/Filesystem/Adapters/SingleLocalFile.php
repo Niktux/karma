@@ -6,7 +6,7 @@ namespace Karma\Filesystem\Adapters;
 
 use Gaufrette\Adapter;
 
-class SingleLocalFile implements Adapter
+final class SingleLocalFile implements Adapter
 {
     private string
         $filename;

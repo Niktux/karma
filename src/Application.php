@@ -16,18 +16,20 @@ use Karma\Generator\ConfigurationFileGenerators\YamlGenerator;
 use Karma\Filesystem\Adapters\MultipleAdapter;
 use Karma\Filesystem\Adapters\SingleLocalFile;
 use Pimple\Container;
+use Psr\Log\NullLogger;
 
-class Application extends Container
+final class Application extends Container
 {
-    public const
-        VERSION = '8.1.0',
+    public const string
+        VERSION = '8.3.0',
         DEFAULT_DISTFILE_SUFFIX = '-dist',
         DEFAULT_CONF_DIRECTORY = 'env',
         DEFAULT_MASTER_FILE = 'master.conf',
         BACKUP_SUFFIX = '~',
         PROFILE_FILENAME = '.karma';
-    private const
-        FINDER_CACHE_DIRECTORY = 'cache/karma',
+    private const string
+        FINDER_CACHE_DIRECTORY = 'cache/karma';
+    private const int
         FINDER_CACHE_DURATION = 86400;
 
     public function __construct()
@@ -66,7 +68,7 @@ class Application extends Container
             return new Filesystem($c['configuration.fileSystem.adapter']);
         });
 
-        $this['parser'] = function(Container $c) {
+        $this['parser'] = static function(Container $c) {
             $parser = new Parser($c['configuration.fileSystem']);
 
             $parser->enableIncludeSupport()
@@ -78,14 +80,14 @@ class Application extends Container
             return $parser;
         };
 
-        $this['configuration'] = function(Container $c) {
+        $this['configuration'] = static function(Container $c) {
             $parser = $c['parser'];
 
             return new Reader(
-                $parser->getVariables(),
-                $parser->getExternalVariables(),
-                $parser->getGroups(),
-                $parser->getDefaultEnvironmentsForGroups()
+                $parser->variables(),
+                $parser->externalVariables(),
+                $parser->groups(),
+                $parser->defaultEnvironmentsForGroups()
             );
         };
     }
@@ -100,7 +102,7 @@ class Application extends Container
             return new Filesystem($c['profile.fileSystem.adapter']);
         });
 
-        $this['profile'] = function(Container $c) {
+        $this['profile'] = static function(Container $c) {
             return new ProfileReader($c['profile.fileSystem']);
         };
     }
@@ -207,10 +209,10 @@ class Application extends Container
     private function initializeServices(): void
     {
         $this['logger'] = $this->factory(function(Container $c) {
-            return new \Psr\Log\NullLogger();
+            return new NullLogger();
         });
 
-        $this['formatter.provider'] = function (Container $c) {
+        $this['formatter.provider'] = static function (Container $c) {
             return new ProfileProvider($c['profile']);
         };
 
@@ -224,7 +226,7 @@ class Application extends Container
             return $hydrator;
         });
 
-        $this['generator.nameTranslator'] = function (Container $c) {
+        $this['generator.nameTranslator'] = static function (Container $c) {
             $translator = new FilePrefixTranslator();
             $translator->changeMasterFile($c['configuration.masterFile']);
 
@@ -235,7 +237,7 @@ class Application extends Container
             $provider = new VariableProvider($c['parser']);
 
             $profile = $c['profile'];
-            $options = $profile->getGeneratorOptions();
+            $options = $profile->generatorOptions();
             if(! isset($options['translator']) || $options['translator'] === 'prefix')
             {
                 $provider->setNameTranslator($c['generator.nameTranslator']);
@@ -244,7 +246,7 @@ class Application extends Container
             return $provider;
         });
 
-        $this['configurationFilesGenerator'] = function (Container $c) {
+        $this['configurationFilesGenerator'] = static function (Container $c) {
             return new YamlGenerator($c['generate.sources.fileSystem'], $c['configuration'], $c['generator.variableProvider']);
         };
     }

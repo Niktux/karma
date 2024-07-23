@@ -32,7 +32,7 @@ console: switch-to-hydrate-test-profile create-console-image ## Run karma
 	$(call console, )
 
 k-hydrate: switch-to-hydrate-test-profile create-console-image ## Run karma hydrate command
-	$(call console, -vvv hydrate)
+	$(call console, -vvv hydrate -e prod)
 
 k-generate: switch-to-generate-test-profile create-console-image ## Run karma generate command
 	$(call console, -vvv generate)

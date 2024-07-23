@@ -17,7 +17,7 @@ abstract class ConfigureActionCommand extends Command
 {
     use FilterInputVariable;
 
-    private const
+    private const string
         ENV_DEV = 'dev',
         OPTION_ASSIGNMENT = '=';
 
@@ -75,7 +75,7 @@ abstract class ConfigureActionCommand extends Command
 
         $this->processInputs($input);
 
-        $processor = $this->getProcessor();
+        $processor = $this->processor();
         $this->configureProcessor($processor);
         $this->launchConfigurationAction($processor);
 
@@ -108,7 +108,7 @@ abstract class ConfigureActionCommand extends Command
                 throw new \RuntimeException('Missing argument sourcePath');
             }
 
-            $sourcePath = $profile->getSourcePath();
+            $sourcePath = $profile->sourcePath();
         }
 
         if(! is_array($sourcePath))
@@ -125,7 +125,7 @@ abstract class ConfigureActionCommand extends Command
 
         if(empty($targetPath) && $profile->hasTargetPath() === true)
         {
-            $targetPath = $profile->getTargetPath();
+            $targetPath = $profile->targetPath();
         }
 
         $this->output->writeln(sprintf(
@@ -149,7 +149,7 @@ abstract class ConfigureActionCommand extends Command
     }
 
     abstract protected function launchConfigurationAction(ConfigurableProcessor $processor): void;
-    abstract protected function getProcessor(): ConfigurableProcessor;
+    abstract protected function processor(): ConfigurableProcessor;
 
     private function configureProcessor(ConfigurableProcessor $processor): void
     {

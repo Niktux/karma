@@ -8,11 +8,12 @@ use Gaufrette\Filesystem;
 use Karma\Configuration\Collections\SectionParserCollection;
 use Karma\Configuration\Parser\NullParser;
 use Karma\Configuration\Parser\SectionParser;
+use Karma\Logging\LoggerAware;
 use Psr\Log\NullLogger;
 
-class Parser implements FileParser
+final class Parser implements FileParser
 {
-    use \Karma\Logging\LoggerAware;
+    use LoggerAware;
 
     private SectionParserCollection
         $parsers;
@@ -69,7 +70,7 @@ class Parser implements FileParser
         {
             $this->parseFromMasterFile($masterFilePath);
 
-            $variables = $this->getVariables();
+            $variables = $this->variables();
             $this->printExternalFilesStatus();
 
             $this->postParse();
@@ -98,7 +99,7 @@ class Parser implements FileParser
             $parser = $this->parsers->includes();
             if($parser !== null)
             {
-                $files = $parser->getCollectedFiles();
+                $files = $parser->collectedFiles();
             }
 
             // Avoid loop
@@ -191,24 +192,24 @@ class Parser implements FileParser
         $this->currentParser = $this->parsers->get($sectionName);
     }
 
-    public function getVariables(): array
+    public function variables(): array
     {
-        return $this->parsers->variables()->getVariables();
+        return $this->parsers->variables()->variables();
     }
 
-    public function getFileSystem(): Filesystem
+    public function fileSystem(): Filesystem
     {
         return $this->fs;
     }
 
-    public function getExternalVariables(): array
+    public function externalVariables(): array
     {
         $variables = [];
 
         $parser = $this->parsers->externals();
         if($parser !== null)
         {
-            $variables = $parser->getExternalVariables();
+            $variables = $parser->externalVariables();
         }
 
         return $variables;
@@ -216,7 +217,7 @@ class Parser implements FileParser
 
     private function printExternalFilesStatus(): void
     {
-        $files = $this->getExternalFilesStatus();
+        $files = $this->externalFilesStatus();
 
         foreach($files as $file => $status)
         {
@@ -230,27 +231,27 @@ class Parser implements FileParser
         }
     }
 
-    private function getExternalFilesStatus(): array
+    private function externalFilesStatus(): array
     {
         $files = [];
 
         $parser = $this->parsers->externals();
         if($parser !== null)
         {
-            $files = $parser->getExternalFilesStatus();
+            $files = $parser->externalFilesStatus();
         }
 
         return $files;
     }
 
-    public function getGroups(): array
+    public function groups(): array
     {
         $groups = [];
 
         $parser = $this->parsers->groups();
         if($parser !== null)
         {
-            $groups = $parser->getCollectedGroups();
+            $groups = $parser->collectedGroups();
         }
 
         return $groups;
@@ -268,7 +269,7 @@ class Parser implements FileParser
     {
         $system = false;
 
-        $variables = $this->getVariables();
+        $variables = $this->variables();
         if(isset($variables[$variableName]))
         {
             $system = $variables[$variableName]['system'];
@@ -277,14 +278,14 @@ class Parser implements FileParser
         return $system;
     }
 
-    public function getDefaultEnvironmentsForGroups(): array
+    public function defaultEnvironmentsForGroups(): array
     {
         $defaultEnvironments = [];
 
         $parser = $this->parsers->groups();
         if($parser !== null)
         {
-            $defaultEnvironments = $parser->getDefaultEnvironmentsForGroups();
+            $defaultEnvironments = $parser->defaultEnvironmentsForGroups();
         }
 
         return $defaultEnvironments;

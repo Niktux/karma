@@ -6,7 +6,7 @@ namespace Karma\Configuration;
 
 use Karma\Configuration;
 
-class InMemoryReader extends AbstractReader
+final class InMemoryReader extends AbstractReader
 {
     private array
         $values;
@@ -25,7 +25,7 @@ class InMemoryReader extends AbstractReader
         }
     }
 
-    protected function readRaw(string $variable, ?string $environment = null)
+    protected function readRaw(string $variable, ?string $environment = null): mixed
     {
         if($environment === null)
         {
@@ -42,7 +42,7 @@ class InMemoryReader extends AbstractReader
         throw new \RuntimeException("Variable $variable does not exist");
     }
 
-    public function getAllVariables(): array
+    public function allVariables(): array
     {
         $variables = array_map(function($key){
             return $this->extractVariableName($key);

@@ -8,9 +8,9 @@ use Gaufrette\Filesystem;
 use Symfony\Component\Yaml\Yaml;
 use Symfony\Component\Yaml\Exception\ParseException;
 
-class ProfileReader implements FormattersDefinition
+final class ProfileReader implements FormattersDefinition
 {
-    private const
+    private const string
         TEMPLATE_SUFFIX_INDEX = 'suffix',
         MASTER_FILENAME_INDEX = 'master',
         CONFIGURATION_DIRECTORY_INDEX = 'confDir',
@@ -83,7 +83,7 @@ class ProfileReader implements FormattersDefinition
         return $this->hasString(self::TEMPLATE_SUFFIX_INDEX);
     }
 
-    public function getTemplatesSuffix()
+    public function templatesSuffix()
     {
         return $this->getString(self::TEMPLATE_SUFFIX_INDEX);
     }
@@ -93,7 +93,7 @@ class ProfileReader implements FormattersDefinition
         return $this->hasString(self::MASTER_FILENAME_INDEX);
     }
 
-    public function getMasterFilename()
+    public function masterFilename()
     {
         return $this->getString(self::MASTER_FILENAME_INDEX);
     }
@@ -103,7 +103,7 @@ class ProfileReader implements FormattersDefinition
         return $this->hasString(self::CONFIGURATION_DIRECTORY_INDEX);
     }
 
-    public function getConfigurationDirectory()
+    public function configurationDirectory()
     {
         return $this->getString(self::CONFIGURATION_DIRECTORY_INDEX);
     }
@@ -113,7 +113,7 @@ class ProfileReader implements FormattersDefinition
         return $this->has(self::SOURCE_PATH_INDEX);
     }
 
-    public function getSourcePath()
+    public function sourcePath()
     {
         return $this->get(self::SOURCE_PATH_INDEX);
     }
@@ -123,27 +123,27 @@ class ProfileReader implements FormattersDefinition
         return $this->has(self::TARGET_PATH_INDEX);
     }
 
-    public function getTargetPath()
+    public function targetPath()
     {
         return $this->get(self::TARGET_PATH_INDEX);
     }
 
-    public function getDefaultFormatterName(): ?string
+    public function defaultFormatterName(): ?string
     {
         return $this->getString(self::DEFAULT_FORMATTER_INDEX);
     }
 
-    public function getFormatters()
+    public function formatters()
     {
         return $this->get(self::FORMATTERS_INDEX);
     }
 
-    public function getFileExtensionFormatters()
+    public function fileExtensionFormatters()
     {
         return $this->get(self::FILE_EXTENSION_FORMATTERS_INDEX);
     }
 
-    public function getGeneratorOptions()
+    public function generatorOptions()
     {
         return $this->get(self::GENERATOR_INDEX);
     }

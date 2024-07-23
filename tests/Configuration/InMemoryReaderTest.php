@@ -55,7 +55,7 @@ class InMemoryReaderTest extends TestCase
 
     public function testGetAllVariables(): void
     {
-        $variables = $this->reader->getAllVariables();
+        $variables = $this->reader->allVariables();
         sort($variables);
 
         $expected = ['foo', 'bar', 'baz'];
@@ -67,7 +67,7 @@ class InMemoryReaderTest extends TestCase
     #[DataProvider('providerTestGetAllValuesForEnvironment')]
     public function testGetAllValuesForEnvironment(string $environment, array $expectedValues): void
     {
-        $variables = $this->reader->getAllValuesForEnvironment($environment);
+        $variables = $this->reader->allValuesForEnvironment($environment);
         self::assertIsArray($variables);
 
         $keys = array_keys($variables);

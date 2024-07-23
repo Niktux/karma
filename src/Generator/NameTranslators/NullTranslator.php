@@ -6,7 +6,7 @@ namespace Karma\Generator\NameTranslators;
 
 use Karma\Generator\NameTranslator;
 
-class NullTranslator implements NameTranslator
+final readonly class NullTranslator implements NameTranslator
 {
     public function translate(string $file, string $variable): string
     {
