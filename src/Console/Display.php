@@ -11,9 +11,9 @@ use Karma\Configuration;
 use Karma\Command;
 use Karma\Configuration\ValueFilterIterator;
 
-class Display extends Command
+final class Display extends Command
 {
-    private const
+    private const string
         ENV_DEV = 'dev',
         NO_FILTERING = 'karma-nofiltering';
 
@@ -51,7 +51,7 @@ class Display extends Command
 
     private function displayValues(Configuration $reader, $filter = self::NO_FILTERING): void
     {
-        $values = new \ArrayIterator($reader->getAllValuesForEnvironment());
+        $values = new \ArrayIterator($reader->allValuesForEnvironment());
 
         if($filter !== self::NO_FILTERING)
         {

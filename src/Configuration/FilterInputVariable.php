@@ -6,7 +6,7 @@ namespace Karma\Configuration;
 
 trait FilterInputVariable
 {
-    private function filterValue($value)
+    private function filterValue(string|array|null $value): array|string|float|int|bool|null
     {
         if(is_array($value))
         {
@@ -18,7 +18,7 @@ trait FilterInputVariable
         return $this->filterOneValue($value);
     }
 
-    private function filterOneValue($value)
+    private function filterOneValue(?string $value): string|float|int|bool|null
     {
         if(! is_string($value))
         {
@@ -51,14 +51,15 @@ trait FilterInputVariable
         return $value;
     }
 
-    public function parseList(string $value)
+    public function parseList(string $value): string|array
     {
         $value = trim($value);
 
         if(preg_match('~^\[(?P<valueList>[^\[\]]*)\]$~', $value, $matches))
         {
-            $value = array_map('trim', explode(',', $matches['valueList']));
-            $value = $this->removeEmptyEntries($value);
+            return $this->removeEmptyEntries(
+                array_map('trim', explode(',', $matches['valueList']))
+            );
         }
 
         return $value;

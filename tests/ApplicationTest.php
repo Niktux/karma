@@ -5,13 +5,12 @@ declare(strict_types = 1);
 namespace Karma;
 
 use Gaufrette\Adapter\InMemory;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class ApplicationTest extends TestCase
 {
-    /**
-     * @dataProvider providerTestContainer
-     */
+    #[DataProvider('providerTestContainer')]
     public function testContainer(string $service, string $expected): void
     {
         $adapter = new InMemory();
@@ -23,14 +22,19 @@ class ApplicationTest extends TestCase
         self::assertInstanceOf($expected, $app[$service]);
     }
 
-    public function providerTestContainer(): array
+    public static function providerTestContainer(): array
     {
         return [
-            ['hydrator', Hydrator::class],
-            ['parser', Configuration\Parser::class],
-            ['configuration', Configuration::class],
-            ['finder', Finder::class],
-            ['configurationFilesGenerator', Generator\ConfigurationFileGenerator::class],
+           'hydrator' =>
+               ['hydrator', Hydrator::class],
+           'parser' =>
+               ['parser', Configuration\Parser::class],
+           'config' =>
+               ['configuration', Configuration::class],
+           'finder' =>
+               ['finder', Finder::class],
+           'configFileGen' =>
+               ['configurationFilesGenerator', Generator\ConfigurationFileGenerator::class],
         ];
     }
 }

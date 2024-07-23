@@ -52,7 +52,7 @@ abstract class AbstractFileGenerator implements ConfigurationFileGenerator
     {
         $this->preGenerate();
 
-        $variables = $this->variableProvider->getAllVariables();
+        $variables = $this->variableProvider->allVariables();
 
         foreach($variables as $variable => $translatedVariableName)
         {

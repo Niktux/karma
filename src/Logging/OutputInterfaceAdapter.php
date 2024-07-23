@@ -5,12 +5,13 @@ declare(strict_types = 1);
 namespace Karma\Logging;
 
 use Psr\Log\LoggerInterface;
+use Psr\Log\LoggerTrait;
 use Symfony\Component\Console\Output\OutputInterface;
 use Psr\Log\LogLevel;
 
-class OutputInterfaceAdapter implements LoggerInterface
+final class OutputInterfaceAdapter implements LoggerInterface
 {
-    use \Psr\Log\LoggerTrait;
+    use LoggerTrait;
 
     private OutputInterface
         $output;

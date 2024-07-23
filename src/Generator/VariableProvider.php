@@ -7,7 +7,7 @@ namespace Karma\Generator;
 use Karma\Configuration\FileParser;
 use Karma\Generator\NameTranslators\NullTranslator;
 
-class VariableProvider
+final class VariableProvider
 {
     private FileParser
         $parser;
@@ -25,9 +25,9 @@ class VariableProvider
         $this->nameTranslator = $translator;
     }
 
-    public function getAllVariables(): array
+    public function allVariables(): array
     {
-        $parsedVariables = $this->parser->getVariables();
+        $parsedVariables = $this->parser->variables();
 
         $variables = [];
 

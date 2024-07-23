@@ -10,6 +10,7 @@ use Gaufrette\Adapter\InMemory;
 use Karma\Application;
 use Karma\Generator\NameTranslators\NullTranslator;
 use Karma\Generator\NameTranslators\FilePrefixTranslator;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class VariableProviderTest extends TestCase
@@ -69,18 +70,16 @@ CONFFILE;
         self::assertSame($expected, $result);
     }
 
-    /**
-     * @dataProvider providerTestGetAllVariables
-     */
+    #[DataProvider('providerTestGetAllVariables')]
     public function testGetAllVariables(NameTranslator $translator, array $expected): void
     {
         $this->provider->setNameTranslator($translator);
-        $variables = $this->provider->getAllVariables();
+        $variables = $this->provider->allVariables();
 
         $this->assertSameArraysExceptOrder($expected, $variables);
     }
 
-    public function providerTestGetAllVariables(): array
+    public static function providerTestGetAllVariables(): array
     {
         return [
             [new NullTranslator(), [

@@ -7,7 +7,7 @@ namespace Karma;
 use Gaufrette\Filesystem;
 use Karma\Filters\FileFilterIterator;
 
-class Finder
+final readonly class Finder
 {
     private Filesystem
         $fs;
@@ -17,7 +17,7 @@ class Finder
         $this->fs = $fs;
     }
 
-    public function findFiles(string $regex): iterable
+    public function findFiles(string $regex): FileFilterIterator
     {
         return new FileFilterIterator(
             new \ArrayIterator($this->fs->keys()),

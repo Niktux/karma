@@ -7,6 +7,7 @@ namespace Karma\Configuration;
 use Karma\Configuration;
 use Gaufrette\Filesystem;
 use Gaufrette\Adapter\InMemory;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 require_once __DIR__ . '/ParserTestCase.php';
 
@@ -20,10 +21,10 @@ class ReaderTest extends ParserTestCase
         parent::setUp();
 
         $variables = $this->parser->parse(self::MASTERFILE_PATH);
-        $this->reader = new Reader($variables, $this->parser->getExternalVariables());
+        $this->reader = new Reader($variables, $this->parser->externalVariables());
     }
 
-    public function providerTestRead(): array
+    public static function providerTestRead(): array
     {
         return [
             // master.conf
@@ -105,17 +106,13 @@ class ReaderTest extends ParserTestCase
         ];
     }
 
-    /**
-     * @dataProvider providerTestRead
-     */
+    #[DataProvider('providerTestRead')]
     public function testRead(string $variable, string $environment, $expectedValue): void
     {
         self::assertSame($expectedValue, $this->reader->read($variable, $environment));
     }
 
-    /**
-     * @dataProvider providerTestRead
-     */
+    #[DataProvider('providerTestRead')]
     public function testReadWithDefaultEnvironment(string $variable, string $environment, $expectedValue): void
     {
         $this->reader->setDefaultEnvironment($environment);
@@ -123,9 +120,7 @@ class ReaderTest extends ParserTestCase
         self::assertSame($expectedValue, $this->reader->read($variable));
     }
 
-    /**
-     * @dataProvider providerTestReadNotFoundValue
-     */
+    #[DataProvider('providerTestReadNotFoundValue')]
     public function testReadNotFoundValue(string $variable, string $environment): void
     {
         $this->expectException(\RuntimeException::class);
@@ -133,7 +128,7 @@ class ReaderTest extends ParserTestCase
         $this->reader->read($variable, $environment);
     }
 
-    public function providerTestReadNotFoundValue(): array
+    public static function providerTestReadNotFoundValue(): array
     {
         return [
             ['thisvariabledoesnotexist', 'dev'],
@@ -143,7 +138,7 @@ class ReaderTest extends ParserTestCase
 
     public function testGetAllVariables(): void
     {
-        $variables = $this->reader->getAllVariables();
+        $variables = $this->reader->allVariables();
         sort($variables);
 
         $expected = ['print_errors', 'debug', 'gourdin', 'server', 'tva', 'apiKey', 'my.var.with.subnames', 'param', 'user', 'list.ok', 'list.notlist', 'variable-name-with-dashes', 'redis_prefix'];
@@ -152,12 +147,10 @@ class ReaderTest extends ParserTestCase
         self::assertSame($expected, $variables);
     }
 
-    /**
-     * @dataProvider providerTestGetAllValuesForEnvironment
-     */
+    #[DataProvider('providerTestGetAllValuesForEnvironment')]
     public function testGetAllValuesForEnvironment(string $environment, array $expectedValues): void
     {
-        $variables = $this->reader->getAllValuesForEnvironment($environment);
+        $variables = $this->reader->allValuesForEnvironment($environment);
         self::assertIsArray($variables);
 
         $keys = array_keys($variables);
@@ -172,7 +165,7 @@ class ReaderTest extends ParserTestCase
         }
     }
 
-    public function providerTestGetAllValuesForEnvironment(): array
+    public static function providerTestGetAllValuesForEnvironment(): array
     {
         return [
             ['dev', [
@@ -208,9 +201,7 @@ class ReaderTest extends ParserTestCase
         ];
     }
 
-    /**
-     * @dataProvider providerTestDiff
-     */
+    #[DataProvider('providerTestDiff')]
     public function testDiff(string $environment1, string $environment2, array $expectedDiff): void
     {
         $diff = $this->reader->compareEnvironments($environment1, $environment2);
@@ -218,7 +209,7 @@ class ReaderTest extends ParserTestCase
         self::assertSame($expectedDiff, $diff);
     }
 
-    public function providerTestDiff(): array
+    public static function providerTestDiff(): array
     {
         return [
             ['dev', 'prod', [
@@ -283,7 +274,7 @@ CONFFILE;
             ->enableExternalSupport()
             ->parse(self::MASTERFILE_PATH);
 
-        $reader = new Reader($variables, $parser->getExternalVariables());
+        $reader = new Reader($variables, $parser->externalVariables());
 
         $expected = [
             'db.pass' => [
@@ -307,9 +298,7 @@ CONFFILE;
         }
     }
 
-    /**
-     * @dataProvider providerTestExternalError
-     */
+    #[DataProvider('providerTestExternalError')]
     public function testExternalError(string $contentMaster): void
     {
         $this->expectException(\RuntimeException::class);
@@ -329,11 +318,11 @@ CONFFILE
             ->enableExternalSupport();
 
         $variables = $parser->parse(self::MASTERFILE_PATH);
-        $reader = new Reader($variables, $parser->getExternalVariables());
+        $reader = new Reader($variables, $parser->externalVariables());
         $reader->read('toto', 'prod');
     }
 
-    public function providerTestExternalError(): array
+    public static function providerTestExternalError(): array
     {
         return [
             'external variable without any external file' => [<<<CONFFILE
@@ -400,7 +389,7 @@ CONFFILE;
             ->enableExternalSupport();
 
         $variables = $parser->parse(self::MASTERFILE_PATH);
-        $reader = new Reader($variables, $parser->getExternalVariables());
+        $reader = new Reader($variables, $parser->externalVariables());
         $reader->read('v1', 'prod');
     }
 
@@ -546,7 +535,7 @@ CONFFILE;
             ->enableGroupSupport();
 
         $variables = $parser->parse(self::MASTERFILE_PATH);
-        $reader = new Reader($variables, $parser->getExternalVariables(), $parser->getGroups());
+        $reader = new Reader($variables, $parser->externalVariables(), $parser->groups());
 
         $expected = [
             'db.pass' => [
@@ -606,7 +595,7 @@ CONFFILE;
             ->enableGroupSupport();
 
         $variables = $parser->parse(self::MASTERFILE_PATH);
-        $reader = new Reader($variables, $parser->getExternalVariables(), $parser->getGroups());
+        $reader = new Reader($variables, $parser->externalVariables(), $parser->groups());
         $reader->read('db.pass', 'qa');
     }
 
@@ -631,7 +620,7 @@ CONFFILE;
             ->enableGroupSupport();
 
         $variables = $parser->parse(self::MASTERFILE_PATH);
-        $reader = new Reader($variables, $parser->getExternalVariables(), $parser->getGroups(), $parser->getDefaultEnvironmentsForGroups());
+        $reader = new Reader($variables, $parser->externalVariables(), $parser->groups(), $parser->defaultEnvironmentsForGroups());
         self::assertSame($reader->read('db.pass', 'qa'), $reader->read('db.pass', 'staging'));
     }
 
@@ -662,7 +651,7 @@ CONFFILE;
             ->enableGroupSupport();
 
         $variables = $parser->parse(self::MASTERFILE_PATH);
-        $reader = new Reader($variables, $parser->getExternalVariables(), $parser->getGroups());
+        $reader = new Reader($variables, $parser->externalVariables(), $parser->groups());
 
         self::assertSame('password', $reader->read('db.pass', 'staging'));
     }
@@ -698,20 +687,18 @@ CONFFILE;
             ->enableGroupSupport();
 
         $variables = $parser->parse(self::MASTERFILE_PATH);
-        $reader = new Reader($variables, $parser->getExternalVariables(), $parser->getGroups());
+        $reader = new Reader($variables, $parser->externalVariables(), $parser->groups());
 
         self::assertSame('success', $reader->read('db.pass', 'staging'));
     }
 
-    /**
-     * @dataProvider providerTestIsSystem
-     */
+    #[DataProvider('providerTestIsSystem')]
     public function testIsSystem(string $variable, bool $expected): void
     {
         self::assertSame($expected, $this->reader->isSystem($variable));
     }
 
-    public function providerTestIsSystem(): array
+    public static function providerTestIsSystem(): array
     {
         return [
             ['gourdin', true],

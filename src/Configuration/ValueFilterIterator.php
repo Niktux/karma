@@ -4,11 +4,11 @@ declare(strict_types = 1);
 
 namespace Karma\Configuration;
 
-class ValueFilterIterator extends \FilterIterator
+final class ValueFilterIterator extends \FilterIterator
 {
     use FilterInputVariable;
 
-    private const
+    private const string
         FILTER_WILDCARD = '*',
         ESCAPED_WILDCARD = '**';
 
@@ -25,7 +25,7 @@ class ValueFilterIterator extends \FilterIterator
         $filter = $this->filterValue($filter);
 
         $this->isRegex = false;
-        if(strpos((string) $filter, self::FILTER_WILDCARD) !== false)
+        if(str_contains((string) $filter, self::FILTER_WILDCARD))
         {
             $this->isRegex = true;
             $filter = $this->convertToRegex($filter);

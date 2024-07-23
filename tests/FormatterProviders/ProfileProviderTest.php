@@ -8,6 +8,7 @@ use Karma\ProfileReader;
 use Gaufrette\Filesystem;
 use Gaufrette\Adapter\InMemory;
 use Karma\Application;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class ProfileProviderTest extends TestCase
@@ -45,12 +46,10 @@ YAML;
 
         self::assertTrue($provider->hasFormatter('yaml'), 'Yaml formatter must exist');
         self::assertFalse($provider->hasFormatter('php'), 'PHP formatter must not exist');
-        self::assertSame($provider->getFormatter($fileExtension), $provider->getFormatter($fileExtension, 'yaml'));
+        self::assertSame($provider->formatter($fileExtension), $provider->formatter($fileExtension, 'yaml'));
     }
 
-    /**
-     * @dataProvider providerTestFormatterSyntaxError
-     */
+    #[DataProvider('providerTestFormatterSyntaxError')]
     public function testFormatterSyntaxError(string $yaml): void
     {
         $this->expectException(\InvalidArgumentException::class);
@@ -58,7 +57,7 @@ YAML;
         $this->buildProvider($yaml);
     }
 
-    public function providerTestFormatterSyntaxError(): array
+    public static function providerTestFormatterSyntaxError(): array
     {
         return [
             [<<<YAML
@@ -92,10 +91,10 @@ fileExtensionFormatters:
 YAML;
         $provider = $this->buildProvider($yaml);
 
-        self::assertSame($provider->getFormatter(null, 'f1'), $provider->getFormatter('ini', null));
-        self::assertSame($provider->getFormatter(null, 'f2'), $provider->getFormatter('yml', null));
-        self::assertSame($provider->getFormatter(null, 'f3'), $provider->getFormatter('cfg', null));
-        self::assertSame($provider->getFormatter(null, 'f2'), $provider->getFormatter('txt', null)); // default
-        self::assertSame($provider->getFormatter(null, 'f3'), $provider->getFormatter('ini', 'f3'));
+        self::assertSame($provider->formatter(null, 'f1'), $provider->formatter('ini', null));
+        self::assertSame($provider->formatter(null, 'f2'), $provider->formatter('yml', null));
+        self::assertSame($provider->formatter(null, 'f3'), $provider->formatter('cfg', null));
+        self::assertSame($provider->formatter(null, 'f2'), $provider->formatter('txt', null)); // default
+        self::assertSame($provider->formatter(null, 'f3'), $provider->formatter('ini', 'f3'));
     }
 }

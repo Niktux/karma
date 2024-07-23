@@ -4,16 +4,13 @@ declare(strict_types = 1);
 
 namespace Karma\Display;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
-/**
- * @group Unix
- */
+#Group['Unix']
 class CliTableTest extends TestCase
 {
-    /**
-     * @dataProvider providerTestRender
-     */
+    #[DataProvider('providerTestRender')]
     public function testRender(array $headers, array $input, string $expected): void
     {
         $table = new CliTable($input);
@@ -22,7 +19,7 @@ class CliTableTest extends TestCase
         self::assertSame($expected, $table->render());
     }
 
-    public function providerTestRender(): array
+    public static function providerTestRender(): array
     {
         return [
             [['Variable', 'Dev', 'Prod'], [
@@ -131,9 +128,7 @@ RESULT;
         self::assertSame($expected, $table->render());
     }
 
-    /**
-     * @dataProvider providerTestSanityChecks
-     */
+    #[DataProvider('providerTestSanityChecks')]
     public function testSanityChecks(array $values): void
     {
         $this->expectException(\InvalidArgumentException::class);
@@ -142,7 +137,7 @@ RESULT;
         $table->render();
     }
 
-    public function providerTestSanityChecks(): array
+    public static function providerTestSanityChecks(): array
     {
         return [
             'one dim array' => [['a', 'b', 'c']],
@@ -153,9 +148,7 @@ RESULT;
         ];
     }
 
-    /**
-     * @dataProvider providerTestDisplayKeys
-     */
+    #[DataProvider('providerTestDisplayKeys')]
     public function testDisplayKeys(bool $enableKeys, string $expected): void
     {
         $values = [
@@ -175,7 +168,7 @@ RESULT;
         self::assertSame($expected, $result);
     }
 
-    public function providerTestDisplayKeys(): array
+    public static function providerTestDisplayKeys(): array
     {
         return [
             [true, <<<RESULT

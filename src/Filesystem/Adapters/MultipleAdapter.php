@@ -6,7 +6,7 @@ namespace Karma\Filesystem\Adapters;
 
 use Gaufrette\Adapter;
 
-class MultipleAdapter implements Adapter
+final class MultipleAdapter implements Adapter
 {
     private array
         $mountTable;

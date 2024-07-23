@@ -6,11 +6,11 @@ namespace Karma\Configuration\Parser;
 
 use Karma\Configuration;
 
-class VariableParser extends AbstractSectionParser
+final class VariableParser extends AbstractSectionParser
 {
     use Configuration\FilterInputVariable;
 
-    private const
+    private const string
         ASSIGNMENT = '=',
         ENV_SEPARATOR = ',';
     private ?string
@@ -137,7 +137,7 @@ class VariableParser extends AbstractSectionParser
         $this->valueFound = true;
     }
 
-    public function getVariables(): array
+    public function variables(): array
     {
         return $this->variables;
     }

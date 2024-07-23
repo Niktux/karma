@@ -6,7 +6,7 @@ namespace Karma;
 
 interface Configuration
 {
-    public const
+    public const string
         SYSTEM_VARIABLE_FLAG = '@',
         NOT_FOUND = 'karma-notfound';
 
@@ -14,8 +14,8 @@ interface Configuration
 
     public function setDefaultEnvironment(string $environment): void;
 
-    public function getAllVariables(): array;
-    public function getAllValuesForEnvironment(?string $environment = null);
+    public function allVariables(): array;
+    public function allValuesForEnvironment(?string $environment = null);
 
     public function overrideVariable(string $variable, $value): void;
 

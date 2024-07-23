@@ -6,7 +6,7 @@ namespace Karma\Formatters;
 
 use Karma\Formatter;
 
-class Rules implements Formatter
+final class Rules implements Formatter
 {
     private array
         $rules;
@@ -47,7 +47,7 @@ class Rules implements Formatter
         }
     }
 
-    private function handleStringFormatting(string $value, $result)
+    private function handleStringFormatting(string $value, mixed $result): mixed
     {
         if($value === '<string>')
         {
@@ -59,7 +59,7 @@ class Rules implements Formatter
         return $result;
     }
 
-    public function format($value)
+    public function format(mixed $value): mixed
     {
         foreach($this->rules as $rule)
         {
@@ -74,7 +74,7 @@ class Rules implements Formatter
         return $value;
     }
 
-    private function isRuleMatches($condition, $value): bool
+    private function isRuleMatches(mixed $condition, mixed $value): bool
     {
         $hasMatched = ($condition === $value);
 
@@ -86,7 +86,7 @@ class Rules implements Formatter
         return $hasMatched;
     }
 
-    private function applyFormattingRule($ruleResult, $value)
+    private function applyFormattingRule(mixed $ruleResult, mixed $value): mixed
     {
         if($ruleResult instanceof \Closure)
         {

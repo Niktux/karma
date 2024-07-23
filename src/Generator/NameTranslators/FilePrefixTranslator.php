@@ -8,7 +8,7 @@ use Karma\Generator\NameTranslator;
 use Karma\Application;
 use Karma\Generator\ConfigurationFileGenerator;
 
-class FilePrefixTranslator implements NameTranslator
+final class FilePrefixTranslator implements NameTranslator
 {
     private string
         $masterFilename;

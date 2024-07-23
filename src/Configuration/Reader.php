@@ -4,9 +4,9 @@ declare(strict_types = 1);
 
 namespace Karma\Configuration;
 
-class Reader extends AbstractReader
+final class Reader extends AbstractReader
 {
-    private const
+    private const string
         DEFAULT_ENVIRONMENT = 'default',
         DEFAULT_VALUE_FOR_ENVIRONMENT_PARAMETER = 'prod',
         EXTERNAL = '<external>';
@@ -52,7 +52,7 @@ class Reader extends AbstractReader
         $this->groupNames = array_keys($groups);
     }
 
-    protected function readRaw(string $variable, ?string $environment = null)
+    protected function readRaw(string $variable, ?string $environment = null): mixed
     {
         if($environment === null)
         {
@@ -80,7 +80,7 @@ class Reader extends AbstractReader
         $variable = $this->accessVariable($variableName);
         $envs = $variable['env'];
 
-        foreach($this->getEnvironmentEntries($environment) as $entry)
+        foreach($this->environmentEntries($environment) as $entry)
         {
             if(array_key_exists($entry, $envs))
             {
@@ -115,7 +115,7 @@ class Reader extends AbstractReader
         return $this->variables[$variableName];
     }
 
-    private function getEnvironmentEntries(string $environment): array
+    private function environmentEntries(string $environment): array
     {
         $entries = array($environment);
 
@@ -143,15 +143,15 @@ class Reader extends AbstractReader
         return $this->externalReader->read($variable, $environment);
     }
 
-    public function getAllVariables(): array
+    public function allVariables(): array
     {
         return array_keys($this->variables);
     }
 
     public function compareEnvironments(string $environment1, string $environment2): array
     {
-        $values1 = $this->getAllValuesForEnvironment($environment1);
-        $values2 = $this->getAllValuesForEnvironment($environment2);
+        $values1 = $this->allValuesForEnvironment($environment1);
+        $values2 = $this->allValuesForEnvironment($environment2);
 
         $diff = [];
 

@@ -29,7 +29,7 @@ class YamlGeneratorTest extends TestCase
 
         $parser = $this->initializeParserAndConfFiles();
         $variables = $parser->parse(Application::DEFAULT_MASTER_FILE);
-        $reader = new Reader($variables, $parser->getExternalVariables(), $parser->getGroups(), $parser->getDefaultEnvironmentsForGroups());
+        $reader = new Reader($variables, $parser->externalVariables(), $parser->groups(), $parser->defaultEnvironmentsForGroups());
 
         $this->variableProvider = new VariableProvider($parser);
         $this->variableProvider->setNameTranslator(new FilePrefixTranslator());

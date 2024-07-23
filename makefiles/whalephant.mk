@@ -6,7 +6,7 @@ whalephant = $(DOCKER_RUN) --rm --name whalephant \
                              -v ${HOST_SOURCE_PATH}:/var/www/app \
                              -w /var/www/app \
                              -u ${USER_ID}:${GROUP_ID} \
-                             php:7.1-cli \
+                             php:8.2-cli \
                              ./whalephant generate $1
 
 #------------------------------------------------------------------------------

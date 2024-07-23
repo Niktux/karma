@@ -6,5 +6,5 @@ namespace Karma\Configuration;
 
 interface FileParser
 {
-    public function getVariables(): array;
+    public function variables(): array;
 }

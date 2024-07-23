@@ -7,7 +7,7 @@ namespace Karma\FormatterProviders;
 use Karma\Formatter;
 use Karma\FormatterProvider;
 
-class CallbackProvider implements FormatterProvider
+final class CallbackProvider implements FormatterProvider
 {
     private \Closure
         $closure;
@@ -17,12 +17,12 @@ class CallbackProvider implements FormatterProvider
         $this->closure = $closure;
     }
 
-    public function hasFormatter(?string $index): bool
+    public function hasFormatter(?string $index): true
     {
         return true;
     }
 
-    public function getFormatter(?string $fileExtension, ?string $index = null): Formatter
+    public function formatter(?string $fileExtension, ?string $index = null): Formatter
     {
         $closure = $this->closure;
 

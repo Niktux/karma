@@ -22,7 +22,7 @@ abstract class AbstractReader implements Configuration
         $this->customData = [];
     }
 
-    public function read(string $variable, ?string $environment = null)
+    public function read(string $variable, ?string $environment = null): mixed
     {
         $value = null;
 
@@ -38,21 +38,21 @@ abstract class AbstractReader implements Configuration
         return $this->handleCustomData($value);
     }
 
-    abstract protected function readRaw(string $variable, ?string $environment = null);
+    abstract protected function readRaw(string $variable, ?string $environment = null): mixed;
 
     public function setDefaultEnvironment(string $environment): void
     {
-        if(! empty($environment) && is_string($environment))
+        if(! empty($environment))
         {
             $this->defaultEnvironment = $environment;
         }
     }
 
-    public function getAllValuesForEnvironment(?string $environment = null): array
+    public function allValuesForEnvironment(?string $environment = null): array
     {
         $result = [];
 
-        $variables = $this->getAllVariables();
+        $variables = $this->allVariables();
 
         foreach($variables as $variable)
         {
@@ -60,7 +60,7 @@ abstract class AbstractReader implements Configuration
             {
                 $value = $this->read($variable, $environment);
             }
-            catch(\RuntimeException $e)
+            catch(\RuntimeException)
             {
                 $value = Configuration::NOT_FOUND;
             }
@@ -82,7 +82,7 @@ abstract class AbstractReader implements Configuration
         $this->customData[$key] = $value;
     }
 
-    private function handleCustomData($value)
+    private function handleCustomData(mixed $value): mixed
     {
         if(is_array($value))
         {

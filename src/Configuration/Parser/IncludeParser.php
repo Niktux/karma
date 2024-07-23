@@ -4,7 +4,7 @@ declare(strict_types = 1);
 
 namespace Karma\Configuration\Parser;
 
-class IncludeParser extends AbstractSectionParser
+final class IncludeParser extends AbstractSectionParser
 {
     private array
         $files;
@@ -31,7 +31,7 @@ class IncludeParser extends AbstractSectionParser
         }
     }
 
-    public function getCollectedFiles(): array
+    public function collectedFiles(): array
     {
         return $this->files;
     }

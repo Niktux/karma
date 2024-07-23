@@ -4,7 +4,7 @@ declare(strict_types = 1);
 
 namespace Karma\Configuration\Parser;
 
-class GroupParser extends AbstractSectionParser
+final class GroupParser extends AbstractSectionParser
 {
     private array
         $groups,
@@ -112,7 +112,7 @@ class GroupParser extends AbstractSectionParser
         return empty($duplicatedValues) === false;
     }
 
-    public function getCollectedGroups(): array
+    public function collectedGroups(): array
     {
         return $this->groups;
     }
@@ -125,7 +125,7 @@ class GroupParser extends AbstractSectionParser
 
     private function checkEnvironmentsBelongToOnlyOneGroup(): void
     {
-        $allEnvironments = $this->getAllEnvironmentsBelongingToGroups();
+        $allEnvironments = $this->allEnvironmentsBelongingToGroups();
 
         if($this->hasDuplicatedValues($allEnvironments))
         {
@@ -133,7 +133,7 @@ class GroupParser extends AbstractSectionParser
         }
     }
 
-    private function getAllEnvironmentsBelongingToGroups(): array
+    private function allEnvironmentsBelongingToGroups(): array
     {
         $allEnvironments = [];
 
@@ -147,7 +147,7 @@ class GroupParser extends AbstractSectionParser
 
     private function checkGroupsAreNotPartsOfAnotherGroups(): void
     {
-        $allEnvironments = $this->getAllEnvironmentsBelongingToGroups();
+        $allEnvironments = $this->allEnvironmentsBelongingToGroups();
 
         $errors = array_intersect($allEnvironments, array_keys($this->groups));
 
@@ -160,7 +160,7 @@ class GroupParser extends AbstractSectionParser
         }
     }
 
-    public function getDefaultEnvironmentsForGroups(): array
+    public function defaultEnvironmentsForGroups(): array
     {
         return $this->defaultEnvironments;
     }

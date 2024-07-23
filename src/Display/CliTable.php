@@ -4,7 +4,7 @@ declare(strict_types = 1);
 
 namespace Karma\Display;
 
-class CliTable
+final class CliTable
 {
     private array
         $headers,

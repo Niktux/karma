@@ -10,6 +10,7 @@ use Gaufrette\Adapter\InMemory;
 use Gaufrette\Filesystem;
 use Karma\Application;
 use Karma\Hydrator;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class RollbackTest extends CommandTestCase
 {
@@ -22,9 +23,7 @@ class RollbackTest extends CommandTestCase
         ]);
     }
 
-    /**
-     * @dataProvider providerTestOptions
-     */
+    #[DataProvider('providerTestOptions')]
     public function testOptions($option, $expectedMethodCall): void
     {
         $mock = $this->createMock(Hydrator::class);
@@ -40,7 +39,7 @@ class RollbackTest extends CommandTestCase
         ]);
     }
 
-    public function providerTestOptions(): array
+    public static function providerTestOptions(): array
     {
         return [
             ['--dry-run', 'setDryRun'],

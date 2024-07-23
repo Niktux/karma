@@ -10,7 +10,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Karma\Display\CliTable;
 use Karma\Command;
 
-class Diff extends Command
+final class Diff extends Command
 {
     protected function configure(): void
     {

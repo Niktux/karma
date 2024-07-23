@@ -6,14 +6,13 @@ namespace Karma\Configuration;
 
 use Gaufrette\Filesystem;
 use Gaufrette\Adapter\InMemory;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 require_once __DIR__ . '/ParserTestCase.php';
 
 class ParserTest extends ParserTestCase
 {
-    /**
-     * @dataProvider providerTestRead
-     */
+    #[DataProvider('providerTestRead')]
     public function testRead(string $variable, string $environment, $expectedValue): void
     {
         $variables = $this->parser->setEOL("\n")->parse(self::MASTERFILE_PATH);
@@ -24,7 +23,7 @@ class ParserTest extends ParserTestCase
         self::assertSame($expectedValue, $variables[$variable]['env'][$environment]);
     }
 
-    public function providerTestRead(): array
+    public static function providerTestRead(): array
     {
         return [
             // master.conf
@@ -94,9 +93,7 @@ class ParserTest extends ParserTestCase
         ];
     }
 
-    /**
-     * @dataProvider providerTestSyntaxError
-     */
+    #[DataProvider('providerTestSyntaxError')]
     public function testSyntaxError(string $contentMaster): void
     {
         $this->expectException(\RuntimeException::class);
@@ -125,7 +122,7 @@ CONFFILE
             ->parse(self::MASTERFILE_PATH);
     }
 
-    public function providerTestSyntaxError(): array
+    public static function providerTestSyntaxError(): array
     {
         return [
             'missing =' => [<<<CONFFILE
@@ -480,7 +477,7 @@ CONFFILE;
             }
         }
 
-        $groups = $parser->getGroups();
+        $groups = $parser->groups();
 
         $expected = [
             'dev' => ['dev1', 'dev2', 'dev3'],
@@ -491,16 +488,14 @@ CONFFILE;
         $this->assertSameArraysExceptOrder($expected, $groups);
     }
 
-    /**
-     * @dataProvider providerTestIsSystem
-     */
+    #[DataProvider('providerTestIsSystem')]
     public function testIsSystem(string $variable, bool $expected): void
     {
         $this->parser->parse(self::MASTERFILE_PATH);
         self::assertSame($expected, $this->parser->isSystem($variable));
     }
 
-    public function providerTestIsSystem(): array
+    public static function providerTestIsSystem(): array
     {
         return [
             ['gourdin', true],
@@ -528,7 +523,7 @@ CONFFILE;
             ->enableGroupSupport()
             ->parse(self::MASTERFILE_PATH);
 
-        $groups = $parser->getGroups();
+        $groups = $parser->groups();
         $expected = [
             'dev' => ['dev1', 'dev2', 'dev3'],
             'qa' => ['staging', 'preprod'],
@@ -537,7 +532,7 @@ CONFFILE;
 
         $this->assertSameArraysExceptOrder($expected, $groups);
 
-        $envs = $parser->getDefaultEnvironmentsForGroups();
+        $envs = $parser->defaultEnvironmentsForGroups();
         $expected = [
             'dev' => 'dev2',
             'qa' => 'staging',

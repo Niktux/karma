@@ -10,10 +10,11 @@ use Gaufrette\Adapter\InMemory;
 use Gaufrette\Filesystem;
 use Karma\Application;
 use Karma\Hydrator;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class HydrateTest extends CommandTestCase
 {
-    private const
+    private const string
         COMMAND_NAME = 'hydrate';
 
     protected function setUp(): void
@@ -27,9 +28,7 @@ class HydrateTest extends CommandTestCase
         $this->app['target.fileSystem.adapter'] = new InMemory();
     }
 
-    /**
-     * @dataProvider providerTestOptions
-     */
+    #[DataProvider('providerTestOptions')]
     public function testOptions(string $option, string $expectedMethodCall): void
     {
         $mock = $this->createMock(Hydrator::class);
@@ -45,7 +44,7 @@ class HydrateTest extends CommandTestCase
         ]);
     }
 
-    public function providerTestOptions(): array
+    public static function providerTestOptions(): array
     {
         return [
             ['--dry-run', 'setDryRun'],

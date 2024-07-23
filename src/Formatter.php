@@ -6,5 +6,5 @@ namespace Karma;
 
 interface Formatter
 {
-    public function format($value);
+    public function format(mixed $value): mixed;
 }

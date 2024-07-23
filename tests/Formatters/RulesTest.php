@@ -4,6 +4,7 @@ declare(strict_types = 1);
 
 namespace Karma\Formatters;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class RulesTest extends TestCase
@@ -25,16 +26,14 @@ class RulesTest extends TestCase
         $this->formatter = new Rules($rules);
     }
 
-    /**
-     * @dataProvider providerTestFormat
-     */
+    #[DataProvider('providerTestFormat')]
     public function testFormat($input, $expected): void
     {
         $result = $this->formatter->format($input);
         self::assertSame($expected, $result);
     }
 
-    public function providerTestFormat(): array
+    public static function providerTestFormat(): array
     {
         return [
             'boolean true' => [true, 'string true'],
