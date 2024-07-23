@@ -16,3 +16,11 @@ box.phar:
 clean-phar:
 	-rm box.phar
 	-rm karma.phar
+
+test-phar: prepare-env phar restore-env ## Compile and run phar
+	docker run -it --rm --name karma_console \
+               -v ${HOST_SOURCE_PATH}:${CONTAINER_SOURCE_PATH} \
+               -w ${CONTAINER_SOURCE_PATH} \
+               -u ${USER_ID}:${GROUP_ID} \
+               ${CONSOLE_IMAGE_NAME} \
+               php karma.phar hydrate $(CLI_ARGS)
