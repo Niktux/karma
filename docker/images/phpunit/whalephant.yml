@@ -1,6 +1,6 @@
 name: karma-phpunit
 php:
-    version: "8.3"
+    version: "8.4"
 extensions:
     - xdebug
 ini:

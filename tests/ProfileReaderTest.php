@@ -5,7 +5,7 @@ declare(strict_types = 1);
 namespace Karma;
 
 use Gaufrette\Filesystem;
-use Gaufrette\Adapter\InMemory;
+use Karma\Filesystem\Adapters\Memory;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
@@ -23,7 +23,7 @@ class ProfileReaderTest extends TestCase
         }
 
         return new ProfileReader(
-            new Filesystem(new InMemory($files))
+            new Filesystem(new Memory($files))
         );
     }
 

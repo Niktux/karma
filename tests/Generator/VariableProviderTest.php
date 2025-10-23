@@ -6,7 +6,7 @@ namespace Karma\Generator;
 
 use Karma\Configuration\Parser;
 use Gaufrette\Filesystem;
-use Gaufrette\Adapter\InMemory;
+use Karma\Filesystem\Adapters\Memory;
 use Karma\Application;
 use Karma\Generator\NameTranslators\NullTranslator;
 use Karma\Generator\NameTranslators\FilePrefixTranslator;
@@ -54,7 +54,7 @@ CONFFILE;
             'db.conf' => $dbContent,
         );
 
-        $parser = new Parser(new Filesystem(new InMemory($files)));
+        $parser = new Parser(new Filesystem(new Memory($files)));
         $parser->enableIncludeSupport()
             ->enableExternalSupport()
             ->parse(Application::DEFAULT_MASTER_FILE);

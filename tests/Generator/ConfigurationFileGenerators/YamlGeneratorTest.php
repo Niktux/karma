@@ -5,7 +5,7 @@ declare(strict_types = 1);
 namespace Karma\Generator\ConfigurationFileGenerators;
 
 use Gaufrette\Filesystem;
-use Gaufrette\Adapter\InMemory;
+use Karma\Filesystem\Adapters\Memory;
 use Karma\Configuration\Reader;
 use Karma\Application;
 use Karma\Configuration\Parser;
@@ -25,7 +25,7 @@ class YamlGeneratorTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->fs = new Filesystem(new InMemory());
+        $this->fs = new Filesystem(new Memory());
 
         $parser = $this->initializeParserAndConfFiles();
         $variables = $parser->parse(Application::DEFAULT_MASTER_FILE);
@@ -87,7 +87,7 @@ CONFFILE;
             'db.conf' => $dbContent,
         ];
 
-        $parser = new Parser(new Filesystem(new InMemory($files)));
+        $parser = new Parser(new Filesystem(new Memory($files)));
         $parser->enableIncludeSupport()
             ->enableExternalSupport();
 

@@ -5,7 +5,7 @@ declare(strict_types = 1);
 namespace Karma;
 
 use Gaufrette\Filesystem;
-use Gaufrette\Adapter\InMemory;
+use Karma\Filesystem\Adapters\Memory;
 use Karma\Configuration\Reader;
 use PHPUnit\Framework\TestCase;
 
@@ -18,8 +18,8 @@ class RollbackTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->sourceFs = new Filesystem(new InMemory());
-        $targetFs = new Filesystem(new InMemory());
+        $this->sourceFs = new Filesystem(new Memory());
+        $targetFs = new Filesystem(new Memory());
 
         $this->write('a.php-dist', 'a');
         $this->write('a.php', 'a');

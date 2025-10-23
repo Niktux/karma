@@ -5,7 +5,7 @@ declare(strict_types = 1);
 namespace Karma;
 
 use Gaufrette\Filesystem;
-use Gaufrette\Adapter\InMemory;
+use Karma\Filesystem\Adapters\Memory;
 use Karma\Configuration\InMemoryReader;
 use Karma\FormatterProviders\NullProvider;
 use Karma\FormatterProviders\CallbackProvider;
@@ -26,8 +26,8 @@ class HydratorTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->sourceFs = new Filesystem(new InMemory());
-        $this->targetFs = new Filesystem(new InMemory());
+        $this->sourceFs = new Filesystem(new Memory());
+        $this->targetFs = new Filesystem(new Memory());
         $this->reader = new InMemoryReader([
             'var:dev' => 42,
             'var:preprod' => 51,

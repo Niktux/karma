@@ -5,7 +5,7 @@ declare(strict_types = 1);
 namespace Karma\Console;
 
 use Karma\Application;
-use Gaufrette\Adapter\InMemory;
+use Karma\Filesystem\Adapters\Memory;
 use Karma\Console;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -29,12 +29,12 @@ app.bar:
 CONFFILE;
 
         $this->app = new Application();
-        $this->app['configuration.fileSystem.adapter'] = new InMemory([
+        $this->app['configuration.fileSystem.adapter'] = new Memory([
             Application::DEFAULT_MASTER_FILE => $masterContent,
         ]);
 
         $this->app['profile.fileSystem.adapter'] = static function() {
-            return new InMemory();
+            return new Memory();
         };
     }
 

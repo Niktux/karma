@@ -6,7 +6,6 @@ namespace Karma\Filesystem\Adapters;
 
 use Gaufrette\Adapter;
 use Gaufrette\Adapter\MetadataSupporter;
-use Gaufrette\Adapter\InMemory;
 
 final class Cache implements Adapter, MetadataSupporter
 {
@@ -26,7 +25,7 @@ final class Cache implements Adapter, MetadataSupporter
 
         if(!$serializeCache)
         {
-            $serializeCache = new InMemory();
+            $serializeCache = new Memory();
         }
 
         $this->serializeCache = $serializeCache;
@@ -68,7 +67,7 @@ final class Cache implements Adapter, MetadataSupporter
         return $this->source->rename($key, $new) && $this->cache->rename($key, $new);
     }
 
-    public function write($key, $content, array $metadata = null)
+    public function write($key, $content, ?array $metadata = null)
     {
         $bytesSource = $this->source->write($key, $content);
 

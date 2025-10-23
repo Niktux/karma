@@ -21,7 +21,7 @@ Installation
 ------------
 Download latest phar (recommended) :
 ```
-  wget https://github.com/Niktux/karma/releases/download/8.3.0/karma.phar
+  wget https://github.com/Niktux/karma/releases/latest/download/karma.phar
 ```
 
 Or use composer (disapproved)
@@ -29,14 +29,14 @@ Or use composer (disapproved)
 ```json
 {
     "require": {
-        "niktux/karma" : "~8.3"
+        "niktux/karma" : "~8.4"
     }
 }
 ```
 
 Full Documentation
 ------------------
-You can find it here : http://karma-php.com/
+You can find it here : http://karma-php.com/ (offline) --> https://github.com/Niktux/karma-docs
 
 Versionning
 -----------

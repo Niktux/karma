@@ -5,7 +5,7 @@ declare(strict_types = 1);
 namespace Karma\Configuration;
 
 use Gaufrette\Filesystem;
-use Gaufrette\Adapter\InMemory;
+use Karma\Filesystem\Adapters\Memory;
 use Karma\Logging\OutputInterfaceAdapter;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Output\ConsoleOutput;
@@ -120,7 +120,7 @@ CONFFILE;
             'db.conf' => $contentDb,
         );
 
-        $adapter = new InMemory($files);
+        $adapter = new Memory($files);
         $fs = new Filesystem($adapter);
 
         $this->parser = new Parser($fs);

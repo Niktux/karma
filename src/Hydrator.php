@@ -43,7 +43,7 @@ class Hydrator implements ConfigurableProcessor
         $unvaluedVariables,
         $hydratedFiles;
 
-    public function __construct(Filesystem $sources, Filesystem $target, Configuration $reader, Finder $finder, FormatterProvider $formatterProvider = null)
+    public function __construct(Filesystem $sources, Filesystem $target, Configuration $reader, Finder $finder, ?FormatterProvider $formatterProvider = null)
     {
         $this->logger = new NullLogger();
 

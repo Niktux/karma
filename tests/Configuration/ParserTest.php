@@ -5,7 +5,7 @@ declare(strict_types = 1);
 namespace Karma\Configuration;
 
 use Gaufrette\Filesystem;
-use Gaufrette\Adapter\InMemory;
+use Karma\Filesystem\Adapters\Memory;
 use PHPUnit\Framework\Attributes\DataProvider;
 
 require_once __DIR__ . '/ParserTestCase.php';
@@ -98,7 +98,7 @@ class ParserTest extends ParserTestCase
     {
         $this->expectException(\RuntimeException::class);
 
-        $this->parser = new Parser(new Filesystem(new InMemory([
+        $this->parser = new Parser(new Filesystem(new Memory([
             self::MASTERFILE_PATH => $contentMaster,
             'empty.conf' => '',
             'vicious.conf' => <<<CONFFILE
@@ -339,7 +339,7 @@ CONFFILE
     {
         $masterContent = '';
 
-        $parser = new Parser(new Filesystem(new InMemory([self::MASTERFILE_PATH => $masterContent])));
+        $parser = new Parser(new Filesystem(new Memory([self::MASTERFILE_PATH => $masterContent])));
 
         $variables = $parser->enableIncludeSupport()
             ->enableExternalSupport()
@@ -384,7 +384,7 @@ CONFFILE;
             'external2.conf' => $externalContent2,
         ];
 
-        $parser = new Parser(new Filesystem(new InMemory($files)));
+        $parser = new Parser(new Filesystem(new Memory($files)));
 
         $parser->enableIncludeSupport()
             ->enableExternalSupport();
@@ -440,7 +440,7 @@ db.cache:
     default = false
 CONFFILE;
 
-        $parser = new Parser(new Filesystem(new InMemory([self::MASTERFILE_PATH => $masterContent])));
+        $parser = new Parser(new Filesystem(new Memory([self::MASTERFILE_PATH => $masterContent])));
 
         $parser->enableIncludeSupport()
             ->enableExternalSupport()
@@ -516,7 +516,7 @@ dev = [ dev1,  *  dev2,dev3]
 production=[prod]
 CONFFILE;
 
-        $parser = new Parser(new Filesystem(new InMemory([self::MASTERFILE_PATH => $masterContent])));
+        $parser = new Parser(new Filesystem(new Memory([self::MASTERFILE_PATH => $masterContent])));
 
         $parser->enableIncludeSupport()
             ->enableExternalSupport()
@@ -559,7 +559,7 @@ CONFFILE;
 dev = [ dev1, *dev2,*dev3]
 CONFFILE;
 
-        $parser = new Parser(new Filesystem(new InMemory([self::MASTERFILE_PATH => $masterContent])));
+        $parser = new Parser(new Filesystem(new Memory([self::MASTERFILE_PATH => $masterContent])));
 
         $parser->enableIncludeSupport()
             ->enableExternalSupport()
@@ -581,7 +581,7 @@ toto:
 
 CONFFILE;
 
-        $parser = new Parser(new Filesystem(new InMemory([self::MASTERFILE_PATH => $masterContent])));
+        $parser = new Parser(new Filesystem(new Memory([self::MASTERFILE_PATH => $masterContent])));
 
         $variables = $parser->parse(self::MASTERFILE_PATH);
 

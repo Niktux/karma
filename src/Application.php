@@ -21,7 +21,7 @@ use Psr\Log\NullLogger;
 final class Application extends Container
 {
     public const string
-        VERSION = '8.3.0',
+        VERSION = '8.4.0',
         DEFAULT_DISTFILE_SUFFIX = '-dist',
         DEFAULT_CONF_DIRECTORY = 'env',
         DEFAULT_MASTER_FILE = 'master.conf',

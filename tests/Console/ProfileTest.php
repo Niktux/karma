@@ -7,7 +7,7 @@ namespace Karma\Console;
 require_once __DIR__ . '/CommandTestCase.php';
 
 use Karma\Application;
-use Gaufrette\Adapter\InMemory;
+use Karma\Filesystem\Adapters\Memory;
 
 class ProfileTest extends CommandTestCase
 {
@@ -23,7 +23,7 @@ bar:
 CONFFILE;
 
         $this->app = new Application();
-        $this->app['configuration.fileSystem.adapter'] = new InMemory([
+        $this->app['configuration.fileSystem.adapter'] = new Memory([
             'masterAlias.conf' => $masterContent,
         ]);
 
@@ -33,7 +33,7 @@ confDir: env
 suffix: -tpl
 YAML;
 
-        $this->app['profile.fileSystem.adapter'] = new InMemory([
+        $this->app['profile.fileSystem.adapter'] = new Memory([
         	Application::PROFILE_FILENAME => $profileContent
         ]);
     }

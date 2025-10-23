@@ -4,7 +4,7 @@ declare(strict_types = 1);
 
 namespace Karma;
 
-use Gaufrette\Adapter\InMemory;
+use Karma\Filesystem\Adapters\Memory;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
@@ -13,7 +13,7 @@ class ApplicationTest extends TestCase
     #[DataProvider('providerTestContainer')]
     public function testContainer(string $service, string $expected): void
     {
-        $adapter = new InMemory();
+        $adapter = new Memory();
         $adapter->write(Application::DEFAULT_MASTER_FILE, null);
 
         $app = new Application();

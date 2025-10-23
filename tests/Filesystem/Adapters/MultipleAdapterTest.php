@@ -5,7 +5,6 @@ declare(strict_types = 1);
 namespace Karma\Filesystem\Adapters;
 
 use Gaufrette\Adapter;
-use Gaufrette\Adapter\InMemory;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
@@ -18,12 +17,12 @@ class MultipleAdapterTest extends TestCase
         
     protected function setUp(): void
     {
-        $this->src = new InMemory([
+        $this->src = new Memory([
             'wildHorses' => 'Jolly Jumper',
             'pony/unicorn.ext' => 'PONY PONY RUN RUN',
         ]);
         
-        $this->lib = new InMemory([
+        $this->lib = new Memory([
             'burger' => 'BURGER',
             'fat/burger' => 'Mac Julian',
             'more/fat/burger' => 'Mac Fau',
@@ -38,7 +37,7 @@ class MultipleAdapterTest extends TestCase
     {
         self::assertFalse($this->multiple->exists('tmp/test'), 'tmp/test should not exist');
         
-        $this->multiple->mount('tmp', new InMemory(['test' => 42]));
+        $this->multiple->mount('tmp', new Memory(['test' => 42]));
         
         self::assertTrue($this->multiple->exists('tmp/test'), 'tmp/test should exist');
     }

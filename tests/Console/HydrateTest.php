@@ -6,7 +6,7 @@ namespace Karma\Console;
 
 require_once __DIR__ . '/CommandTestCase.php';
 
-use Gaufrette\Adapter\InMemory;
+use Karma\Filesystem\Adapters\Memory;
 use Gaufrette\Filesystem;
 use Karma\Application;
 use Karma\Hydrator;
@@ -21,11 +21,11 @@ class HydrateTest extends CommandTestCase
     {
         parent::setUp();
 
-        $this->app['sources.fileSystem.adapter'] = new InMemory(array(
+        $this->app['sources.fileSystem.adapter'] = new Memory(array(
             'src/file-dist' => '<%app.foo%>',
         ));
 
-        $this->app['target.fileSystem.adapter'] = new InMemory();
+        $this->app['target.fileSystem.adapter'] = new Memory();
     }
 
     #[DataProvider('providerTestOptions')]
@@ -54,7 +54,7 @@ class HydrateTest extends CommandTestCase
 
     public function testSourcePathFromProfile(): void
     {
-        $this->app['profile.fileSystem.adapter'] = new InMemory([
+        $this->app['profile.fileSystem.adapter'] = new Memory([
             Application::PROFILE_FILENAME => 'sourcePath: lib/',
         ]);
 
@@ -70,7 +70,7 @@ sourcePath:
     - settings/
 YAML;
         
-        $this->app['profile.fileSystem.adapter'] = new InMemory([
+        $this->app['profile.fileSystem.adapter'] = new Memory([
             Application::PROFILE_FILENAME => $profileContent,
         ]);
 
@@ -82,14 +82,14 @@ YAML;
     {
         $this->expectException(\RuntimeException::class);
 
-        $this->app['profile.fileSystem.adapter'] = new InMemory();
+        $this->app['profile.fileSystem.adapter'] = new Memory();
 
         $this->runCommand(self::COMMAND_NAME, []);
     }
 
     public function testCache(): void
     {
-        $cacheAdapter = new InMemory([]);
+        $cacheAdapter = new Memory([]);
         $this->app['finder.cache.adapter'] = $cacheAdapter;
 
         $cache = new Filesystem($cacheAdapter);
@@ -124,11 +124,11 @@ YAML;
 
     public function testOverrideWithList(): void
     {
-        $this->app['sources.fileSystem.adapter'] = $adapter = new InMemory([
+        $this->app['sources.fileSystem.adapter'] = $adapter = new Memory([
             'src/file-dist' => '<%foo%>',
         ]);
         
-        $this->app['target.fileSystem.adapter'] = $adapter = new InMemory();
+        $this->app['target.fileSystem.adapter'] = $adapter = new Memory();
 
         $this->runCommand(self::COMMAND_NAME, [
             '--override' => ['foo=[1,2,3]'],

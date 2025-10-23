@@ -6,7 +6,7 @@ namespace Karma\Console;
 
 require_once __DIR__ . '/CommandTestCase.php';
 
-use Gaufrette\Adapter\InMemory;
+use Karma\Filesystem\Adapters\Memory;
 use Gaufrette\Filesystem;
 use Karma\Application;
 use Karma\Hydrator;
@@ -18,7 +18,7 @@ class RollbackTest extends CommandTestCase
     {
         parent::setUp();
 
-        $this->app['sources.fileSystem.adapter'] = new InMemory([
+        $this->app['sources.fileSystem.adapter'] = new Memory([
         	'src/file' => '',
         ]);
     }
@@ -48,7 +48,7 @@ class RollbackTest extends CommandTestCase
 
     public function testCache(): void
     {
-        $cacheAdapter = new InMemory([]);
+        $cacheAdapter = new Memory([]);
         $this->app['finder.cache.adapter'] = $cacheAdapter;
 
         $cache = new Filesystem($cacheAdapter);
@@ -72,7 +72,7 @@ class RollbackTest extends CommandTestCase
 
     public function testSourcePathFromProfile(): void
     {
-        $this->app['profile.fileSystem.adapter'] = new InMemory([
+        $this->app['profile.fileSystem.adapter'] = new Memory([
             Application::PROFILE_FILENAME => 'sourcePath: lib/',
         ]);
 
@@ -84,7 +84,7 @@ class RollbackTest extends CommandTestCase
     {
         $this->expectException(\RuntimeException::class);
 
-        $this->app['profile.fileSystem.adapter'] = new InMemory();
+        $this->app['profile.fileSystem.adapter'] = new Memory();
 
         $this->runCommand('rollback', []);
     }

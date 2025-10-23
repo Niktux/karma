@@ -6,7 +6,7 @@ namespace Karma\Console;
 
 require_once __DIR__ . '/CommandTestCase.php';
 
-use Gaufrette\Adapter\InMemory;
+use Karma\Filesystem\Adapters\Memory;
 use Karma\Application;
 use Karma\Generator\ConfigurationFileGenerators\YamlGenerator;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -20,11 +20,11 @@ class GenerateTest extends CommandTestCase
     {
         parent::setUp();
 
-        $this->app['generate.sources.fileSystem.adapter'] = new InMemory([
+        $this->app['generate.sources.fileSystem.adapter'] = new Memory([
             'src/file' => '',
         ]);
 
-        $this->app['profile.fileSystem.adapter'] = new InMemory([
+        $this->app['profile.fileSystem.adapter'] = new Memory([
             Application::PROFILE_FILENAME => "generator:\n  translator: none",
         ]);
     }
@@ -55,7 +55,7 @@ class GenerateTest extends CommandTestCase
 
     public function testSourcePathFromProfile(): void
     {
-        $this->app['profile.fileSystem.adapter'] = new InMemory([
+        $this->app['profile.fileSystem.adapter'] = new Memory([
             Application::PROFILE_FILENAME => 'sourcePath: lib/',
         ]);
 
@@ -67,7 +67,7 @@ class GenerateTest extends CommandTestCase
     {
         $this->expectException(\RuntimeException::class);
 
-        $this->app['profile.fileSystem.adapter'] = new InMemory();
+        $this->app['profile.fileSystem.adapter'] = new Memory();
 
         $this->runCommand(self::COMMAND_NAME, []);
     }
@@ -85,7 +85,7 @@ class GenerateTest extends CommandTestCase
 
     public function testOverrideWithList(): void
     {
-        $this->app['generate.sources.fileSystem.adapter'] = $adapter = new InMemory([
+        $this->app['generate.sources.fileSystem.adapter'] = $adapter = new Memory([
         ]);
 
         $this->runCommand(self::COMMAND_NAME, [

@@ -8,6 +8,9 @@
          xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/11.2/phpunit.xsd"
          cacheDirectory=".phpunit.cache"
          backupStaticProperties="false"
+         displayDetailsOnTestsThatTriggerDeprecations="true"
+         displayDetailsOnTestsThatTriggerWarnings="true"
+         displayDetailsOnPhpunitDeprecations="true"
 >
   <testsuites>
     <testsuite name="Karma Test Suite">

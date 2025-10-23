@@ -6,7 +6,7 @@ namespace Karma\FormatterProviders;
 
 use Karma\ProfileReader;
 use Gaufrette\Filesystem;
-use Gaufrette\Adapter\InMemory;
+use Karma\Filesystem\Adapters\Memory;
 use Karma\Application;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
@@ -25,7 +25,7 @@ class ProfileProviderTest extends TestCase
         }
 
         $profile = new ProfileReader(
-            new Filesystem(new InMemory($files))
+            new Filesystem(new Memory($files))
         );
 
         return new ProfileProvider($profile);

@@ -5,7 +5,6 @@ declare(strict_types = 1);
 namespace Karma\Filesystem\Adapters;
 
 use Gaufrette\Adapter;
-use Gaufrette\Adapter\InMemory;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
@@ -24,7 +23,7 @@ class SingleLocalFileTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->src = new InMemory([
+        $this->src = new Memory([
             self::FILENAME => self::CONTENT,
             'subDir/anotherFile' => 'yala',
             'fileInSameDir' => 'yili',
