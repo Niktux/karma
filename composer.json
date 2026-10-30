@@ -16,9 +16,9 @@
         "MIT"
     ],
     "require" : {
-        "php" : ">=8.4",
+        "php" : ">=8.5",
         "symfony/console" : "~7.1",
-        "pimple/pimple" : "~3.5",
+        "pimple/pimple" : "~3.6",
         "symfony/yaml" : "~7.1",
         "knplabs/gaufrette" : "~0.11",
         "psr/log" : "~3.0"

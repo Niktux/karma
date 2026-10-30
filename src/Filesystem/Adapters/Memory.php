@@ -43,7 +43,7 @@ final class Memory implements Adapter, Adapter\MimeTypeProvider
 
         $this->files[$key] = [
             'content' => (string) $content,
-            'mtime' => (integer) $mtime,
+            'mtime' => (int) $mtime,
         ];
     }
 

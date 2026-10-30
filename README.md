@@ -29,7 +29,7 @@ Or use composer (disapproved)
 ```json
 {
     "require": {
-        "niktux/karma" : "~8.4"
+        "niktux/karma" : "~8.5"
     }
 }
 ```

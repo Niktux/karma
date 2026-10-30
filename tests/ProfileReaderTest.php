@@ -18,7 +18,7 @@ class ProfileReaderTest extends TestCase
         if($profileContent !== null)
         {
             $files = [
-               $filename => $profileContent,
+               $filename ?? Application::PROFILE_FILENAME => $profileContent,
             ];
         }
 

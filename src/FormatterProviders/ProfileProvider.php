@@ -51,7 +51,7 @@ final class ProfileProvider implements FormatterProvider
 
     public function hasFormatter(?string $index): bool
     {
-        return isset($this->formatters[$index]);
+        return $index !== null && isset($this->formatters[$index]);
     }
 
     public function formatter(?string $fileExtension, ?string $index = null): Formatter
@@ -60,7 +60,7 @@ final class ProfileProvider implements FormatterProvider
 
         if($index === null)
         {
-            if(isset($this->fileExtensionFormatters[$fileExtension]))
+            if($fileExtension !== null && isset($this->fileExtensionFormatters[$fileExtension]))
             {
                 $index = $this->fileExtensionFormatters[$fileExtension];
             }
